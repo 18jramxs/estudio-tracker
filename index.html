@@ -347,6 +347,7 @@ body::after {
 
 .cat-row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-top: 1px solid var(--border); }
 .cat-row:first-of-type { border-top: none; }
+.cat-row.subcat-row { padding: 8px 0; border-top: none; }
 .cat-row-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cat-row-count { font-size: 11px; color: var(--text3); font-family: var(--font-mono); flex-shrink: 0; }
 .cat-reorder-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text2); width: 26px; height: 26px; border-radius: 8px; font-size: 12px; cursor: pointer; flex-shrink: 0; }
@@ -452,17 +453,17 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(41
 
 </div>
 
+<!-- CATEGORÍAS -->
+<div id="screen-categorias" class="screen">
+  <div id="categorias-list"></div>
+  <button class="add-btn" onclick="openNewCategoryModal()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Nueva categoría
+  </button>
+</div>
+
 <!-- AJUSTES -->
 <div id="screen-ajustes" class="screen">
-
-  <div class="settings-group">
-    <div class="settings-group-title">Categorías</div>
-    <div id="cat-list"></div>
-    <div class="settings-row" onclick="openNewCategoryModal()">
-      <div class="settings-row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-      <span>Nueva categoría</span>
-    </div>
-  </div>
 
   <div class="settings-group">
     <div class="settings-group-title">Datos</div>
@@ -506,6 +507,9 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(41
   <button class="nav-btn" onclick="showScreen('estadisticas',this)">
     <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg></span>Estadísticas
   </button>
+  <button class="nav-btn" onclick="showScreen('categorias',this)">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1"/></svg></span>Categorías
+  </button>
   <button class="nav-btn" onclick="showScreen('ajustes',this)">
     <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 018.4 12 3.6 3.6 0 0112 8.4a3.6 3.6 0 013.6 3.6 3.6 3.6 0 01-3.6 3.6z" stroke="none" fill="currentColor"/></svg></span>Ajustes
   </button>
@@ -528,8 +532,12 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(41
     </div>
 
     <label class="modal-label">Subcategoría <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
-    <input type="text" class="modal-input" id="entry-subcat-input" list="subcat-datalist" placeholder="p.ej. Test, Clases online, Estudio puro" style="font-family:var(--font-sans);">
-    <datalist id="subcat-datalist"></datalist>
+    <select class="modal-select" id="entry-subcat-select" onchange="onEntrySubcatChange()"></select>
+
+    <div id="entry-newsubcat-row" style="display:none;">
+      <label class="modal-label">Nombre de la subcategoría nueva</label>
+      <input type="text" class="modal-input" id="entry-newsubcat-name" placeholder="p.ej. Clase" style="font-family:var(--font-sans);">
+    </div>
 
     <label class="modal-label" id="entry-time-label">Tiempo</label>
     <input type="text" class="modal-input" id="entry-time-input" placeholder="h:mm o minutos (ej. 2:30 o 45)" inputmode="text">
@@ -552,6 +560,19 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(41
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="closeModal('category-modal')">Cancelar</button>
       <button class="modal-btn primary" onclick="saveCategoryModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: subcategoría (crear/editar) -->
+<div class="modal-bg" id="subcategory-modal">
+  <div class="modal">
+    <div class="modal-title" id="subcategory-modal-title">Nueva subcategoría</div>
+    <label class="modal-label">Nombre</label>
+    <input type="text" class="modal-input" id="subcategory-name-input" placeholder="p.ej. Clase" style="font-family:var(--font-sans);">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('subcategory-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveSubcategoryModal()">Guardar</button>
     </div>
   </div>
 </div>
@@ -587,6 +608,8 @@ let entryNewCatColor = PALETTE[0];
 let editingCategoryId = null;   // id de categoría en edición (null = nueva)
 let categoryModalColor = PALETTE[0];
 let pendingDeleteCategoryId = null;
+let subcategoryModalCatId = null; // categoría a la que pertenece la subcategoría en el modal
+let editingSubcategoryId = null;  // id de subcategoría en edición (null = nueva)
 let estHeatmapMonth = null;     // 'YYYY-MM' mostrado en el heatmap
 let charts = {};
 
@@ -653,10 +676,62 @@ function getOrCreateCategoria(nombre,color){
   const cats = getCategorias();
   const existing = cats.find(c=>c.nombre.trim().toLowerCase()===nombre.trim().toLowerCase());
   if(existing) return existing.id;
-  const cat = {id:uid(), nombre:nombre.trim(), color};
+  const cat = {id:uid(), nombre:nombre.trim(), color, subcategorias:[]};
   cats.push(cat);
   saveCategorias(cats);
   return cat.id;
+}
+
+function getSubcategoria(catId,subId){ const c = getCategoria(catId); return c && (c.subcategorias||[]).find(s=>s.id===subId); }
+function getSubcategoriaNombre(catId,subId){ if(!subId) return ''; const s = getSubcategoria(catId,subId); return s?s.nombre:''; }
+function sumMinutosSubcategoria(catId,subId){
+  let total = 0;
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===catId && e.subcategoriaId===subId) total += e.minutos; }));
+  return total;
+}
+function getOrCreateSubcategoria(catId,nombre){
+  const cats = getCategorias();
+  const cat = cats.find(c=>c.id===catId);
+  if(!cat) return '';
+  if(!cat.subcategorias) cat.subcategorias = [];
+  const existing = cat.subcategorias.find(s=>s.nombre.trim().toLowerCase()===nombre.trim().toLowerCase());
+  if(existing) return existing.id;
+  const sub = {id:uid(), nombre:nombre.trim()};
+  cat.subcategorias.push(sub);
+  saveCategorias(cats);
+  return sub.id;
+}
+
+// Migra datos antiguos: subcategoria (texto libre por registro) -> subcategoriaId
+// (lista fija por categoría). Se ejecuta una vez en el arranque; es idempotente.
+function migrateSubcategorias(){
+  const cats = getCategorias();
+  let catsChanged = false;
+  cats.forEach(c=>{ if(!c.subcategorias){ c.subcategorias = []; catsChanged = true; } });
+  const dias = getDias();
+  let diasChanged = false;
+  dias.forEach(d=>d.entradas.forEach(e=>{
+    if(e.subcategoriaId===undefined){
+      diasChanged = true;
+      const text = (e.subcategoria||'').trim();
+      if(text){
+        const cat = cats.find(c=>c.id===e.categoriaId);
+        if(cat){
+          if(!cat.subcategorias) cat.subcategorias = [];
+          let sub = cat.subcategorias.find(s=>s.nombre.trim().toLowerCase()===text.toLowerCase());
+          if(!sub){ sub = {id:uid(), nombre:text}; cat.subcategorias.push(sub); catsChanged = true; }
+          e.subcategoriaId = sub.id;
+        } else {
+          e.subcategoriaId = '';
+        }
+      } else {
+        e.subcategoriaId = '';
+      }
+      delete e.subcategoria;
+    }
+  }));
+  if(catsChanged) saveCategorias(cats);
+  if(diasChanged) saveDias(dias);
 }
 
 // ========== HOY ==========
@@ -690,7 +765,7 @@ function renderHoy(){
   }
   list.innerHTML = '<div class="entry-list">' + entradas.map(e=>{
     const color = getCategoriaColor(e.categoriaId);
-    const sub = (e.subcategoria||'').trim();
+    const sub = getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
     return `<div class="entry-row" onclick="openEditEntry('${e.id}')">
       <span class="entry-dot" style="background:${color};color:${color}"></span>
       <span class="entry-name">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span>
@@ -708,9 +783,7 @@ function openAddEntry(){
   document.getElementById('entry-time-label').textContent = 'Tiempo';
   document.getElementById('entry-time-input').placeholder = 'h:mm o minutos (ej. 2:30 o 45)';
   document.getElementById('entry-time-input').value = '';
-  document.getElementById('entry-subcat-input').value = '';
   populateEntryCatSelect(null);
-  populateSubcatDatalist();
   document.getElementById('entry-modal').classList.add('open');
 }
 function openEditEntry(id){
@@ -725,21 +798,24 @@ function openEditEntry(id){
   document.getElementById('entry-time-label').textContent = 'Añadir tiempo (opcional)';
   document.getElementById('entry-time-input').placeholder = 'p.ej. 0:30 o 15 — se suma al total';
   document.getElementById('entry-time-input').value = '';
-  document.getElementById('entry-subcat-input').value = entrada.subcategoria || '';
   populateEntryCatSelect(entrada.categoriaId);
-  populateSubcatDatalist();
+  populateEntrySubcatSelect(entrada.categoriaId, entrada.subcategoriaId || '');
   document.getElementById('entry-modal').classList.add('open');
 }
-function populateSubcatDatalist(){
-  const seen = new Map();
-  getDias().forEach(d=>d.entradas.forEach(e=>{
-    const s = (e.subcategoria||'').trim();
-    if(!s) return;
-    const key = s.toLowerCase();
-    if(!seen.has(key)) seen.set(key, s);
-  }));
-  const list = Array.from(seen.values()).sort((a,b)=>a.localeCompare(b,'es'));
-  document.getElementById('subcat-datalist').innerHTML = list.map(s=>`<option value="${escapeHtml(s)}"></option>`).join('');
+function populateEntrySubcatSelect(catId, selectedSubId){
+  const cat = getCategoria(catId);
+  const subs = (cat && cat.subcategorias) || [];
+  const sel = document.getElementById('entry-subcat-select');
+  sel.innerHTML = `<option value="">— Sin subcategoría —</option>`
+    + subs.map(s=>`<option value="${s.id}">${escapeHtml(s.nombre)}</option>`).join('')
+    + `<option value="__new__">+ Nueva subcategoría…</option>`;
+  sel.value = selectedSubId || '';
+  onEntrySubcatChange();
+}
+function onEntrySubcatChange(){
+  const isNew = document.getElementById('entry-subcat-select').value==='__new__';
+  document.getElementById('entry-newsubcat-row').style.display = isNew ? 'block' : 'none';
+  if(isNew) document.getElementById('entry-newsubcat-name').value = '';
 }
 function populateEntryCatSelect(selectedId){
   const cats = getCategorias();
@@ -756,12 +832,16 @@ function populateEntryCatSelect(selectedId){
   onEntryCatChange();
 }
 function onEntryCatChange(){
-  const isNew = document.getElementById('entry-cat-select').value==='__new__';
+  const catSel = document.getElementById('entry-cat-select');
+  const isNew = catSel.value==='__new__';
   document.getElementById('entry-newcat-row').style.display = isNew ? 'block' : 'none';
   if(isNew){
     entryNewCatColor = nextSuggestedColor();
     document.getElementById('entry-newcat-name').value = '';
     renderSwatches('entry-newcat-colors', entryNewCatColor, 'selectEntryNewColor');
+    populateEntrySubcatSelect(null, '');
+  } else {
+    populateEntrySubcatSelect(catSel.value, '');
   }
 }
 function selectEntryNewColor(c){ entryNewCatColor = c; renderSwatches('entry-newcat-colors', c, 'selectEntryNewColor'); }
@@ -781,8 +861,15 @@ function saveEntry(){
   } else {
     categoriaId = sel.value;
   }
+  const subSel = document.getElementById('entry-subcat-select');
+  let subcategoriaId = '';
+  if(subSel.value==='__new__'){
+    const subNombre = document.getElementById('entry-newsubcat-name').value.trim();
+    if(subNombre) subcategoriaId = getOrCreateSubcategoria(categoriaId, subNombre);
+  } else {
+    subcategoriaId = subSel.value;
+  }
   const timeRaw = document.getElementById('entry-time-input').value.trim();
-  const subcategoria = document.getElementById('entry-subcat-input').value.trim();
 
   const dias = getDias();
   let dia = dias.find(d=>d.fecha===currentHoyDate);
@@ -797,12 +884,12 @@ function saveEntry(){
       if(delta==null || delta<=0){ showToast('Introduce un tiempo válido'); return; }
     }
     e.categoriaId = categoriaId;
-    e.subcategoria = subcategoria;
+    e.subcategoriaId = subcategoriaId;
     e.minutos = e.minutos + delta;
   } else {
     const minutos = parseTiempo(timeRaw);
     if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
-    dia.entradas.push({id:uid(), categoriaId, minutos, subcategoria});
+    dia.entradas.push({id:uid(), categoriaId, subcategoriaId, minutos});
   }
   saveDias(dias);
   closeModal('entry-modal');
@@ -837,7 +924,7 @@ function renderHistorial(){
       `<span class="hist-chip"><span class="d" style="background:${getCategoriaColor(cid)}"></span>${escapeHtml(getCategoriaNombre(cid))} · ${formatHM(porCategoria[cid])}</span>`
     ).join('');
     const rows = dia.entradas.map(e=>{
-      const sub = (e.subcategoria||'').trim();
+      const sub = getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
       return `<div class="history-row"><span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${getCategoriaColor(e.categoriaId)};flex-shrink:0;"></span><span class="n">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span></span><span class="history-row-val">${formatHM(e.minutos)}</span></div>`;
     }).join('');
     return `<div class="history-session">
@@ -914,30 +1001,28 @@ function renderCatBreakdown(){
       <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(t.total/max).toFixed(4)});background:${t.cat.color}"></div></div>
     </div>`).join('');
 }
-function getSubcatStats(){
-  const map = {};
-  getDias().forEach(d=>d.entradas.forEach(e=>{
-    const s = (e.subcategoria||'').trim();
-    if(!s) return;
-    const key = s.toLowerCase();
-    if(!map[key]) map[key] = {nombre:s, total:0};
-    map[key].total += e.minutos;
-  }));
-  return Object.values(map).sort((a,b)=>b.total-a.total);
-}
 function renderSubcatBreakdown(){
   const el = document.getElementById('est-subcat-breakdown');
-  const stats = getSubcatStats();
-  if(!stats.length){ el.innerHTML = '<div class="empty-state">Sin subcategorías aún</div>'; return; }
-  const max = Math.max(1, ...stats.map(s=>s.total));
-  el.innerHTML = stats.map((s,i)=>{
-    const color = PALETTE[i % PALETTE.length];
-    return `<div class="cat-bar-row">
-      <div class="cat-bar-top">
-        <span class="cat-bar-name"><span class="entry-dot" style="width:9px;height:9px;background:${color};color:${color};box-shadow:none;"></span><span class="n">${escapeHtml(s.nombre)}</span></span>
-        <span class="cat-bar-val">${formatHM(s.total)}</span>
+  const groups = getCategorias().map(c=>{
+    const subs = (c.subcategorias||[]).map(s=>({nombre:s.nombre, total:sumMinutosSubcategoria(c.id,s.id)})).filter(s=>s.total>0).sort((a,b)=>b.total-a.total);
+    return {cat:c, subs};
+  }).filter(g=>g.subs.length>0);
+  if(!groups.length){ el.innerHTML = '<div class="empty-state">Sin subcategorías aún</div>'; return; }
+  el.innerHTML = groups.map(g=>{
+    const max = Math.max(1, ...g.subs.map(s=>s.total));
+    const rows = g.subs.map(s=>`
+      <div class="cat-bar-row">
+        <div class="cat-bar-top">
+          <span class="cat-bar-name"><span class="entry-dot" style="width:9px;height:9px;background:${g.cat.color};color:${g.cat.color};box-shadow:none;opacity:.75;"></span><span class="n">${escapeHtml(s.nombre)}</span></span>
+          <span class="cat-bar-val">${formatHM(s.total)}</span>
+        </div>
+        <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(s.total/max).toFixed(4)});background:${g.cat.color}"></div></div>
+      </div>`).join('');
+    return `<div style="margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+        <span class="entry-dot" style="width:7px;height:7px;background:${g.cat.color};color:${g.cat.color};box-shadow:none;"></span>${escapeHtml(g.cat.nombre)}
       </div>
-      <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(s.total/max).toFixed(4)});background:${color}"></div></div>
+      ${rows}
     </div>`;
   }).join('');
 }
@@ -1029,20 +1114,101 @@ function heatColor(mins, maxMin){
   return { bg: `rgba(182,255,46,${alpha})`, fg: alpha>0.6 ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.55)' };
 }
 
-// ========== AJUSTES · CATEGORÍAS ==========
-function renderCatList(){
+// ========== CATEGORÍAS (+ subcategorías) ==========
+function renderCategoriasList(){
   const cats = getCategorias();
-  const list = document.getElementById('cat-list');
+  const list = document.getElementById('categorias-list');
   if(!cats.length){ list.innerHTML = '<div class="empty-state" style="padding:24px 16px;">Aún no tienes categorías</div>'; return; }
-  list.innerHTML = cats.map((c,i)=>`
-    <div class="cat-row">
-      <span class="entry-dot" style="width:12px;height:12px;background:${c.color};color:${c.color};"></span>
-      <span class="cat-row-name" onclick="openEditCategoryModal('${c.id}')">${escapeHtml(c.nombre)}</span>
-      <span class="cat-row-count">${countEntradasCategoria(c.id)} reg.</span>
-      <button class="cat-reorder-btn" ${i===0?'disabled':''} onclick="moveCategory('${c.id}',-1)">↑</button>
-      <button class="cat-reorder-btn" ${i===cats.length-1?'disabled':''} onclick="moveCategory('${c.id}',1)">↓</button>
-      <button class="del-btn" onclick="openDeleteCategoryModal('${c.id}')">✕</button>
-    </div>`).join('');
+  list.innerHTML = cats.map((c,i)=>{
+    const subs = c.subcategorias || [];
+    const totalCat = sumMinutosCategoria(c.id);
+    const subRows = subs.map(s=>`
+      <div class="cat-row subcat-row">
+        <span class="entry-dot" style="width:8px;height:8px;background:${c.color};color:${c.color};box-shadow:none;opacity:.65;"></span>
+        <span class="cat-row-name" onclick="openEditSubcategoryModal('${c.id}','${s.id}')">${escapeHtml(s.nombre)}</span>
+        <span class="cat-row-count">${formatHM(sumMinutosSubcategoria(c.id,s.id))}</span>
+        <button class="del-btn" onclick="deleteSubcategory('${c.id}','${s.id}')">✕</button>
+      </div>`).join('');
+    return `<div class="history-session">
+      <div class="history-session-header" style="cursor:pointer;" onclick="toggleCatExpand('${c.id}')">
+        <span class="entry-dot" style="background:${c.color};color:${c.color};flex-shrink:0;"></span>
+        <div style="flex:1;min-width:0;">
+          <div class="history-session-title">${escapeHtml(c.nombre)}</div>
+          <div class="history-session-sub">${countEntradasCategoria(c.id)} registro(s) · ${subs.length} subcategoría(s)</div>
+        </div>
+        <div class="history-session-total">${formatHM(totalCat)}</div>
+        <button class="toggle-btn" id="cat-arr-${c.id}">›</button>
+      </div>
+      <div class="history-session-body" id="cat-body-${c.id}">
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <button class="cat-reorder-btn" ${i===0?'disabled':''} onclick="moveCategory('${c.id}',-1)">↑</button>
+          <button class="cat-reorder-btn" ${i===cats.length-1?'disabled':''} onclick="moveCategory('${c.id}',1)">↓</button>
+          <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;" onclick="openEditCategoryModal('${c.id}')">Editar</button>
+          <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;color:var(--red);border-color:rgba(255,69,58,0.35);" onclick="openDeleteCategoryModal('${c.id}')">Borrar</button>
+        </div>
+        ${subRows || '<div class="empty-state" style="padding:12px 0;">Sin subcategorías</div>'}
+        <div class="settings-row" style="padding:11px 4px;border-top:1px solid var(--border);margin-top:8px;cursor:pointer;" onclick="openNewSubcategoryModal('${c.id}')">
+          <div class="settings-row-icon" style="width:28px;height:28px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <span style="font-size:13px;">Nueva subcategoría</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleCatExpand(id){
+  const b = document.getElementById('cat-body-'+id);
+  const a = document.getElementById('cat-arr-'+id);
+  const o = b.classList.toggle('open');
+  a.textContent = o ? '⌄' : '›';
+}
+function openNewSubcategoryModal(catId){
+  editingSubcategoryId = null;
+  subcategoryModalCatId = catId;
+  document.getElementById('subcategory-modal-title').textContent = 'Nueva subcategoría';
+  document.getElementById('subcategory-name-input').value = '';
+  document.getElementById('subcategory-modal').classList.add('open');
+}
+function openEditSubcategoryModal(catId,subId){
+  const sub = getSubcategoria(catId,subId);
+  if(!sub) return;
+  editingSubcategoryId = subId;
+  subcategoryModalCatId = catId;
+  document.getElementById('subcategory-modal-title').textContent = 'Editar subcategoría';
+  document.getElementById('subcategory-name-input').value = sub.nombre;
+  document.getElementById('subcategory-modal').classList.add('open');
+}
+function saveSubcategoryModal(){
+  const nombre = document.getElementById('subcategory-name-input').value.trim();
+  if(!nombre){ showToast('Ponle un nombre a la subcategoría'); return; }
+  const cats = getCategorias();
+  const cat = cats.find(c=>c.id===subcategoryModalCatId);
+  if(!cat) return;
+  if(!cat.subcategorias) cat.subcategorias = [];
+  const dup = cat.subcategorias.find(s=>s.nombre.trim().toLowerCase()===nombre.toLowerCase() && s.id!==editingSubcategoryId);
+  if(dup){ showToast('Ya existe una subcategoría con ese nombre'); return; }
+  if(editingSubcategoryId){
+    const s = cat.subcategorias.find(s=>s.id===editingSubcategoryId);
+    if(s) s.nombre = nombre;
+  } else {
+    cat.subcategorias.push({id:uid(), nombre});
+  }
+  saveCategorias(cats);
+  closeModal('subcategory-modal');
+  renderCategoriasList();
+  showToast('Guardada ✓','green');
+}
+function deleteSubcategory(catId,subId){
+  if(!confirm('¿Borrar esta subcategoría? Los registros que la usan se quedarán sin subcategoría.')) return;
+  const cats = getCategorias();
+  const cat = cats.find(c=>c.id===catId);
+  if(!cat) return;
+  cat.subcategorias = (cat.subcategorias||[]).filter(s=>s.id!==subId);
+  saveCategorias(cats);
+  const dias = getDias();
+  dias.forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===catId && e.subcategoriaId===subId) e.subcategoriaId=''; }));
+  saveDias(dias);
+  renderCategoriasList();
+  showToast('Subcategoría borrada');
 }
 function moveCategory(id,dir){
   const cats = getCategorias();
@@ -1051,7 +1217,7 @@ function moveCategory(id,dir){
   if(i<0||j<0||j>=cats.length) return;
   [cats[i],cats[j]] = [cats[j],cats[i]];
   saveCategorias(cats);
-  renderCatList();
+  renderCategoriasList();
 }
 function openNewCategoryModal(){
   editingCategoryId = null;
@@ -1082,11 +1248,11 @@ function saveCategoryModal(){
     const c = cats.find(c=>c.id===editingCategoryId);
     if(c){ c.nombre = nombre; c.color = categoryModalColor; }
   } else {
-    cats.push({id:uid(), nombre, color:categoryModalColor});
+    cats.push({id:uid(), nombre, color:categoryModalColor, subcategorias:[]});
   }
   saveCategorias(cats);
   closeModal('category-modal');
-  renderCatList();
+  renderCategoriasList();
   showToast('Guardada ✓','green');
 }
 function openDeleteCategoryModal(id){
@@ -1124,7 +1290,7 @@ function confirmDeleteCategory(){
   saveCategorias(getCategorias().filter(c=>c.id!==id));
   closeModal('delete-cat-modal');
   pendingDeleteCategoryId = null;
-  renderCatList();
+  renderCategoriasList();
   showToast('Categoría borrada');
 }
 
@@ -1147,7 +1313,7 @@ function showScreen(name,btn){
   if(name==='hoy') renderHoy();
   if(name==='historial') renderHistorial();
   if(name==='estadisticas') renderEstadisticas();
-  if(name==='ajustes') renderCatList();
+  if(name==='categorias') renderCategoriasList();
 }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function showToast(msg,cls){
@@ -1175,11 +1341,12 @@ function handleImport(e){
       if(p.categorias && p.dias){
         saveCategorias(p.categorias);
         saveDias(p.dias);
+        migrateSubcategorias();
       } else {
         throw new Error('formato desconocido');
       }
       showToast('Importado ✓','green');
-      renderCatList(); renderHoy(); renderHistorial();
+      renderCategoriasList(); renderHoy(); renderHistorial();
     }catch{
       showToast('Error al importar');
     }
@@ -1190,7 +1357,7 @@ function exportCSV(){
   const rows = [['Fecha','Categoría','Subcategoría','Minutos','Tiempo']];
   getDias().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(d=>{
     d.entradas.forEach(e=>{
-      rows.push([d.fecha, getCategoriaNombre(e.categoriaId), e.subcategoria||'', e.minutos, formatHM(e.minutos)]);
+      rows.push([d.fecha, getCategoriaNombre(e.categoriaId), getSubcategoriaNombre(e.categoriaId,e.subcategoriaId), e.minutos, formatHM(e.minutos)]);
     });
   });
   const blob = new Blob([rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n')], {type:'text/csv'});
@@ -1207,6 +1374,7 @@ function clearAllData(){
 }
 
 // ========== INIT ==========
+migrateSubcategorias();
 currentHoyDate = todayStr();
 document.getElementById('hoy-date-input').value = currentHoyDate;
 renderHoy();
