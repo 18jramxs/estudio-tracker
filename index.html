@@ -221,6 +221,7 @@ body::after {
 .entry-row:active { transform: scale(0.985); }
 .entry-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px -1px currentColor; }
 .entry-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-sub { font-weight: 500; color: var(--text3); }
 .entry-time { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--text2); flex-shrink: 0; }
 
 /* —— buttons: add / save —— */
@@ -425,6 +426,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(41
   </div>
 
   <div class="card" style="padding:16px;">
+    <div class="chart-card-label">Por subcategoría</div>
+    <div id="est-subcat-breakdown"><div class="empty-state">Sin subcategorías aún</div></div>
+  </div>
+
+  <div class="card" style="padding:16px;">
     <div class="chart-card-label">Horas por día · últimas 4 semanas</div>
     <canvas id="chart-diario" height="180"></canvas>
   </div>
@@ -509,6 +515,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(41
 <div class="modal-bg" id="entry-modal">
   <div class="modal">
     <div class="modal-title" id="entry-modal-title">Nuevo registro</div>
+    <div class="modal-note" id="entry-current-note" style="display:none;"></div>
 
     <label class="modal-label">Categoría</label>
     <select class="modal-select" id="entry-cat-select" onchange="onEntryCatChange()"></select>
@@ -520,7 +527,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(41
       <div class="color-swatch-row" id="entry-newcat-colors"></div>
     </div>
 
-    <label class="modal-label">Tiempo</label>
+    <label class="modal-label">Subcategoría <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+    <input type="text" class="modal-input" id="entry-subcat-input" list="subcat-datalist" placeholder="p.ej. Test, Clases online, Estudio puro" style="font-family:var(--font-sans);">
+    <datalist id="subcat-datalist"></datalist>
+
+    <label class="modal-label" id="entry-time-label">Tiempo</label>
     <input type="text" class="modal-input" id="entry-time-input" placeholder="h:mm o minutos (ej. 2:30 o 45)" inputmode="text">
 
     <div class="modal-actions">
@@ -679,9 +690,10 @@ function renderHoy(){
   }
   list.innerHTML = '<div class="entry-list">' + entradas.map(e=>{
     const color = getCategoriaColor(e.categoriaId);
+    const sub = (e.subcategoria||'').trim();
     return `<div class="entry-row" onclick="openEditEntry('${e.id}')">
       <span class="entry-dot" style="background:${color};color:${color}"></span>
-      <span class="entry-name">${escapeHtml(getCategoriaNombre(e.categoriaId))}</span>
+      <span class="entry-name">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span>
       <span class="entry-time">${formatHM(e.minutos)}</span>
       <button class="del-btn" onclick="event.stopPropagation();deleteEntry('${currentHoyDate}','${e.id}')">✕</button>
     </div>`;
@@ -692,8 +704,13 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 function openAddEntry(){
   editingEntryId = null;
   document.getElementById('entry-modal-title').textContent = 'Nuevo registro';
+  document.getElementById('entry-current-note').style.display = 'none';
+  document.getElementById('entry-time-label').textContent = 'Tiempo';
+  document.getElementById('entry-time-input').placeholder = 'h:mm o minutos (ej. 2:30 o 45)';
   document.getElementById('entry-time-input').value = '';
+  document.getElementById('entry-subcat-input').value = '';
   populateEntryCatSelect(null);
+  populateSubcatDatalist();
   document.getElementById('entry-modal').classList.add('open');
 }
 function openEditEntry(id){
@@ -702,9 +719,27 @@ function openEditEntry(id){
   if(!entrada) return;
   editingEntryId = id;
   document.getElementById('entry-modal-title').textContent = 'Editar registro';
-  document.getElementById('entry-time-input').value = formatHM(entrada.minutos);
+  const note = document.getElementById('entry-current-note');
+  note.textContent = `Tiempo actual: ${formatHM(entrada.minutos)}. Lo que añadas abajo se suma a este total.`;
+  note.style.display = 'block';
+  document.getElementById('entry-time-label').textContent = 'Añadir tiempo (opcional)';
+  document.getElementById('entry-time-input').placeholder = 'p.ej. 0:30 o 15 — se suma al total';
+  document.getElementById('entry-time-input').value = '';
+  document.getElementById('entry-subcat-input').value = entrada.subcategoria || '';
   populateEntryCatSelect(entrada.categoriaId);
+  populateSubcatDatalist();
   document.getElementById('entry-modal').classList.add('open');
+}
+function populateSubcatDatalist(){
+  const seen = new Map();
+  getDias().forEach(d=>d.entradas.forEach(e=>{
+    const s = (e.subcategoria||'').trim();
+    if(!s) return;
+    const key = s.toLowerCase();
+    if(!seen.has(key)) seen.set(key, s);
+  }));
+  const list = Array.from(seen.values()).sort((a,b)=>a.localeCompare(b,'es'));
+  document.getElementById('subcat-datalist').innerHTML = list.map(s=>`<option value="${escapeHtml(s)}"></option>`).join('');
 }
 function populateEntryCatSelect(selectedId){
   const cats = getCategorias();
@@ -746,8 +781,8 @@ function saveEntry(){
   } else {
     categoriaId = sel.value;
   }
-  const minutos = parseTiempo(document.getElementById('entry-time-input').value);
-  if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
+  const timeRaw = document.getElementById('entry-time-input').value.trim();
+  const subcategoria = document.getElementById('entry-subcat-input').value.trim();
 
   const dias = getDias();
   let dia = dias.find(d=>d.fecha===currentHoyDate);
@@ -755,9 +790,19 @@ function saveEntry(){
 
   if(editingEntryId){
     const e = dia.entradas.find(e=>e.id===editingEntryId);
-    if(e){ e.categoriaId = categoriaId; e.minutos = minutos; }
+    if(!e) return;
+    let delta = 0;
+    if(timeRaw!==''){
+      delta = parseTiempo(timeRaw);
+      if(delta==null || delta<=0){ showToast('Introduce un tiempo válido'); return; }
+    }
+    e.categoriaId = categoriaId;
+    e.subcategoria = subcategoria;
+    e.minutos = e.minutos + delta;
   } else {
-    dia.entradas.push({id:uid(), categoriaId, minutos});
+    const minutos = parseTiempo(timeRaw);
+    if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
+    dia.entradas.push({id:uid(), categoriaId, minutos, subcategoria});
   }
   saveDias(dias);
   closeModal('entry-modal');
@@ -791,9 +836,10 @@ function renderHistorial(){
     const chips = Object.keys(porCategoria).map(cid=>
       `<span class="hist-chip"><span class="d" style="background:${getCategoriaColor(cid)}"></span>${escapeHtml(getCategoriaNombre(cid))} · ${formatHM(porCategoria[cid])}</span>`
     ).join('');
-    const rows = dia.entradas.map(e=>
-      `<div class="history-row"><span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${getCategoriaColor(e.categoriaId)};flex-shrink:0;"></span><span class="n">${escapeHtml(getCategoriaNombre(e.categoriaId))}</span></span><span class="history-row-val">${formatHM(e.minutos)}</span></div>`
-    ).join('');
+    const rows = dia.entradas.map(e=>{
+      const sub = (e.subcategoria||'').trim();
+      return `<div class="history-row"><span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${getCategoriaColor(e.categoriaId)};flex-shrink:0;"></span><span class="n">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span></span><span class="history-row-val">${formatHM(e.minutos)}</span></div>`;
+    }).join('');
     return `<div class="history-session">
       <div class="history-session-header">
         <div onclick="toggleHistDay(${i})" style="flex:1;cursor:pointer;min-width:0;">
@@ -849,6 +895,7 @@ function renderEstadisticas(){
   document.getElementById('est-media30').textContent = formatHM(sumEnRango(addDays(today,-29), today)/30);
 
   renderCatBreakdown();
+  renderSubcatBreakdown();
   renderChartDiario();
   renderHeatmap();
 }
@@ -866,6 +913,33 @@ function renderCatBreakdown(){
       </div>
       <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(t.total/max).toFixed(4)});background:${t.cat.color}"></div></div>
     </div>`).join('');
+}
+function getSubcatStats(){
+  const map = {};
+  getDias().forEach(d=>d.entradas.forEach(e=>{
+    const s = (e.subcategoria||'').trim();
+    if(!s) return;
+    const key = s.toLowerCase();
+    if(!map[key]) map[key] = {nombre:s, total:0};
+    map[key].total += e.minutos;
+  }));
+  return Object.values(map).sort((a,b)=>b.total-a.total);
+}
+function renderSubcatBreakdown(){
+  const el = document.getElementById('est-subcat-breakdown');
+  const stats = getSubcatStats();
+  if(!stats.length){ el.innerHTML = '<div class="empty-state">Sin subcategorías aún</div>'; return; }
+  const max = Math.max(1, ...stats.map(s=>s.total));
+  el.innerHTML = stats.map((s,i)=>{
+    const color = PALETTE[i % PALETTE.length];
+    return `<div class="cat-bar-row">
+      <div class="cat-bar-top">
+        <span class="cat-bar-name"><span class="entry-dot" style="width:9px;height:9px;background:${color};color:${color};box-shadow:none;"></span><span class="n">${escapeHtml(s.nombre)}</span></span>
+        <span class="cat-bar-val">${formatHM(s.total)}</span>
+      </div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(s.total/max).toFixed(4)});background:${color}"></div></div>
+    </div>`;
+  }).join('');
 }
 function sumMinutosCategoria(id){
   let total = 0;
@@ -1113,10 +1187,10 @@ function handleImport(e){
   r.readAsText(f); e.target.value='';
 }
 function exportCSV(){
-  const rows = [['Fecha','Categoría','Minutos','Tiempo']];
+  const rows = [['Fecha','Categoría','Subcategoría','Minutos','Tiempo']];
   getDias().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(d=>{
     d.entradas.forEach(e=>{
-      rows.push([d.fecha, getCategoriaNombre(e.categoriaId), e.minutos, formatHM(e.minutos)]);
+      rows.push([d.fecha, getCategoriaNombre(e.categoriaId), e.subcategoria||'', e.minutos, formatHM(e.minutos)]);
     });
   });
   const blob = new Blob([rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n')], {type:'text/csv'});
