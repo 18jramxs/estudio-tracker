@@ -137,10 +137,10 @@ body::after {
   position: sticky; top: 0; z-index: 100;
 }
 .header h1 { font-size: 12.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text); display: flex; align-items: center; gap: 10px; }
-.header h1 .cnp-badge {
+.header .cnp-badge {
   color: #ffffff; font-family: var(--font-sans); font-weight: 800; letter-spacing: 1.6px;
   border: 1px solid var(--border-2); border-radius: var(--r-xs);
-  padding: 2px 6px; font-size: 10.5px; line-height: 1.4;
+  padding: 2px 6px; font-size: 10.5px; line-height: 1.4; flex-shrink: 0;
 }
 .header h1 .accent { color: var(--gold); font-family: var(--font-mono); font-weight: 500; letter-spacing: 0px; text-transform: none; }
 
@@ -183,7 +183,7 @@ body::after {
 @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 /* —— Panels: glass cards, same as gym-tracker / 1000m —— */
-.card, .history-session, .settings-group, .entry-list, .stats-grid {
+.card, .history-session, .settings-group, .entry-list, .stat-pill {
   position: relative;
   background: var(--panel);
   border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow-card);
@@ -192,7 +192,7 @@ body::after {
 }
 .card { margin-bottom: 12px; overflow: hidden; }
 
-/* —— HOY: today hero, Nike-style oversized backdrop type (abstract shield) —— */
+/* —— HOY: today hero, Nike-style oversized backdrop type —— */
 .today-hero {
   position: relative; border-radius: var(--r-lg);
   background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025));
@@ -210,8 +210,11 @@ body::after {
 }
 @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
 .today-bg-shield {
-  position: absolute; top: -18px; right: -14px; width: 170px; height: 204px;
-  color: rgba(255,255,255,0.05); pointer-events: none; user-select: none;
+  position: absolute; top: -8px; right: -10px;
+  font-family: var(--font-disp); font-size: 96px; font-weight: 400;
+  color: rgba(255,255,255,0.05); text-transform: uppercase;
+  letter-spacing: -2px; line-height: 0.85; white-space: nowrap;
+  pointer-events: none; user-select: none;
 }
 @keyframes ghostDrift {
   0%, 100% { opacity: 0.045; transform: translateX(0); }
@@ -284,10 +287,10 @@ body::after {
 .history-session-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
 .history-session-total { font-family: var(--font-mono); font-weight: 600; font-size: 17px; color: var(--text); font-variant-numeric: tabular-nums; flex-shrink: 0; padding-top: 1px; }
 .history-session-body {
-  display: grid; grid-template-rows: 0fr; border-top: 1px solid var(--border);
-  transition: grid-template-rows 0.38s var(--ease-out-soft);
+  display: grid; grid-template-rows: 0fr; overflow: hidden; border-top: 1px solid transparent;
+  transition: grid-template-rows 0.38s var(--ease-out-soft), border-color 0.38s var(--ease-out-soft);
 }
-.history-session-body.open { grid-template-rows: 1fr; }
+.history-session-body.open { grid-template-rows: 1fr; border-top-color: var(--border); }
 .history-session-body .body-inner { overflow: hidden; min-height: 0; padding: 12px 16px 14px; }
 .history-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 12px; }
 .history-row:last-child { border-bottom: none; }
@@ -300,14 +303,13 @@ body::after {
 .hist-chip .d { width: 6px; height: 6px; border-radius: 1px; }
 .edit-date-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px 7px; opacity: 0.65; display: inline-flex; align-items: center; justify-content: center; }
 .edit-date-btn:active { opacity: 1; color: var(--gold2); }
-.toggle-btn { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 0 2px; line-height: 1; display: inline-block; transition: transform 0.32s var(--ease-out-soft); }
-.toggle-btn.open { transform: rotate(90deg); }
+.toggle-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.32s var(--ease-out-soft), color 0.2s; }
+.toggle-btn.open { transform: rotate(180deg); color: var(--gold2); }
 .empty-state { text-align: center; color: var(--text3); padding: 48px 16px; font-size: 14px; font-family: var(--font-mono); }
 
 /* —— ESTADÍSTICAS: ruled score table, not three floating pills —— */
-.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); margin-bottom: 10px; overflow: hidden; }
-.stat-pill { padding: 14px 6px; text-align: center; border-left: 1px solid var(--border); }
-.stat-pill:first-child { border-left: none; }
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
+.stat-pill { padding: 14px 6px; text-align: center; }
 .stat-val { font-family: var(--font-mono); font-weight: 600; font-size: 20px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
 .stat-lbl { font-size: 9.5px; color: var(--text3); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
 .racha-chevrons { display: flex; justify-content: center; gap: 3px; margin-top: 7px; }
@@ -419,21 +421,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <body>
 
 <div class="header">
-  <h1><span class="cnp-badge">CNP</span> ESTUDIO TRACKER&nbsp;&nbsp;<span class="accent">jo$e</span></h1>
+  <span class="cnp-badge">CNP</span>
+  <h1>ESTUDIO TRACKER&nbsp;&nbsp;<span class="accent">jo$e</span></h1>
 </div>
 
 <!-- HOY -->
 <div id="screen-hoy" class="screen active">
 
   <div class="today-hero">
-    <div class="today-bg-shield" aria-hidden="true">
-      <svg viewBox="0 0 140 168" width="170" height="204" xmlns="http://www.w3.org/2000/svg">
-        <path d="M70 4 L128 26 C128 92 104 138 70 164 C36 138 12 92 12 26 Z" fill="none" stroke="currentColor" stroke-width="3"/>
-        <path d="M70 40 L76 54 L91 54 L79 63 L84 78 L70 69 L56 78 L61 63 L49 54 L64 54 Z" fill="currentColor"/>
-        <line x1="34" y1="98" x2="106" y2="98" stroke="currentColor" stroke-width="3"/>
-        <line x1="34" y1="110" x2="106" y2="110" stroke="currentColor" stroke-width="3"/>
-      </svg>
-    </div>
+    <div class="today-bg-shield" aria-hidden="true">CNP</div>
     <div class="today-hero-tab" id="hoy-eyebrow">Total del día</div>
     <div class="today-title" id="hoy-total">0:00</div>
     <div class="today-stats">
@@ -580,7 +576,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="14" y2="17"/></svg></span>Historial
   </button>
   <button class="nav-btn" onclick="showScreen('estadisticas',this)">
-    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg></span>Estadísticas
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg></span>Stats
   </button>
   <button class="nav-btn" onclick="showScreen('categorias',this)">
     <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1"/></svg></span>Categorías
@@ -671,6 +667,7 @@ const PALETTE = ['#ff5c5c','#ff9f43','#ffd60a','#a3e635','#4ade80','#2dd4bf','#3
 // Drawn SVG icons matching the app's stroke system — no Unicode glyphs standing in for icons.
 const ICON_EDIT = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 const ICON_CLOSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
+const ICON_CHEVRON = '<svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg>';
 const DOW_NAMES_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -1011,17 +1008,16 @@ function renderHistorial(){
     ).join('');
     const rows = dia.entradas.map(e=>{
       const sub = getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
-      return `<div class="history-row"><span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${getCategoriaColor(e.categoriaId)};flex-shrink:0;"></span><span class="n">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span></span><span class="history-row-val">${formatHM(e.minutos)}</span></div>`;
+      return `<div class="history-row"><span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${getCategoriaColor(e.categoriaId)};flex-shrink:0;"></span><span class="n">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span></span><span class="history-row-val">${formatHM(e.minutos)}</span><button class="edit-date-btn" onclick="openEditEntryModal('${dia.fecha}','${e.id}')">${ICON_EDIT}</button></div>`;
     }).join('');
     return `<div class="history-session">
-      <div class="history-session-header">
-        <div onclick="toggleHistDay(${i})" style="flex:1;cursor:pointer;min-width:0;">
+      <div class="history-session-header" onclick="toggleHistDay(${i})" style="cursor:pointer;">
+        <div style="flex:1;min-width:0;">
           <div class="history-session-title">${formatDate(dia.fecha)}${isToday?' · HOY':''}</div>
           <div class="history-session-sub">${dia.entradas.length} registro(s) · ${numCats} categoría(s)</div>
         </div>
         <div class="history-session-total">${formatHM(total)}</div>
-        <button class="edit-date-btn" onclick="event.stopPropagation();goToHoyDate('${dia.fecha}')">${ICON_EDIT}</button>
-        <button class="toggle-btn" id="hist-arr-${i}" onclick="toggleHistDay(${i})">›</button>
+        <button class="toggle-btn" id="hist-arr-${i}">${ICON_CHEVRON}</button>
       </div>
       <div class="history-session-body" id="hist-body-${i}">
         <div class="body-inner">
@@ -1240,7 +1236,7 @@ function renderCategoriasList(){
           <div class="history-session-sub">${countEntradasCategoria(c.id)} registro(s) · ${subs.length} subcategoría(s)</div>
         </div>
         <div class="history-session-total">${formatHM(totalCat)}</div>
-        <button class="toggle-btn" id="cat-arr-${c.id}">›</button>
+        <button class="toggle-btn" id="cat-arr-${c.id}">${ICON_CHEVRON}</button>
       </div>
       <div class="history-session-body" id="cat-body-${c.id}">
         <div class="body-inner">
