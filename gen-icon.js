@@ -1,7 +1,8 @@
 // One-off generator for icon.png — no runtime dependency, just a build asset.
-// Abstract open-book glyph: bold white pages on a pure black ground, the same
-// flat glyph-on-black idiom as gym-tracker's dumbbell icon and 1000m's
-// wordmark (no gradients, no accent color — just white on #000).
+// A single bold "E" monogram, condensed like the app's Bebas Neue display
+// type, white on a pure black ground — same flat glyph-on-black idiom as
+// gym-tracker's dumbbell icon and 1000m's wordmark (no gradients, no accent
+// color, just white on #000).
 // Pure Node (zlib + hand-rolled PNG encoder), no npm deps.
 const zlib = require('zlib');
 
@@ -39,21 +40,20 @@ function roundedRect(x0, y0, x1, y1, rad, col, alpha) {
 }
 
 const WHITE = [255, 255, 255];
-const BLACK = [0, 0, 0];
 
-// —— One open-book silhouette (not two separate cards): a single rounded
-// shape with a thin center crease cut out of it, so it reads as one object
-// split into two pages rather than two documents side by side. ——
-roundedRect(160, 240, 864, 784, 48, WHITE, 255);
-roundedRect(506, 240, 518, 784, 0, BLACK, 255);
+// —— Bold block "E": stem + three bars, condensed proportions (narrower,
+// taller strokes) echoing Bebas Neue's letterforms. Bounding box is exactly
+// centered on the 1024×1024 canvas both ways. ——
+const stemX0 = 320, stemX1 = 460;   // vertical stem
+const glyphTop = 260, glyphBottom = 764;
+const barRight = 704;               // top/bottom bar right edge
+const midBarRight = 624;            // middle bar is shorter, classic E proportions
+const R = 16;
 
-// —— Text-line cutouts (negative space) echo the dumbbell icon's cutout
-// stripes — a "title" block left solid up top, ruled lines below. ——
-const lineYs = [452, 552, 652];
-lineYs.forEach(y => {
-  roundedRect(196, y, 486, y + 18, 6, BLACK, 255);
-  roundedRect(538, y, 828, y + 18, 6, BLACK, 255);
-});
+roundedRect(stemX0, glyphTop, stemX1, glyphBottom, R, WHITE, 255);       // stem
+roundedRect(stemX0, glyphTop, barRight, 390, R, WHITE, 255);             // top bar
+roundedRect(stemX0, 453, midBarRight, 571, R, WHITE, 255);               // middle bar
+roundedRect(stemX0, 634, barRight, glyphBottom, R, WHITE, 255);          // bottom bar
 
 // —— PNG encoding (8-bit RGBA, filter type 0 per scanline) ——
 function crc32(buf) {

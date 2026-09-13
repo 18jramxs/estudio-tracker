@@ -287,11 +287,12 @@ body::after {
 .history-session-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
 .history-session-total { font-family: var(--font-mono); font-weight: 600; font-size: 17px; color: var(--text); font-variant-numeric: tabular-nums; flex-shrink: 0; padding-top: 1px; }
 .history-session-body {
-  display: grid; grid-template-rows: 0fr; overflow: hidden; border-top: 1px solid transparent;
-  transition: grid-template-rows 0.38s var(--ease-out-soft), border-color 0.38s var(--ease-out-soft);
+  max-height: 0; overflow: hidden; border-top: 1px solid transparent;
+  transition: max-height 0.38s var(--ease-out-soft), border-color 0.38s var(--ease-out-soft);
 }
-.history-session-body.open { grid-template-rows: 1fr; border-top-color: var(--border); }
-.history-session-body .body-inner { overflow: hidden; min-height: 0; padding: 12px 16px 14px; }
+.history-session-body.open { max-height: 2000px; border-top-color: var(--border); }
+.history-session-body .body-inner { padding: 0; }
+.history-session-body.open .body-inner { padding: 12px 16px 14px; }
 .history-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 12px; }
 .history-row:last-child { border-bottom: none; }
 .history-row-name { color: var(--text2); flex: 1; display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
