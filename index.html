@@ -327,6 +327,23 @@ body::after {
 .cat-bar-track { height: 5px; background: var(--bg-input); border-radius: 2px; overflow: hidden; }
 .cat-bar-fill { height: 100%; width: 100%; border-radius: 2px; transform-origin: left center; transform: scaleX(0); transition: transform 0.6s var(--ease-out-soft); }
 
+/* —— DÍAS OPOSITANDO —— */
+.opo-card { padding: 18px 16px; }
+.opo-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.opo-days-num { font-family: var(--font-disp); font-size: 48px; font-weight: 400; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
+.opo-days-lbl { font-size: 10.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; margin-top: 4px; }
+.opo-edit-btn {
+  background: none; border: 1px solid var(--border-2); color: var(--text2);
+  border-radius: var(--r-xs); padding: 7px 12px; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: inherit; flex-shrink: 0;
+  transition: transform 0.16s var(--ease-pop), border-color 0.2s, color 0.2s;
+}
+.opo-edit-btn:active { transform: scale(0.95); border-color: var(--border-3); color: var(--gold2); }
+.opo-meta-row { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.opo-meta-item { display: flex; flex-direction: column; gap: 3px; }
+.opo-meta-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+.opo-meta-val { font-family: var(--font-mono); font-size: 15px; color: var(--text); font-variant-numeric: tabular-nums; }
+
 .nav-arrow-btn {
   background: none; border: 1px solid var(--border); color: var(--text2);
   width: 28px; height: 28px; border-radius: var(--r-xs); font-size: 15px; cursor: pointer;
@@ -481,6 +498,21 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- ESTADÍSTICAS -->
 <div id="screen-estadisticas" class="screen">
 
+  <div class="card opo-card">
+    <div class="opo-top">
+      <div>
+        <div class="opo-days-num" id="opo-dias">—</div>
+        <div class="opo-days-lbl">Días opositando</div>
+      </div>
+      <button class="opo-edit-btn" onclick="openOpoModal()">Editar</button>
+    </div>
+    <div class="opo-meta-row">
+      <div class="opo-meta-item"><div class="opo-meta-lbl">Inicio</div><div class="opo-meta-val" id="opo-inicio-txt">Sin configurar</div></div>
+      <div class="opo-meta-item"><div class="opo-meta-lbl">Semanas</div><div class="opo-meta-val" id="opo-semanas-txt">—</div></div>
+      <div class="opo-meta-item"><div class="opo-meta-lbl">Media semanal</div><div class="opo-meta-val" id="opo-media-semanal-txt">—</div></div>
+    </div>
+  </div>
+
   <div class="stats-grid">
     <div class="stat-pill"><div class="stat-val" id="est-total">0:00</div><div class="stat-lbl">Total</div></div>
     <div class="stat-pill"><div class="stat-val" id="est-semana">0:00</div><div class="stat-lbl">Esta semana</div></div>
@@ -491,6 +523,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <div class="stat-pill"><div class="stat-val" id="est-media7">0:00</div><div class="stat-lbl">Media 7 días</div></div>
     <div class="stat-pill"><div class="stat-val" id="est-media30">0:00</div><div class="stat-lbl">Media 30 días</div></div>
   </div>
+  <div class="stats-grid">
+    <div class="stat-pill"><div class="stat-val" id="est-mejor-semana">0:00</div><div class="stat-lbl">Mejor semana</div></div>
+    <div class="stat-pill"><div class="stat-val" id="est-pct-activos">0%</div><div class="stat-lbl">Días activos</div></div>
+    <div class="stat-pill"><div class="stat-val" id="est-media-dia">0:00</div><div class="stat-lbl">Media diaria</div></div>
+  </div>
 
   <div class="card" style="padding:16px;">
     <div class="chart-card-label">Por categoría</div>
@@ -500,6 +537,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   <div class="card" style="padding:16px;">
     <div class="chart-card-label">Por subcategoría</div>
     <div id="est-subcat-breakdown"><div class="empty-state">Sin subcategorías aún</div></div>
+  </div>
+
+  <div class="card" style="padding:16px;">
+    <div class="chart-card-label">Horas por semana · últimas 8 semanas</div>
+    <canvas id="chart-semanal" height="180"></canvas>
   </div>
 
   <div class="card" style="padding:16px;">
@@ -585,6 +627,19 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 018.4 12 3.6 3.6 0 0112 8.4a3.6 3.6 0 013.6 3.6 3.6 3.6 0 01-3.6 3.6z" stroke="none" fill="currentColor"/></svg></span>Ajustes
   </button>
 </nav>
+
+<!-- MODAL: fecha de inicio de la oposición -->
+<div class="modal-bg" id="opo-modal">
+  <div class="modal">
+    <div class="modal-title">Días opositando</div>
+    <label class="modal-label">Fecha de inicio</label>
+    <input type="date" class="modal-input" id="opo-inicio-input">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('opo-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveOpoInicio()">Guardar</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL: editar/quitar tiempo de un registro concreto -->
 <div class="modal-bg" id="edit-entry-modal">
@@ -728,6 +783,79 @@ function getWeekStart(dateStr){
   const diff = (day===0?-6:1-day);
   d.setDate(d.getDate()+diff);
   return toLocalISO(d);
+}
+
+function getOpoInicio(){ return localStorage.getItem('estudio_opo_inicio') || null; }
+function setOpoInicio(fecha){ localStorage.setItem('estudio_opo_inicio', fecha); }
+
+// Días opositando: cuenta días naturales desde la fecha de inicio elegida
+// por el usuario (incluyéndola), no días con estudio registrado (eso ya
+// lo cubre la racha). Las medias/mejor-semana/% activos caen de vuelta al
+// primer día con registros si aún no se ha configurado el inicio, para que
+// esos datos no se queden vacíos antes de que el usuario los configure.
+function diasEntre(desde,hasta){
+  const d1 = new Date(desde+'T12:00:00'), d2 = new Date(hasta+'T12:00:00');
+  return Math.round((d2-d1)/86400000)+1;
+}
+function primerDiaRegistrado(){
+  const fechas = getDias().filter(d=>totalDia(d)>0).map(d=>d.fecha).sort();
+  return fechas.length ? fechas[0] : null;
+}
+function computeOpoStats(){
+  const inicio = getOpoInicio() || primerDiaRegistrado();
+  if(!inicio) return null;
+  const today = todayStr();
+  const dias = Math.max(1, diasEntre(inicio, today));
+  const totalDesdeInicio = sumEnRango(inicio, today);
+  const semanas = Math.max(1, Math.ceil(dias/7));
+  const mediaSemanal = totalDesdeInicio/semanas;
+  const mediaDiaria = totalDesdeInicio/dias;
+
+  let mejorSemana = 0;
+  let ws = getWeekStart(inicio);
+  const todayWs = getWeekStart(today);
+  while(ws<=todayWs){
+    const t = sumEnRango(ws, addDays(ws,6));
+    if(t>mejorSemana) mejorSemana = t;
+    ws = addDays(ws,7);
+  }
+
+  let activos = 0;
+  for(let i=0;i<dias;i++){ if(totalFecha(addDays(inicio,i))>0) activos++; }
+  const pctActivos = Math.round(activos/dias*100);
+
+  return { dias, semanas, mediaSemanal, mediaDiaria, mejorSemana, pctActivos };
+}
+function renderOpoCard(){
+  const inicio = getOpoInicio();
+  const numEl = document.getElementById('opo-dias');
+  const inicioEl = document.getElementById('opo-inicio-txt');
+  const semanasEl = document.getElementById('opo-semanas-txt');
+  const mediaEl = document.getElementById('opo-media-semanal-txt');
+  if(!inicio){
+    numEl.textContent = '—';
+    inicioEl.textContent = 'Sin configurar';
+    semanasEl.textContent = '—';
+    mediaEl.textContent = '—';
+    return;
+  }
+  const stats = computeOpoStats();
+  numEl.textContent = stats.dias;
+  inicioEl.textContent = formatDate(inicio);
+  semanasEl.textContent = stats.semanas;
+  mediaEl.textContent = formatHM(stats.mediaSemanal);
+}
+function openOpoModal(){
+  document.getElementById('opo-inicio-input').value = getOpoInicio() || todayStr();
+  document.getElementById('opo-modal').classList.add('open');
+}
+function saveOpoInicio(){
+  const v = document.getElementById('opo-inicio-input').value;
+  if(!v){ showToast('Selecciona una fecha'); return; }
+  setOpoInicio(v);
+  closeModal('opo-modal');
+  renderEstadisticas();
+  showToast('Guardado ✓','green');
 }
 
 function getCategoria(id){ return getCategorias().find(c=>c.id===id); }
@@ -1074,8 +1202,15 @@ function renderEstadisticas(){
   document.getElementById('est-media7').textContent = formatHM(sumEnRango(addDays(today,-6), today)/7);
   document.getElementById('est-media30').textContent = formatHM(sumEnRango(addDays(today,-29), today)/30);
 
+  renderOpoCard();
+  const opoStats = computeOpoStats();
+  document.getElementById('est-mejor-semana').textContent = opoStats ? formatHM(opoStats.mejorSemana) : '0:00';
+  document.getElementById('est-pct-activos').textContent = opoStats ? opoStats.pctActivos+'%' : '0%';
+  document.getElementById('est-media-dia').textContent = opoStats ? formatHM(opoStats.mediaDiaria) : '0:00';
+
   renderCatBreakdown();
   renderSubcatBreakdown();
+  renderChartSemanal();
   renderChartDiario();
   renderHeatmap();
 }
@@ -1157,6 +1292,17 @@ function renderChartDiario(){
     data.push(totalFecha(ds)/60);
   }
   renderBarChart('chart-diario', labels, data, '#38bdf8');
+}
+function renderChartSemanal(){
+  const thisWeekStart = getWeekStart(todayStr());
+  const labels = [], data = [];
+  for(let i=7;i>=0;i--){
+    const ws = addDays(thisWeekStart, -7*i);
+    const [,m,d] = ws.split('-');
+    labels.push(d+'/'+m);
+    data.push(sumEnRango(ws, addDays(ws,6))/60);
+  }
+  renderBarChart('chart-semanal', labels, data, '#8fdcff');
 }
 
 function changeHeatmapMonth(delta){

@@ -1,16 +1,16 @@
 // One-off generator for icon.png — no runtime dependency, just a build asset.
-// Draws a bold "E" monogram (Bebas-ish block letter) on the app's dark glass
-// gradient, in the same volt-lime/blue accent pair used across the tracker
-// family. Pure Node (zlib + hand-rolled PNG encoder), no npm deps.
+// Abstract open-book glyph: bold white pages on a pure black ground, the same
+// flat glyph-on-black idiom as gym-tracker's dumbbell icon and 1000m's
+// wordmark (no gradients, no accent color — just white on #000).
+// Pure Node (zlib + hand-rolled PNG encoder), no npm deps.
 const zlib = require('zlib');
 
-const W = 512, H = 512;
+const W = 1024, H = 1024;
 const buf = Buffer.alloc(W * H * 4);
 
 function setPx(x, y, r, g, b, a) {
   if (x < 0 || y < 0 || x >= W || y >= H) return;
   const i = (y * W + x) * 4;
-  // simple alpha blend over whatever is already there
   const srcA = a / 255;
   buf[i]     = Math.round(r * srcA + buf[i]     * (1 - srcA));
   buf[i + 1] = Math.round(g * srcA + buf[i + 1] * (1 - srcA));
@@ -18,35 +18,14 @@ function setPx(x, y, r, g, b, a) {
   buf[i + 3] = 255;
 }
 
-function lerp(a, b, t) { return a + (b - a) * t; }
-
-// —— Background: vertical dark gradient + two soft radial glows (mesh wash,
-// same recipe as body::before in the app CSS) ——
-for (let y = 0; y < H; y++) {
-  const t = y / H;
-  const base = [lerp(13, 5, t), lerp(13, 5, t), lerp(18, 7, t)];
-  for (let x = 0; x < W; x++) {
-    let r = base[0], g = base[1], b = base[2];
-    // blue glow, top-left
-    const dx1 = x - W * 0.22, dy1 = y - H * 0.10;
-    const d1 = Math.sqrt(dx1 * dx1 + dy1 * dy1) / (W * 0.62);
-    const g1 = Math.max(0, 1 - d1);
-    r = lerp(r, 41, g1 * 0.35); g = lerp(g, 121, g1 * 0.35); b = lerp(b, 255, g1 * 0.35);
-    // green glow, bottom-right
-    const dx2 = x - W * 0.86, dy2 = y - H * 0.94;
-    const d2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) / (W * 0.55);
-    const g2 = Math.max(0, 1 - d2);
-    r = lerp(r, 182, g2 * 0.16); g = lerp(g, 255, g2 * 0.16); b = lerp(b, 46, g2 * 0.16);
-    setPx(x, y, Math.round(r), Math.round(g), Math.round(b), 255);
-  }
-}
+// —— Background: pure black ——
+for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) setPx(x, y, 0, 0, 0, 255);
 
 function roundedRect(x0, y0, x1, y1, rad, col, alpha) {
   for (let y = Math.floor(y0); y <= Math.ceil(y1); y++) {
     for (let x = Math.floor(x0); x <= Math.ceil(x1); x++) {
       let inside = x >= x0 && x <= x1 && y >= y0 && y <= y1;
       if (inside && rad > 0) {
-        // corner rounding
         const cx = x < x0 + rad ? x0 + rad : (x > x1 - rad ? x1 - rad : null);
         const cy = y < y0 + rad ? y0 + rad : (y > y1 - rad ? y1 - rad : null);
         if (cx !== null && cy !== null) {
@@ -59,16 +38,22 @@ function roundedRect(x0, y0, x1, y1, rad, col, alpha) {
   }
 }
 
-// —— Glyph: bold block "E" ——
-const GREEN = [182, 255, 46];
-const stemX0 = 152, stemX1 = 220, top = 128, bottom = 384, R = 12;
-roundedRect(stemX0, top, stemX1, bottom, R, GREEN, 255);           // vertical stem
-roundedRect(stemX0, top, 352, top + 62, R, GREEN, 255);            // top bar
-roundedRect(stemX0, 225, 322, 287, R, GREEN, 255);                 // middle bar
-roundedRect(stemX0, bottom - 62, 352, bottom, R, GREEN, 255);      // bottom bar
+const WHITE = [255, 255, 255];
+const BLACK = [0, 0, 0];
 
-// —— Accent underline (blue), echoes the dual-accent system ——
-roundedRect(152, 410, 352, 424, 6, [41, 121, 255], 255);
+// —— One open-book silhouette (not two separate cards): a single rounded
+// shape with a thin center crease cut out of it, so it reads as one object
+// split into two pages rather than two documents side by side. ——
+roundedRect(160, 240, 864, 784, 48, WHITE, 255);
+roundedRect(506, 240, 518, 784, 0, BLACK, 255);
+
+// —— Text-line cutouts (negative space) echo the dumbbell icon's cutout
+// stripes — a "title" block left solid up top, ruled lines below. ——
+const lineYs = [452, 552, 652];
+lineYs.forEach(y => {
+  roundedRect(196, y, 486, y + 18, 6, BLACK, 255);
+  roundedRect(538, y, 828, y + 18, 6, BLACK, 255);
+});
 
 // —— PNG encoding (8-bit RGBA, filter type 0 per scanline) ——
 function crc32(buf) {
