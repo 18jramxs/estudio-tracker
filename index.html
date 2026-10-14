@@ -47,10 +47,10 @@
   --orange:   #ff8a3d;
 
   /* Colores por sección/bloque (único sitio donde se ajustan) */
-  --col-temas:      #dd6b47; /* rojo suave/terracota, tipo Claude pero algo más vivo */
+  --col-temas:      #ff2e4f; /* parte del rosa de psico, más intenso/saturado y tirando a rojo */
   --col-juridicas:  #ff4433; /* rojo claramente más vivo/brillante que --col-temas */
-  --col-psico:      #ff4d73; /* rosa vivo, tirando a rojo, sin caer en fucsia */
-  --col-ingles:     #9fdb8a; /* verde claro, pistacho */
+  --col-psico:      #ff7d9b; /* el mismo rosa, más claro que el de temas */
+  --col-ingles:     #7ed95c; /* verde con más saturación y vida, sin llegar a neón */
   --col-sociales:   #a3e635; /* verde lima, más claro y amarillento */
   --col-tecnicas:   #38bdf8; /* azul */
   --col-tests:      #e3a71e; /* ámbar dorado, saturado */
@@ -548,14 +548,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <span id="chart-semanal-year" style="color:var(--text3);font-weight:600;"></span>
     </div>
     <canvas id="chart-semanal" height="200"></canvas>
-  </div>
-
-  <div class="card" style="padding:16px;">
-    <div class="chart-card-label" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>Horas por día · últimas 4 semanas</span>
-      <span id="chart-diario-year" style="color:var(--text3);font-weight:600;"></span>
-    </div>
-    <canvas id="chart-diario" height="200"></canvas>
   </div>
 
   <div class="card" style="padding:14px;">
@@ -1782,7 +1774,6 @@ function renderEstadisticas(){
   renderStatsCatBreakdown();
   renderStatsSubBreakdown();
   renderChartSemanal();
-  renderChartDiario();
   renderHeatmap();
 }
 function statsBackRow(onclick){ return `<button class="lvl-back" style="margin-bottom:10px;" onclick="${onclick}">‹</button>`; }
@@ -1852,7 +1843,7 @@ function renderStatsSubBreakdown(){
     (rows.length ? rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,null)).join('') : '<div class="empty-sub">Sin temas con tiempo</div>');
 }
 
-const MONTH_BAR_PALETTE = ['#2b8fc9','#7cc8f0'];
+const MONTH_BAR_PALETTE = ['#8ecae6','#f0dfb0'];
 function buildMonthGroups(mesKeys){
   const groups = [];
   mesKeys.forEach((mk,i)=>{
@@ -1895,14 +1886,12 @@ function renderBarChart(id, labels, data, opts){
       c.save();
       c.font = '600 10px -apple-system, "SF Pro Text", sans-serif';
       c.textAlign = 'center';
+      c.fillStyle = '#ffffff';
       meta.data.forEach((bar,i)=>{
         const val = chart.data.datasets[0].data[i];
         if(!val) return;
         const txt = (Math.round(val*10)/10)+'h';
-        const barHeight = bar.base - bar.y;
-        const inside = barHeight > 20;
-        c.fillStyle = inside ? 'rgba(4,20,30,0.88)' : 'rgba(255,255,255,0.85)';
-        c.fillText(txt, bar.x, inside ? bar.y+12 : bar.y-6);
+        c.fillText(txt, bar.x, bar.y-6);
       });
       c.restore();
     }
@@ -1919,7 +1908,7 @@ function renderBarChart(id, labels, data, opts){
       monthGroups.forEach(g=>{
         const xs = meta.data.slice(g.startIndex, g.endIndex+1).map(b=>b.x);
         const cx = xs.reduce((a,b)=>a+b,0)/xs.length;
-        c.fillText(g.label, cx, chart.chartArea.bottom+26);
+        c.fillText(g.label, cx, chart.chartArea.bottom+34);
       });
       c.restore();
     }
@@ -1931,7 +1920,7 @@ function renderBarChart(id, labels, data, opts){
     plugins: monthGroups ? [valueLabelPlugin, monthLabelPlugin] : [valueLabelPlugin],
     options: {
       responsive: true,
-      layout: { padding: { top: 18, bottom: monthGroups ? 20 : 0 } },
+      layout: { padding: { top: 22, bottom: monthGroups ? 40 : 0 } },
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(2)+' h' } } },
       scales: {
         x: { ticks: { color: 'rgba(255,255,255,0.32)', font: { size: 9 }, maxRotation: 0, autoSkip: opts.autoSkip!==false }, grid: { display: false } },
@@ -1939,23 +1928,6 @@ function renderBarChart(id, labels, data, opts){
       }
     }
   });
-}
-function renderChartDiario(){
-  const today = todayStr();
-  const start = addDays(today, -27);
-  const labels = [], data = [], mesKeys = [];
-  for(let i=0;i<28;i++){
-    const ds = addDays(start, i);
-    const [y,m,d] = ds.split('-');
-    labels.push(d);
-    data.push(totalFecha(ds)/60);
-    mesKeys.push(y+'-'+m);
-  }
-  const groups = buildMonthGroups(mesKeys);
-  const colors = mesKeys.map((mk,i)=> groups.find(g=>i>=g.startIndex && i<=g.endIndex).color);
-  const monthGroups = groups.map(g=>({label:g.label, startIndex:g.startIndex, endIndex:g.endIndex}));
-  document.getElementById('chart-diario-year').textContent = yearsLabel(mesKeys);
-  renderBarChart('chart-diario', labels, data, {colors, monthGroups, autoSkip:true});
 }
 function renderChartSemanal(){
   const weeks = getRecentCutWeeks(8);
