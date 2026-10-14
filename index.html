@@ -53,6 +53,15 @@
   --orange:   #ff8a3d;
   --pink:     #ff2d92;
 
+  /* Colores por sección/bloque (único sitio donde se ajustan) */
+  --col-temas:      #b3261e; /* rojo oscuro y profundo */
+  --col-juridicas:  #ff4433; /* rojo claramente más vivo/brillante que --col-temas */
+  --col-psico:      #f472b6; /* rosa */
+  --col-ingles:     #22c55e; /* verde medio */
+  --col-sociales:   #a3e635; /* verde lima, más claro y amarillento */
+  --col-tecnicas:   #38bdf8; /* azul */
+  --col-tests:      #e3a71e; /* ámbar dorado, saturado */
+
   --r-xs: 10px; --r-sm: 14px; --r: 20px; --r-lg: 26px; --r-pill: 100px;
 
   --shadow-card:    0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
@@ -239,6 +248,26 @@ body::after {
 }
 .save-btn:hover { filter: brightness(1.05); }
 .save-btn:active { transform: scale(0.985); box-shadow: 0 3px 10px rgba(56,189,248,0.45), inset 0 1px 0 rgba(255,255,255,0.4); }
+
+.cat-picker-row { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 8px; margin-bottom: 14px; }
+.cat-picker-btn {
+  --c: var(--gold);
+  background: rgba(255,255,255,0.03); border: 1.5px solid var(--c); color: var(--c);
+  border-radius: var(--r); padding: 18px 6px; min-height: 78px;
+  font-family: var(--font-disp); font-size: 14px; font-weight: 400; letter-spacing: 0.3px; text-transform: uppercase;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.15;
+  transition: transform 0.16s var(--ease-pop), background 0.2s;
+}
+.cat-picker-btn:active { transform: scale(0.96); background: color-mix(in srgb, var(--c) 16%, transparent); }
+
+.entry-selected-wrap { text-align: center; margin-bottom: 14px; }
+.entry-selected-title { font-family: var(--font-disp); font-size: 19px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1.2; }
+.entry-change-btn {
+  display: inline-block; margin-top: 6px; background: none; border: none; color: var(--text3);
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.3px; cursor: pointer; padding: 4px 8px;
+  font-family: inherit; text-decoration: underline; text-decoration-color: var(--border-2); text-underline-offset: 2px;
+}
+.entry-change-btn:active { color: var(--gold2); }
 
 .f-row { display: flex; align-items: center; gap: 9px; margin-bottom: 0; }
 .f-row .f-input { flex: 1; margin-bottom: 0; text-align: center; font-weight: 600; }
@@ -449,15 +478,18 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <input type="date" id="hoy-date-input" class="date-input" onchange="onHoyDateChange()">
   </div>
 
-  <div class="card" style="padding:16px;">
-    <div class="chart-card-label" style="margin-bottom:12px;">Añadir tiempo</div>
+  <div class="cat-picker-row" id="cat-picker-row">
+    <button class="cat-picker-btn" style="--c:var(--col-temas)" onclick="openPicker('temas')">Temas</button>
+    <button class="cat-picker-btn" style="--c:var(--col-psico)" onclick="openPicker('psico')">Psicotécnicos</button>
+    <button class="cat-picker-btn" style="--c:var(--col-ingles)" onclick="openPicker('ingles')">Inglés</button>
+  </div>
 
-    <label class="modal-label">Categoría</label>
-    <div class="lvl-row" style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r-xs);margin-bottom:10px;padding:11px 12px;" onclick="openPicker()">
-      <span class="lvl-name" id="entry-picker-label" style="font-weight:500;opacity:0.6;">Elegir categoría…</span>
-      <span class="lvl-chevron"><svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg></span>
-    </div>
+  <div class="entry-selected-wrap" id="entry-selected-wrap" style="display:none;">
+    <div class="entry-selected-title" id="entry-selected-title"></div>
+    <button class="entry-change-btn" onclick="clearEntrySelection()">Cambiar categoría</button>
+  </div>
 
+  <div class="card" id="entry-form-card" style="padding:16px;display:none;">
     <div id="entry-vuelta-row" style="display:none;margin-bottom:10px;">
       <label class="modal-label">Vuelta</label>
       <div class="vuelta-stepper">
@@ -524,13 +556,19 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 
   <div class="card" style="padding:16px;">
-    <div class="chart-card-label">Horas por semana · últimas 8 semanas</div>
-    <canvas id="chart-semanal" height="180"></canvas>
+    <div class="chart-card-label" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Horas por semana · últimas 8 semanas</span>
+      <span id="chart-semanal-year" style="color:var(--text3);font-weight:600;"></span>
+    </div>
+    <canvas id="chart-semanal" height="200"></canvas>
   </div>
 
   <div class="card" style="padding:16px;">
-    <div class="chart-card-label">Horas por día · últimas 4 semanas</div>
-    <canvas id="chart-diario" height="180"></canvas>
+    <div class="chart-card-label" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Horas por día · últimas 4 semanas</span>
+      <span id="chart-diario-year" style="color:var(--text3);font-weight:600;"></span>
+    </div>
+    <canvas id="chart-diario" height="200"></canvas>
   </div>
 
   <div class="card" style="padding:14px;">
@@ -794,14 +832,20 @@ const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','A
 // Plantilla fija de 45 temas repartidos en 3 bloques + bloque virtual TESTS.
 // No se persisten como objetos: un tema solo existe en localStorage cuando
 // tiene minutos (ver sumMinutosTema/temaTieneTiempo).
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+const COLOR_TEMAS     = cssVar('--col-temas');
+const COLOR_JURIDICAS = cssVar('--col-juridicas');
+const COLOR_SOCIALES  = cssVar('--col-sociales');
+const COLOR_TECNICAS  = cssVar('--col-tecnicas');
+const COLOR_PSICO     = cssVar('--col-psico');
+const COLOR_INGLES    = cssVar('--col-ingles');
+const COLOR_TESTS     = cssVar('--col-tests');
+
 const BLOQUES_TEMAS = [
-  {id:'juridicas', nombre:'CIENCIAS JURÍDICAS', corto:'JURÍDICAS', desde:1, hasta:26, color:'#38bdf8'},
-  {id:'sociales',  nombre:'CIENCIAS SOCIALES', corto:'SOCIALES', desde:27, hasta:37, color:'#a3e635'},
-  {id:'tecnicas',  nombre:'CIENCIAS TÉCNICO-CIENTÍFICAS', corto:'TÉCNICO-CIENT.', desde:38, hasta:45, color:'#ff9f43'},
+  {id:'juridicas', nombre:'CIENCIAS JURÍDICAS', corto:'JURÍDICAS', desde:1, hasta:26, color:COLOR_JURIDICAS},
+  {id:'sociales',  nombre:'CIENCIAS SOCIALES', corto:'SOCIALES', desde:27, hasta:37, color:COLOR_SOCIALES},
+  {id:'tecnicas',  nombre:'CIENCIAS TÉCNICO-CIENTÍFICAS', corto:'TÉCNICO-CIENT.', desde:38, hasta:45, color:COLOR_TECNICAS},
 ];
-const COLOR_PSICO = '#f472b6';
-const COLOR_INGLES = '#4ade80';
-const COLOR_TESTS = '#6ea8ff';
 const TOTAL_TEMAS = 45;
 
 const SUBCATS_TEMA = [
@@ -857,7 +901,8 @@ let pickerNewCatColor = PALETTE[0];
 
 let historialLevel = 'meses';
 let historialMes = null;
-let historialSemana = null;
+let historialSemanaDesde = null;
+let historialSemanaHasta = null;
 let historialDia = null;
 let historialOpenTest = {};
 
@@ -920,6 +965,28 @@ function getWeekStart(dateStr){
   const diff = (day===0?-6:1-day);
   d.setDate(d.getDate()+diff);
   return toLocalISO(d);
+}
+
+// Semanas de lunes a domingo, cortadas por el cambio de mes: cada día cuenta
+// siempre en su propio mes, así la suma de las semanas de un mes = total del mes.
+function pad2(n){ return String(n).padStart(2,'0'); }
+function mesKeyAdd(mesKey, delta){
+  const [y,m] = mesKey.split('-').map(Number);
+  const d = new Date(y, m-1+delta, 1);
+  return d.getFullYear()+'-'+pad2(d.getMonth()+1);
+}
+function getMonthWeeks(mesKey){
+  const [y,m] = mesKey.split('-').map(Number);
+  const daysInMonth = new Date(y,m,0).getDate();
+  const groups = [];
+  let current = null;
+  for(let d=1; d<=daysInMonth; d++){
+    const ds = y+'-'+pad2(m)+'-'+pad2(d);
+    const ws = getWeekStart(ds);
+    if(!current || current.ws!==ws){ current = {ws, days:[]}; groups.push(current); }
+    current.days.push(ds);
+  }
+  return groups.map((g,i)=>({ weekNum:i+1, mesKey, days:g.days, desde:g.days[0], hasta:g.days[g.days.length-1] }));
 }
 
 function getOpoInicio(){ return localStorage.getItem('estudio_opo_inicio') || null; }
@@ -1266,7 +1333,7 @@ function renderHoy(){
   if(tests.length) catSet.add('tests');
   document.getElementById('hoy-num-categorias').textContent = catSet.size;
 
-  renderEntryPickerLabel();
+  renderEntrySelector();
 
   const list = document.getElementById('hoy-list');
   if(!entradas.length && !tests.length){
@@ -1287,14 +1354,25 @@ function renderHoy(){
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-function renderEntryPickerLabel(){
-  const el = document.getElementById('entry-picker-label');
+function renderEntrySelector(){
+  const pickerRow = document.getElementById('cat-picker-row');
+  const selectedWrap = document.getElementById('entry-selected-wrap');
+  const formCard = document.getElementById('entry-form-card');
   const vueltaRow = document.getElementById('entry-vuelta-row');
-  if(!entrySelection){ el.textContent='Elegir categoría…'; el.style.opacity='0.6'; vueltaRow.style.display='none'; return; }
-  el.style.opacity='1';
+  if(!entrySelection){
+    pickerRow.style.display = 'grid';
+    selectedWrap.style.display = 'none';
+    formCard.style.display = 'none';
+    return;
+  }
+  pickerRow.style.display = 'none';
+  selectedWrap.style.display = 'block';
+  formCard.style.display = 'block';
+  const titleEl = document.getElementById('entry-selected-title');
   if(entrySelection.kind==='tema'){
     const {temaId, subKey} = entrySelection;
-    el.textContent = `${temaNombre(temaId)} · ${subcatTemaNombre(subKey)}`;
+    titleEl.textContent = `${temaNombre(temaId)} · ${subcatTemaNombre(subKey)}`;
+    titleEl.style.color = temaColor(temaId);
     if(subKey==='LIBRO_RESUMEN'){
       vueltaRow.style.display='block';
       document.getElementById('entry-vuelta-val').textContent = entryVuelta;
@@ -1302,11 +1380,14 @@ function renderEntryPickerLabel(){
   } else if(entrySelection.kind==='psico'){
     const cat = getCategoria(entrySelection.categoriaId);
     const sub = entrySelection.subcategoriaId ? getSubcategoria(entrySelection.categoriaId, entrySelection.subcategoriaId) : null;
-    el.textContent = `${cat?cat.nombre:'(borrada)'}${sub?' · '+sub.nombre:''}`;
+    titleEl.textContent = `${cat?cat.nombre:'(borrada)'}${sub?' · '+sub.nombre:''}`;
+    titleEl.style.color = COLOR_PSICO;
     vueltaRow.style.display='none';
-  } else {
-    el.textContent='Elegir categoría…'; el.style.opacity='0.6'; vueltaRow.style.display='none';
   }
+}
+function clearEntrySelection(){
+  entrySelection = null;
+  renderEntrySelector();
 }
 function changeEntryVuelta(delta){
   entryVuelta = Math.max(1, entryVuelta+delta);
@@ -1341,6 +1422,8 @@ function addTime(){
   }
   saveDias(dias);
   document.getElementById('entry-time-input').value = '';
+  entrySelection = null;
+  entryVuelta = 1;
   renderHoy();
   showToast('Tiempo añadido ✓','green');
 }
@@ -1411,37 +1494,30 @@ function deleteEditingEntry(){
 }
 
 // ========== SELECTOR DE CATEGORÍA POR NIVELES (Añadir tiempo) ==========
-function openPicker(){
-  pickerStep = 'root'; pickerBloqueId=null; pickerTemaId=null; pickerPsicoCatId=null;
+function openPicker(kind){
+  pickerBloqueId=null; pickerTemaId=null; pickerPsicoCatId=null;
+  if(kind==='psico') pickerStep='psico-lista';
+  else if(kind==='ingles') pickerStep='ingles';
+  else pickerStep='temas-bloques';
   renderPicker();
   document.getElementById('picker-modal').classList.add('open');
 }
+const PICKER_TOP_STEPS = ['temas-bloques','psico-lista','ingles'];
 function pickerBack(){
-  if(pickerStep==='temas-bloques') pickerStep='root';
-  else if(pickerStep==='temas-lista'){ pickerStep='temas-bloques'; pickerTemaId=null; }
+  if(pickerStep==='temas-lista'){ pickerStep='temas-bloques'; pickerTemaId=null; }
   else if(pickerStep==='temas-sub'){ pickerStep='temas-lista'; }
   else if(pickerStep==='tests-choice'){ pickerStep='temas-bloques'; }
-  else if(pickerStep==='psico-lista'){ pickerStep='root'; pickerPsicoCatId=null; }
   else if(pickerStep==='psico-sub'){ pickerStep='psico-lista'; }
   else if(pickerStep==='psico-new'){ pickerStep='psico-lista'; }
   else if(pickerStep==='psico-newsub'){ pickerStep='psico-sub'; }
-  else { pickerStep='root'; }
   renderPicker();
 }
 function renderPicker(){
   const back = document.getElementById('picker-back-btn');
   const title = document.getElementById('picker-title');
-  back.style.display = pickerStep==='root' ? 'none' : 'flex';
+  back.style.display = PICKER_TOP_STEPS.includes(pickerStep) ? 'none' : 'flex';
   const body = document.getElementById('picker-body');
 
-  if(pickerStep==='root'){
-    title.textContent = 'Categoría';
-    body.innerHTML = `
-      <button class="lvl-block-btn" onclick="pickerGoTemasBloques()"><div class="t">TEMAS</div><div class="s">${TOTAL_TEMAS} temas · ${formatHM(sumMinutosTemasTotal())}</div></button>
-      <button class="lvl-block-btn" onclick="pickerGoPsico()"><div class="t">PSICOTÉCNICOS</div><div class="s">${formatHM(sumMinutosPsicoTotal())}</div></button>
-      <button class="lvl-block-btn" onclick="pickerGoIngles()"><div class="t">INGLÉS</div><div class="s">Próximamente</div></button>`;
-    return;
-  }
   if(pickerStep==='temas-bloques'){
     title.textContent = 'Temas';
     body.innerHTML = BLOQUES_TEMAS.map(b=>`
@@ -1545,7 +1621,6 @@ function renderPicker(){
     return;
   }
 }
-function pickerGoTemasBloques(){ pickerStep='temas-bloques'; renderPicker(); }
 function pickerGoBloque(id){ pickerBloqueId=id; pickerStep='temas-lista'; renderPicker(); }
 function pickerGoTema(temaId){ pickerTemaId=temaId; pickerStep='temas-sub'; renderPicker(); }
 function pickerGoTests(){ pickerStep='tests-choice'; renderPicker(); }
@@ -1553,10 +1628,8 @@ function pickerSelectTemaSub(subKey){
   entrySelection = {kind:'tema', temaId:pickerTemaId, subKey};
   if(subKey==='LIBRO_RESUMEN') entryVuelta = Math.max(1, maxVueltaConTiempo(pickerTemaId));
   closeModal('picker-modal');
-  renderEntryPickerLabel();
+  renderEntrySelector();
 }
-function pickerGoPsico(){ pickerStep='psico-lista'; renderPicker(); }
-function pickerGoIngles(){ pickerStep='ingles'; renderPicker(); }
 function pickerGoPsicoCat(id){ pickerPsicoCatId=id; pickerStep='psico-sub'; renderPicker(); }
 function pickerSelectNewCatColor(c){ pickerNewCatColor=c; renderSwatches('picker-newcat-colors', c, 'pickerSelectNewCatColor'); }
 function pickerSavePsicoCat(){
@@ -1570,7 +1643,7 @@ function pickerSavePsicoCat(){
 function pickerSelectPsicoSub(subId){
   entrySelection = {kind:'psico', categoriaId:pickerPsicoCatId, subcategoriaId:subId};
   closeModal('picker-modal');
-  renderEntryPickerLabel();
+  renderEntrySelector();
 }
 function pickerSavePsicoSub(){
   const nombre = document.getElementById('picker-newsub-name').value.trim();
@@ -1611,22 +1684,25 @@ function renderHistorialMeses(list){
 function goHistorialMes(mk){ historialMes=mk; historialLevel='semanas'; renderHistorial(); }
 
 function renderHistorialSemanas(list){
-  const fechas = diasConDatos().filter(f=>f.slice(0,7)===historialMes);
   const [y,m] = historialMes.split('-').map(Number);
-  const semanas = {};
-  fechas.forEach(f=>{ const ws=getWeekStart(f); semanas[ws]=(semanas[ws]||0)+totalFecha(f); });
-  const keys = Object.keys(semanas).sort((a,b)=>b.localeCompare(a));
+  const rows = getMonthWeeks(historialMes)
+    .map(w=>({...w, total:w.days.reduce((a,f)=>a+totalFecha(f),0)}))
+    .filter(w=>w.total>0)
+    .sort((a,b)=>b.weekNum-a.weekNum);
   list.innerHTML = `<div class="lvl-header">${histBackBtn("goHistorialBackMeses()")}<div class="lvl-header-title">${MONTH_NAMES[m-1]} ${y}</div></div>` +
-    (keys.length ? keys.map(ws=>`<div class="history-session"><div class="history-session-header" style="cursor:pointer;" onclick="goHistorialSemana('${ws}')">
-      <div style="flex:1;"><div class="history-session-title">${formatDate(ws)} – ${formatDate(addDays(ws,6))}</div></div>
-      <div class="history-session-total">${formatHM(semanas[ws])}</div>
+    (rows.length ? rows.map(w=>`<div class="history-session"><div class="history-session-header" style="cursor:pointer;" onclick="goHistorialSemana('${w.desde}','${w.hasta}')">
+      <div style="flex:1;">
+        <div class="history-session-title">SEMANA ${w.weekNum}</div>
+        <div class="history-session-sub">${formatDate(w.desde)} – ${formatDate(w.hasta)}</div>
+      </div>
+      <div class="history-session-total">${formatHM(w.total)}</div>
     </div></div>`).join('') : '<div class="empty-state">Sin semanas este mes</div>');
 }
 function goHistorialBackMeses(){ historialLevel='meses'; renderHistorial(); }
-function goHistorialSemana(ws){ historialSemana=ws; historialLevel='dias'; renderHistorial(); }
+function goHistorialSemana(desde,hasta){ historialSemanaDesde=desde; historialSemanaHasta=hasta; historialLevel='dias'; renderHistorial(); }
 
 function renderHistorialDias(list){
-  const desde = historialSemana, hasta = addDays(historialSemana,6);
+  const desde = historialSemanaDesde, hasta = historialSemanaHasta;
   const fechas = diasConDatos().filter(f=>f>=desde && f<=hasta).sort((a,b)=>b.localeCompare(a));
   const today = todayStr();
   list.innerHTML = `<div class="lvl-header">${histBackBtn("goHistorialBackSemanas()")}<div class="lvl-header-title">${formatDate(desde)} – ${formatDate(hasta)}</div></div>` +
@@ -1709,7 +1785,7 @@ function renderStatsCatBreakdown(){
     const temasTotal = sumMinutosTemasTotal();
     const psicoTotal = sumMinutosPsicoTotal();
     const rows = [
-      {nombre:'TEMAS', color:'#38bdf8', total:temasTotal, onclick:"statsCatLevel='temas-bloques';renderStatsCatBreakdown();"},
+      {nombre:'TEMAS', color:COLOR_TEMAS, total:temasTotal, onclick:"statsCatLevel='temas-bloques';renderStatsCatBreakdown();"},
       {nombre:'PSICOTÉCNICOS', color:COLOR_PSICO, total:psicoTotal, onclick:"statsCatLevel='psico';renderStatsCatBreakdown();"},
       {nombre:'INGLÉS', color:COLOR_INGLES, total:0, onclick:null},
     ];
@@ -1760,17 +1836,89 @@ function renderStatsSubBreakdown(){
     (rows.length ? rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,null)).join('') : '<div class="empty-sub">Sin temas con tiempo</div>');
 }
 
-function renderBarChart(id, labels, data, color){
+const MONTH_BAR_PALETTE = ['#2b8fc9','#7cc8f0'];
+function buildMonthGroups(mesKeys){
+  const groups = [];
+  mesKeys.forEach((mk,i)=>{
+    const last = groups[groups.length-1];
+    if(last && last.mesKey===mk) last.endIndex=i;
+    else groups.push({mesKey:mk, startIndex:i, endIndex:i});
+  });
+  groups.forEach((g,gi)=>{
+    const [,m] = g.mesKey.split('-').map(Number);
+    g.color = MONTH_BAR_PALETTE[gi%2];
+    g.label = MONTH_NAMES[m-1].toUpperCase();
+  });
+  return groups;
+}
+function yearsLabel(mesKeys){ return Array.from(new Set(mesKeys.map(k=>k.slice(0,4)))).join(' – '); }
+
+// Últimas `count` semanas cortadas por mes, en orden cronológico, hasta la semana actual (incluida).
+function getRecentCutWeeks(count){
+  const today = todayStr();
+  let all = [];
+  for(let back=0; back<6 && all.length<count+6; back++){
+    const mk = mesKeyAdd(today.slice(0,7), -back);
+    all = getMonthWeeks(mk).concat(all);
+  }
+  return all.filter(w=>w.desde<=today).slice(-count);
+}
+
+function renderBarChart(id, labels, data, opts){
+  opts = opts || {};
+  const colors = opts.colors || data.map(()=> opts.color || '#38bdf8');
+  const monthGroups = opts.monthGroups || null;
   if(charts[id]) charts[id].destroy();
   const ctx = document.getElementById(id).getContext('2d');
+
+  const valueLabelPlugin = {
+    id: 'valueLabel-'+id,
+    afterDatasetsDraw(chart){
+      const c = chart.ctx;
+      const meta = chart.getDatasetMeta(0);
+      c.save();
+      c.font = '600 10px -apple-system, "SF Pro Text", sans-serif';
+      c.textAlign = 'center';
+      meta.data.forEach((bar,i)=>{
+        const val = chart.data.datasets[0].data[i];
+        if(!val) return;
+        const txt = (Math.round(val*10)/10)+'h';
+        const barHeight = bar.base - bar.y;
+        const inside = barHeight > 20;
+        c.fillStyle = inside ? 'rgba(4,20,30,0.88)' : 'rgba(255,255,255,0.85)';
+        c.fillText(txt, bar.x, inside ? bar.y+12 : bar.y-6);
+      });
+      c.restore();
+    }
+  };
+  const monthLabelPlugin = monthGroups ? {
+    id: 'monthLabel-'+id,
+    afterDraw(chart){
+      const c = chart.ctx;
+      const meta = chart.getDatasetMeta(0);
+      c.save();
+      c.font = '700 10px -apple-system, "SF Pro Text", sans-serif';
+      c.fillStyle = 'rgba(255,255,255,0.45)';
+      c.textAlign = 'center';
+      monthGroups.forEach(g=>{
+        const xs = meta.data.slice(g.startIndex, g.endIndex+1).map(b=>b.x);
+        const cx = xs.reduce((a,b)=>a+b,0)/xs.length;
+        c.fillText(g.label, cx, chart.chartArea.bottom+26);
+      });
+      c.restore();
+    }
+  } : null;
+
   charts[id] = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: color+'55', borderColor: color, borderWidth: 1, borderRadius: 4 }] },
+    data: { labels, datasets: [{ data, backgroundColor: colors.map(c=>c+'cc'), borderColor: colors, borderWidth: 1, borderRadius: 4 }] },
+    plugins: monthGroups ? [valueLabelPlugin, monthLabelPlugin] : [valueLabelPlugin],
     options: {
       responsive: true,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(1)+' h' } } },
+      layout: { padding: { top: 18, bottom: monthGroups ? 20 : 0 } },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(2)+' h' } } },
       scales: {
-        x: { ticks: { color: 'rgba(255,255,255,0.32)', font: { size: 9 }, maxRotation: 0, autoSkip: true }, grid: { display: false } },
+        x: { ticks: { color: 'rgba(255,255,255,0.32)', font: { size: 9 }, maxRotation: 0, autoSkip: opts.autoSkip!==false }, grid: { display: false } },
         y: { ticks: { color: 'rgba(255,255,255,0.32)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
       }
     }
@@ -1779,25 +1927,30 @@ function renderBarChart(id, labels, data, color){
 function renderChartDiario(){
   const today = todayStr();
   const start = addDays(today, -27);
-  const labels = [], data = [];
+  const labels = [], data = [], mesKeys = [];
   for(let i=0;i<28;i++){
     const ds = addDays(start, i);
-    const [,m,d] = ds.split('-');
-    labels.push(d+'/'+m);
+    const [y,m,d] = ds.split('-');
+    labels.push(d);
     data.push(totalFecha(ds)/60);
+    mesKeys.push(y+'-'+m);
   }
-  renderBarChart('chart-diario', labels, data, '#38bdf8');
+  const groups = buildMonthGroups(mesKeys);
+  const colors = mesKeys.map((mk,i)=> groups.find(g=>i>=g.startIndex && i<=g.endIndex).color);
+  const monthGroups = groups.map(g=>({label:g.label, startIndex:g.startIndex, endIndex:g.endIndex}));
+  document.getElementById('chart-diario-year').textContent = yearsLabel(mesKeys);
+  renderBarChart('chart-diario', labels, data, {colors, monthGroups, autoSkip:true});
 }
 function renderChartSemanal(){
-  const thisWeekStart = getWeekStart(todayStr());
-  const labels = [], data = [];
-  for(let i=7;i>=0;i--){
-    const ws = addDays(thisWeekStart, -7*i);
-    const [,m,d] = ws.split('-');
-    labels.push(d+'/'+m);
-    data.push(sumEnRango(ws, addDays(ws,6))/60);
-  }
-  renderBarChart('chart-semanal', labels, data, '#8fdcff');
+  const weeks = getRecentCutWeeks(8);
+  const labels = weeks.map(w=>'S'+w.weekNum);
+  const data = weeks.map(w=> w.days.reduce((a,f)=>a+totalFecha(f),0)/60);
+  const mesKeys = weeks.map(w=>w.mesKey);
+  const groups = buildMonthGroups(mesKeys);
+  const colors = mesKeys.map((mk,i)=> groups.find(g=>i>=g.startIndex && i<=g.endIndex).color);
+  const monthGroups = groups.map(g=>({label:g.label, startIndex:g.startIndex, endIndex:g.endIndex}));
+  document.getElementById('chart-semanal-year').textContent = yearsLabel(mesKeys);
+  renderBarChart('chart-semanal', labels, data, {colors, monthGroups, autoSkip:false});
 }
 
 function changeHeatmapMonth(delta){
