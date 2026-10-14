@@ -413,7 +413,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .lvl-back:active { transform: scale(0.92); border-color: var(--border-3); color: var(--gold2); }
 .lvl-block-btn { display: block; width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 16px; margin-bottom: 10px; cursor: pointer; font-family: inherit; transition: transform 0.16s var(--ease-pop), border-color 0.2s; color: var(--text); }
 .lvl-block-btn:active { transform: scale(0.98); border-color: var(--border-3); }
-.lvl-block-btn .t { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; color: var(--text); }
+.lvl-block-btn .t { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .lvl-block-btn .s { font-size: 11.5px; color: var(--text3); margin-top: 4px; }
 .vuelta-stepper { display: flex; align-items: center; gap: 10px; }
 .vuelta-val { font-family: var(--font-mono); font-weight: 700; font-size: 17px; min-width: 24px; text-align: center; }
@@ -1445,11 +1445,11 @@ function renderPicker(){
   if(pickerStep==='temas-bloques'){
     title.textContent = 'Temas';
     body.innerHTML = BLOQUES_TEMAS.map(b=>`
-      <button class="lvl-block-btn" style="border-left:3px solid ${b.color};" onclick="pickerGoBloque('${b.id}')">
-        <div class="t">${b.nombre}</div><div class="s">Temas ${b.desde}–${b.hasta} · ${formatHM(sumMinutosBloque(b.id))}</div>
+      <button class="lvl-block-btn" onclick="pickerGoBloque('${b.id}')">
+        <div class="t"><span class="lvl-dot" style="background:${b.color};color:${b.color};"></span>${b.nombre}</div><div class="s">Temas ${b.desde}–${b.hasta} · ${formatHM(sumMinutosBloque(b.id))}</div>
       </button>`).join('') +
-      `<button class="lvl-block-btn" style="border-left:3px solid ${COLOR_TESTS};" onclick="pickerGoTests()">
-        <div class="t">TESTS</div><div class="s">Test a la carta / Simulacro</div>
+      `<button class="lvl-block-btn" onclick="pickerGoTests()">
+        <div class="t"><span class="lvl-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS};"></span>TESTS</div><div class="s">Test a la carta / Simulacro</div>
       </button>`;
     return;
   }
@@ -1863,11 +1863,11 @@ function renderCategoriasList(){
   }
   if(catLevel==='temas-bloques'){
     list.innerHTML = statsBackRow("catLevel='root';renderCategoriasList();") + BLOQUES_TEMAS.map(b=>`
-      <button class="lvl-block-btn" style="border-left:3px solid ${b.color};" onclick="catBloque='${b.id}';catLevel='temas-lista';renderCategoriasList();">
-        <div class="t">${b.nombre}</div><div class="s">Temas ${b.desde}–${b.hasta} · ${formatHM(sumMinutosBloque(b.id))}</div>
+      <button class="lvl-block-btn" onclick="catBloque='${b.id}';catLevel='temas-lista';renderCategoriasList();">
+        <div class="t"><span class="lvl-dot" style="background:${b.color};color:${b.color};"></span>${b.nombre}</div><div class="s">Temas ${b.desde}–${b.hasta} · ${formatHM(sumMinutosBloque(b.id))}</div>
       </button>`).join('') +
-      `<button class="lvl-block-btn" style="border-left:3px solid ${COLOR_TESTS};" onclick="openTestsView();">
-        <div class="t">TESTS</div><div class="s">${formatHM(sumMinutosTestsTotal())} · ${getTests().length} registro(s)</div>
+      `<button class="lvl-block-btn" onclick="openTestsView();">
+        <div class="t"><span class="lvl-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS};"></span>TESTS</div><div class="s">${formatHM(sumMinutosTestsTotal())} · ${getTests().length} registro(s)</div>
       </button>`;
     return;
   }
