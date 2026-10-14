@@ -11,8 +11,6 @@
 <meta name="theme-color" content="#050507">
 <title>Estudio Tracker</title>
 
-<!-- Bebas Neue for the Nike-style oversized backdrop typography — same shared
-     dark-glass design system as gym-tracker / 1000m. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -20,18 +18,9 @@
 <script src="vendor/chart.umd.min.js"></script>
 
 <style>
-/* ============================================================
-   ESTUDIO TRACKER — design system
-   Same shared dark-glass system as gym-tracker / 1000m (Liquid Glass
-   × Apple Fitness × Nike): mesh-gradient ground, blurred glass cards,
-   Bebas Neue backdrop type, floating pill nav. Institutional accent:
-   siren/CNP blue. Today-hero carries an abstract Policía Nacional
-   shield as oversized ghost backdrop type, CNP badge in the header.
-   ============================================================ */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
 
 :root {
-  /* surface — same dark-glass ground as gym-tracker / 1000m */
   --bg:        #050507;
   --bg-2:      #0a0a0c;
   --panel:     rgba(255,255,255,0.045);
@@ -40,18 +29,15 @@
   --glass:        blur(28px) saturate(180%);
   --glass-strong: blur(44px) saturate(200%);
 
-  /* borders */
   --border:   rgba(255,255,255,0.08);
   --border-2: rgba(255,255,255,0.14);
   --border-3: rgba(255,255,255,0.22);
 
-  /* text */
   --text:  #ffffff;
   --text2: rgba(255,255,255,0.62);
   --text3: rgba(255,255,255,0.54);
   --text4: rgba(255,255,255,0.18);
 
-  /* accents — one committed institutional accent: siren/CNP blue */
   --gold:     #38bdf8;
   --gold2:    #8fdcff;
   --gold-bg:  rgba(56,189,248,0.14);
@@ -67,20 +53,16 @@
   --orange:   #ff8a3d;
   --pink:     #ff2d92;
 
-  /* radius — same oversized glass-bubble scale as the sibling trackers */
   --r-xs: 10px; --r-sm: 14px; --r: 20px; --r-lg: 26px; --r-pill: 100px;
 
-  /* shadows */
   --shadow-card:    0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
   --shadow-card-lg: 0 18px 50px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
   --shadow-nav:     0 14px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
 
-  /* type */
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", sans-serif;
   --font-disp: "Bebas Neue", "Anton", "SF Pro Display", system-ui, sans-serif;
   --font-mono: "SF Mono", ui-monospace, "Roboto Mono", Menlo, monospace;
 
-  /* easing */
   --ease-out-soft: cubic-bezier(0.22,1,0.36,1);
   --ease-pop:      cubic-bezier(0.16,1,0.3,1);
   --ease-drawer:   cubic-bezier(0.32,0.72,0,1);
@@ -97,8 +79,6 @@ body {
   position: relative;
 }
 
-/* mesh wash — same Apple Fitness-style ambient gradient as the sibling trackers,
-   recolored to the institutional siren-blue accent */
 body::before {
   content: "";
   position: fixed; inset: -4%;
@@ -126,7 +106,6 @@ body::after {
 .screen, .header, .bottom-nav, .toast { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
 
-/* —— Header: glass masthead, fading into the mesh —— */
 .header {
   background: linear-gradient(to bottom, rgba(5,5,7,0.92) 0%, rgba(5,5,7,0.6) 80%, transparent 100%);
   backdrop-filter: var(--glass-strong);
@@ -144,7 +123,6 @@ body::after {
 }
 .header h1 .accent { color: var(--gold); font-family: var(--font-mono); font-weight: 500; letter-spacing: 0px; text-transform: none; }
 
-/* —— Bottom nav: floating glass pill, same as gym-tracker / 1000m —— */
 .bottom-nav {
   position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
   width: calc(100% - 32px); max-width: 420px;
@@ -177,12 +155,10 @@ body::after {
   will-change: transform; pointer-events: none; z-index: 0;
 }
 
-/* —— Screen —— */
 .screen { display: none; padding: 14px 16px 8px; }
 .screen.active { display: block; animation: pageIn 0.32s var(--ease-out-soft) both; }
 @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-/* —— Panels: glass cards, same as gym-tracker / 1000m —— */
 .card, .history-session, .settings-group, .entry-list, .stat-pill {
   position: relative;
   background: var(--panel);
@@ -192,7 +168,6 @@ body::after {
 }
 .card { margin-bottom: 12px; overflow: hidden; }
 
-/* —— HOY: today hero, Nike-style oversized backdrop type —— */
 .today-hero {
   position: relative; border-radius: var(--r-lg);
   background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025));
@@ -232,7 +207,6 @@ body::after {
 .today-stats .ts .v { font-family: var(--font-mono); font-weight: 600; font-size: 19px; line-height: 1; color: var(--text); }
 .today-stats .ts .l { font-size: 9.5px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.7px; font-weight: 600; }
 
-/* —— session-info row (date picker) — flat row, no card chrome —— */
 .session-info { padding: 4px 2px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .session-label { font-family: var(--font-disp); font-size: 15px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; color: var(--text); }
 .date-input {
@@ -241,7 +215,6 @@ body::after {
   font-family: var(--font-mono); color-scheme: dark;
 }
 
-/* —— entry rows (HOY list) — ledger rows inside one ruled panel —— */
 .entry-list { padding: 2px 14px; margin-bottom: 12px; }
 .entry-row { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--border); }
 .entry-row:last-child { border-bottom: none; }
@@ -250,7 +223,6 @@ body::after {
 .entry-sub { font-weight: 500; color: var(--text3); }
 .entry-time { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--text2); flex-shrink: 0; font-variant-numeric: tabular-nums; }
 
-/* —— buttons: add / save —— */
 .add-btn {
   width: 100%; background: none; border: 1px solid var(--border-2); color: var(--text2);
   border-radius: var(--r-sm); padding: 13px; font-size: 13.5px; font-weight: 600; cursor: pointer; margin-top: 4px;
@@ -268,7 +240,6 @@ body::after {
 .save-btn:hover { filter: brightness(1.05); }
 .save-btn:active { transform: scale(0.985); box-shadow: 0 3px 10px rgba(56,189,248,0.45), inset 0 1px 0 rgba(255,255,255,0.4); }
 
-/* —— inline add-value row (input + button), same pattern as gym-tracker calorías —— */
 .f-row { display: flex; align-items: center; gap: 9px; margin-bottom: 0; }
 .f-row .f-input { flex: 1; margin-bottom: 0; text-align: center; font-weight: 600; }
 .f-btn {
@@ -280,7 +251,6 @@ body::after {
 }
 .f-btn:active { transform: scale(0.96); filter: brightness(1.08); }
 
-/* —— collapsible bodies (Historial days, Categorías) — smooth height, one wrapper —— */
 .history-session { margin-bottom: 10px; overflow: hidden; }
 .history-session-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
 .history-session-title { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; }
@@ -308,15 +278,10 @@ body::after {
 .toggle-btn.open { transform: rotate(180deg); color: var(--gold2); }
 .empty-state { text-align: center; color: var(--text3); padding: 48px 16px; font-size: 14px; font-family: var(--font-mono); }
 
-/* —— ESTADÍSTICAS: ruled score table, not three floating pills —— */
 .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
 .stat-pill { padding: 14px 6px; text-align: center; }
 .stat-val { font-family: var(--font-mono); font-weight: 600; font-size: 20px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
 .stat-lbl { font-size: 9.5px; color: var(--text3); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
-.racha-chevrons { display: flex; justify-content: center; gap: 3px; margin-top: 7px; }
-.racha-chevrons svg { display: block; }
-.racha-chevrons .off { color: var(--border-2); }
-.racha-chevrons .on { color: var(--gold); }
 .chart-card-label { font-size: 10px; color: var(--gold2); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; }
 
 .cat-bar-row { margin-bottom: 14px; }
@@ -328,7 +293,6 @@ body::after {
 .cat-bar-track { height: 5px; background: var(--bg-input); border-radius: 2px; overflow: hidden; }
 .cat-bar-fill { height: 100%; width: 100%; border-radius: 2px; transform-origin: left center; transform: scaleX(0); transition: transform 0.6s var(--ease-out-soft); }
 
-/* —— DÍAS OPOSITANDO —— */
 .opo-card { padding: 18px 16px; }
 .opo-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .opo-days-num { font-family: var(--font-disp); font-size: 48px; font-weight: 400; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
@@ -366,7 +330,6 @@ body::after {
 .act-day.future { background: transparent; border-color: var(--border); color: var(--text4); cursor: default; }
 .act-day.empty { background: transparent; border-color: transparent; pointer-events: none; }
 
-/* —— MODAL (bottom sheet) —— */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(4,6,10,0.72); z-index: 1000; align-items: flex-end; opacity: 0; transition: opacity 0.3s ease; }
 .modal-bg.open { display: flex; opacity: 1; }
 .modal {
@@ -400,7 +363,6 @@ body::after {
 .color-swatch:active { transform: scale(0.9); }
 .color-swatch.selected { border-color: var(--gold2); box-shadow: 0 0 0 2px rgba(56,189,248,0.25); transform: scale(1.08); }
 
-/* —— SETTINGS / AJUSTES —— */
 .settings-group { margin-bottom: 12px; overflow: hidden; }
 .settings-group-title { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.7px; padding: 14px 16px 6px; font-weight: 800; }
 .settings-row { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-top: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
@@ -418,7 +380,6 @@ body::after {
 .cat-reorder-btn:disabled { opacity: 0.25; pointer-events: none; }
 .cat-reorder-btn:active { transform: scale(0.9); border-color: var(--border-3); }
 
-/* —— TOAST —— */
 .toast {
   position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(14px);
   background: rgba(20,20,26,0.94);
@@ -431,9 +392,36 @@ body::after {
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.green { border-color: rgba(92,227,154,0.5); color: var(--green); }
 .toast.amber { border-color: rgba(56,189,248,0.5); color: var(--gold2); }
+.toast.red { border-color: rgba(255,69,58,0.5); color: var(--red); }
 
 input, select, textarea { transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.28s ease; }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--border-3); box-shadow: 0 0 0 3px rgba(56,189,248,0.14); }
+
+/* —— v2: navegación por niveles (temas/bloques/psico/tests) —— */
+.lvl-row { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; transition: background 0.15s; border-top: 1px solid var(--border); }
+.lvl-row:first-child { border-top: none; }
+.lvl-row:active { background: rgba(56,189,248,0.06); }
+.lvl-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px -1px currentColor; }
+.lvl-dot.off { background: transparent !important; box-shadow: none; border: 1.5px solid var(--border-3); }
+.lvl-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); min-width: 0; overflow-wrap: anywhere; }
+.lvl-meta { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+.lvl-val { font-family: var(--font-mono); font-size: 12.5px; color: var(--text2); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.lvl-chevron { color: var(--text3); flex-shrink: 0; display: flex; transform: rotate(-90deg); }
+.lvl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.lvl-header-title { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; text-transform: uppercase; flex: 1; color: var(--text); }
+.lvl-back { background: none; border: 1px solid var(--border); color: var(--text2); width: 30px; height: 30px; border-radius: var(--r-xs); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: inherit; }
+.lvl-back:active { transform: scale(0.92); border-color: var(--border-3); color: var(--gold2); }
+.lvl-block-btn { display: block; width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 16px; margin-bottom: 10px; cursor: pointer; font-family: inherit; transition: transform 0.16s var(--ease-pop), border-color 0.2s; color: var(--text); }
+.lvl-block-btn:active { transform: scale(0.98); border-color: var(--border-3); }
+.lvl-block-btn .t { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; color: var(--text); }
+.lvl-block-btn .s { font-size: 11.5px; color: var(--text3); margin-top: 4px; }
+.vuelta-stepper { display: flex; align-items: center; gap: 10px; }
+.vuelta-val { font-family: var(--font-mono); font-weight: 700; font-size: 17px; min-width: 24px; text-align: center; }
+.empty-sub { text-align: center; color: var(--text3); padding: 28px 12px; font-size: 13px; }
+.test-tema-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.test-tema-row .nm { flex: 1; font-size: 13px; color: var(--text2); overflow-wrap: anywhere; }
+.test-tema-row input { width: 72px; flex-shrink: 0; margin-bottom: 0; text-align: center; }
+.test-tema-row .rm { background: none; border: none; color: var(--red); cursor: pointer; padding: 4px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -465,21 +453,18 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <div class="chart-card-label" style="margin-bottom:12px;">Añadir tiempo</div>
 
     <label class="modal-label">Categoría</label>
-    <select class="modal-select" id="entry-cat-select" onchange="onEntryCatChange()"></select>
-
-    <div id="entry-newcat-row" style="display:none;">
-      <label class="modal-label">Nombre de la categoría nueva</label>
-      <input type="text" class="modal-input" id="entry-newcat-name" placeholder="p.ej. TEMA 24" style="font-family:var(--font-sans);">
-      <label class="modal-label">Color</label>
-      <div class="color-swatch-row" id="entry-newcat-colors"></div>
+    <div class="lvl-row" style="background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r-xs);margin-bottom:10px;padding:11px 12px;" onclick="openPicker()">
+      <span class="lvl-name" id="entry-picker-label" style="font-weight:500;opacity:0.6;">Elegir categoría…</span>
+      <span class="lvl-chevron"><svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg></span>
     </div>
 
-    <label class="modal-label">Subcategoría <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
-    <select class="modal-select" id="entry-subcat-select" onchange="onEntrySubcatChange()"></select>
-
-    <div id="entry-newsubcat-row" style="display:none;">
-      <label class="modal-label">Nombre de la subcategoría nueva</label>
-      <input type="text" class="modal-input" id="entry-newsubcat-name" placeholder="p.ej. Clase" style="font-family:var(--font-sans);">
+    <div id="entry-vuelta-row" style="display:none;margin-bottom:10px;">
+      <label class="modal-label">Vuelta</label>
+      <div class="vuelta-stepper">
+        <button class="nav-arrow-btn" onclick="changeEntryVuelta(-1)">‹</button>
+        <span class="vuelta-val" id="entry-vuelta-val">1</span>
+        <button class="nav-arrow-btn" onclick="changeEntryVuelta(1)">›</button>
+      </div>
     </div>
 
     <div class="f-row">
@@ -516,17 +501,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 
   <div class="stats-grid">
     <div class="stat-pill"><div class="stat-val" id="est-total">0:00</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-pill"><div class="stat-val" id="est-mes">0:00</div><div class="stat-lbl" id="est-mes-lbl">Mes</div></div>
     <div class="stat-pill"><div class="stat-val" id="est-semana">0:00</div><div class="stat-lbl">Esta semana</div></div>
-    <div class="stat-pill"><div class="stat-val" id="est-mes">0:00</div><div class="stat-lbl">Este mes</div></div>
   </div>
   <div class="stats-grid">
-    <div class="stat-pill"><div class="stat-val" id="est-racha">0</div><div class="stat-lbl">Racha (días)</div><div class="racha-chevrons" id="est-racha-chevrons"></div></div>
     <div class="stat-pill"><div class="stat-val" id="est-media7">0:00</div><div class="stat-lbl">Media 7 días</div></div>
     <div class="stat-pill"><div class="stat-val" id="est-media30">0:00</div><div class="stat-lbl">Media 30 días</div></div>
-  </div>
-  <div class="stats-grid">
     <div class="stat-pill"><div class="stat-val" id="est-mejor-semana">0:00</div><div class="stat-lbl">Mejor semana</div></div>
-    <div class="stat-pill"><div class="stat-val" id="est-pct-activos">0%</div><div class="stat-lbl">Días activos</div></div>
+  </div>
+  <div class="stats-grid" style="grid-template-columns:1fr;">
     <div class="stat-pill"><div class="stat-val" id="est-media-dia">0:00</div><div class="stat-lbl">Media diaria</div></div>
   </div>
 
@@ -570,9 +553,9 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- CATEGORÍAS -->
 <div id="screen-categorias" class="screen">
   <div id="categorias-list"></div>
-  <button class="add-btn" onclick="openNewCategoryModal()">
+  <button class="add-btn" id="categorias-add-btn" onclick="openNewCategoryModal()" style="display:none;">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Nueva categoría
+    Nueva entidad
   </button>
 </div>
 
@@ -649,6 +632,14 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <div class="modal-note" id="edit-entry-meta"></div>
     <label class="modal-label">Tiempo total</label>
     <input type="text" class="modal-input" id="edit-entry-time-input" placeholder="h:mm o minutos" inputmode="text">
+    <div id="edit-entry-vuelta-row" style="display:none;margin-bottom:10px;">
+      <label class="modal-label">Vuelta</label>
+      <div class="vuelta-stepper">
+        <button class="nav-arrow-btn" onclick="changeEditVuelta(-1)">‹</button>
+        <span class="vuelta-val" id="edit-entry-vuelta-val">1</span>
+        <button class="nav-arrow-btn" onclick="changeEditVuelta(1)">›</button>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="closeModal('edit-entry-modal')">Cancelar</button>
       <button class="modal-btn secondary" style="color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteEditingEntry()">Borrar</button>
@@ -657,12 +648,12 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
-<!-- MODAL: categoría (crear/editar) -->
+<!-- MODAL: categoría psicotécnica (crear/editar) -->
 <div class="modal-bg" id="category-modal">
   <div class="modal">
-    <div class="modal-title" id="category-modal-title">Nueva categoría</div>
+    <div class="modal-title" id="category-modal-title">Nueva entidad</div>
     <label class="modal-label">Nombre</label>
-    <input type="text" class="modal-input" id="category-name-input" placeholder="p.ej. PSICOTÉCNICO" style="font-family:var(--font-sans);">
+    <input type="text" class="modal-input" id="category-name-input" placeholder="p.ej. PSI ÓMNIBUS" style="font-family:var(--font-sans);">
     <label class="modal-label">Color</label>
     <div class="color-swatch-row" id="category-colors"></div>
     <div class="modal-actions">
@@ -677,7 +668,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   <div class="modal">
     <div class="modal-title" id="subcategory-modal-title">Nueva subcategoría</div>
     <label class="modal-label">Nombre</label>
-    <input type="text" class="modal-input" id="subcategory-name-input" placeholder="p.ej. Clase" style="font-family:var(--font-sans);">
+    <input type="text" class="modal-input" id="subcategory-name-input" placeholder="p.ej. CUBOS" style="font-family:var(--font-sans);">
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="closeModal('subcategory-modal')">Cancelar</button>
       <button class="modal-btn primary" onclick="saveSubcategoryModal()">Guardar</button>
@@ -685,7 +676,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
-<!-- MODAL: detalle de subcategoría (ver/editar/quitar tiempo) -->
+<!-- MODAL: detalle de subcategoría psicotécnica (ver/editar/quitar tiempo) -->
 <div class="modal-bg" id="subcat-detail-modal">
   <div class="modal">
     <div class="modal-title" id="subcat-detail-title">Subcategoría</div>
@@ -699,10 +690,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
-<!-- MODAL: borrar categoría -->
+<!-- MODAL: borrar categoría psicotécnica -->
 <div class="modal-bg" id="delete-cat-modal">
   <div class="modal">
-    <div class="modal-title">Borrar categoría</div>
+    <div class="modal-title">Borrar entidad</div>
     <div class="modal-note" id="delete-cat-text"></div>
     <div id="delete-cat-select-row">
       <label class="modal-label">Reasignar registros a</label>
@@ -715,42 +706,187 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
+<!-- MODAL: selector de categoría por niveles (Añadir tiempo) -->
+<div class="modal-bg" id="picker-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" id="picker-back-btn" onclick="pickerBack()" style="display:none;">‹</button>
+      <div class="lvl-header-title" id="picker-title">Categoría</div>
+      <button class="toggle-btn" onclick="closeModal('picker-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div id="picker-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: detalle de tema (subcategorías + libro resumen/vueltas) -->
+<div class="modal-bg" id="tema-detail-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" id="tema-detail-back" onclick="temaDetailBack()" style="display:none;">‹</button>
+      <div class="lvl-header-title" id="tema-detail-title">Tema</div>
+      <button class="toggle-btn" onclick="closeModal('tema-detail-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div id="tema-detail-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: elegir tema para test/simulacro -->
+<div class="modal-bg" id="test-tema-picker-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" id="test-tema-picker-back" onclick="testTemaPickerBack()" style="display:none;">‹</button>
+      <div class="lvl-header-title">Elegir tema</div>
+      <button class="toggle-btn" onclick="closeModal('test-tema-picker-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div id="test-tema-picker-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: formulario test a la carta / simulacro -->
+<div class="modal-bg" id="test-form-modal">
+  <div class="modal">
+    <div class="modal-title" id="test-form-title">Test a la carta</div>
+    <label class="modal-label">Fecha</label>
+    <input type="date" class="modal-input" id="test-form-fecha">
+    <label class="modal-label">Tiempo tardado</label>
+    <input type="text" class="modal-input" id="test-form-tiempo" placeholder="h:mm o minutos">
+    <div id="test-form-nota-row" style="display:none;">
+      <label class="modal-label">Nota obtenida</label>
+      <input type="text" class="modal-input" id="test-form-nota" placeholder="p.ej. 7.25" inputmode="decimal">
+    </div>
+    <label class="modal-label">Temas incluidos <span style="text-transform:none;font-weight:500;opacity:0.7;">(preguntas · total <span id="test-form-total-preguntas">0</span>)</span></label>
+    <div id="test-form-temas-list"></div>
+    <button class="add-btn" onclick="openTestTemaPicker()">+ Añadir tema</button>
+    <button class="save-btn" style="margin-top:12px;" onclick="saveTestForm()">Guardar</button>
+  </div>
+</div>
+
+<!-- MODAL: vista de tests y simulacros -->
+<div class="modal-bg" id="tests-view-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <div class="lvl-header-title">Tests</div>
+      <button class="toggle-btn" onclick="closeModal('tests-view-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button class="add-btn" style="margin:0;" onclick="closeModal('tests-view-modal');openTestForm('carta')">+ Test a la carta</button>
+      <button class="add-btn" style="margin:0;" onclick="closeModal('tests-view-modal');openTestForm('simulacro')">+ Simulacro</button>
+    </div>
+    <div id="tests-nota-chart-wrap" class="card" style="padding:16px;display:none;">
+      <div class="chart-card-label">Evolución de la nota</div>
+      <canvas id="tests-nota-chart" height="160"></canvas>
+    </div>
+    <div id="tests-view-list"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 // ========== CONFIG ==========
 const PALETTE = ['#ff5c5c','#ff9f43','#ffd60a','#a3e635','#4ade80','#2dd4bf','#38bdf8','#6ea8ff','#a78bfa','#f472b6'];
-// Drawn SVG icons matching the app's stroke system — no Unicode glyphs standing in for icons.
 const ICON_EDIT = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 const ICON_CLOSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
 const ICON_CHEVRON = '<svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg>';
 const DOW_NAMES_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
+// Plantilla fija de 45 temas repartidos en 3 bloques + bloque virtual TESTS.
+// No se persisten como objetos: un tema solo existe en localStorage cuando
+// tiene minutos (ver sumMinutosTema/temaTieneTiempo).
+const BLOQUES_TEMAS = [
+  {id:'juridicas', nombre:'CIENCIAS JURÍDICAS', corto:'JURÍDICAS', desde:1, hasta:26, color:'#38bdf8'},
+  {id:'sociales',  nombre:'CIENCIAS SOCIALES', corto:'SOCIALES', desde:27, hasta:37, color:'#a3e635'},
+  {id:'tecnicas',  nombre:'CIENCIAS TÉCNICO-CIENTÍFICAS', corto:'TÉCNICO-CIENT.', desde:38, hasta:45, color:'#ff9f43'},
+];
+const COLOR_PSICO = '#f472b6';
+const COLOR_INGLES = '#4ade80';
+const COLOR_TESTS = '#6ea8ff';
+const TOTAL_TEMAS = 45;
+
+const SUBCATS_TEMA = [
+  {key:'ESTUDIO', nombre:'ESTUDIO'},
+  {key:'CLASE', nombre:'CLASE'},
+  {key:'REPASO_CLASE', nombre:'REPASO CLASE'},
+  {key:'TEST', nombre:'TEST'},
+  {key:'REPASO_TEST', nombre:'REPASO TEST'},
+  {key:'INNOTEST', nombre:'INNOTEST'},
+  {key:'REPASO_INNOTEST', nombre:'REPASO INNOTEST'},
+  {key:'ESQUEMA', nombre:'ESQUEMA'},
+];
+const SUBCAT_LIBRO = {key:'LIBRO_RESUMEN', nombre:'LIBRO RESUMEN'};
+const SUBCATS_TEMA_ALL = SUBCATS_TEMA.concat([SUBCAT_LIBRO]);
+
+function subcatTemaNombre(key){
+  if(key==='OTROS') return 'Otros';
+  const s = SUBCATS_TEMA_ALL.find(s=>s.key===key);
+  return s ? s.nombre : key;
+}
+function temaNumero(temaId){ return parseInt(String(temaId).replace('tema-',''),10); }
+function temaIdFromNum(n){ return 'tema-'+n; }
+function temaNombre(temaId){ return 'TEMA '+temaNumero(temaId); }
+function temaBloque(numOrId){
+  const n = typeof numOrId==='string' ? temaNumero(numOrId) : numOrId;
+  return BLOQUES_TEMAS.find(b=>n>=b.desde && n<=b.hasta) || null;
+}
+function temaColor(temaId){ const b = temaBloque(temaId); return b ? b.color : '#666'; }
+
 // ========== STATE ==========
-let currentHoyDate = null;      // fecha (YYYY-MM-DD) mostrada en la pantalla Hoy
-let editingEntryFecha = null;   // fecha del registro abierto en edit-entry-modal
-let editingEntryId = null;      // id del registro abierto en edit-entry-modal
-let entryNewCatColor = PALETTE[0];
-let editingCategoryId = null;   // id de categoría en edición (null = nueva)
+let currentHoyDate = null;
+let editingEntryFecha = null;
+let editingEntryId = null;
+let editingEntryVuelta = null;
+let editingCategoryId = null;
 let categoryModalColor = PALETTE[0];
 let pendingDeleteCategoryId = null;
-let subcategoryModalCatId = null; // categoría a la que pertenece la subcategoría en el modal
-let editingSubcategoryId = null;  // id de subcategoría en edición (null = nueva)
-let subcatDetailCatId = null;     // categoría del detalle de subcategoría abierto
-let subcatDetailSubId = null;     // subcategoría del detalle abierto
-let estHeatmapMonth = null;     // 'YYYY-MM' mostrado en el heatmap
+let subcategoryModalCatId = null;
+let editingSubcategoryId = null;
+let subcatDetailCatId = null;
+let subcatDetailSubId = null;
+let estHeatmapMonth = null;
 let charts = {};
+
+let entrySelection = null; // {kind:'tema', temaId, subKey} | {kind:'psico', categoriaId, subcategoriaId}
+let entryVuelta = 1;
+
+let pickerStep = 'root';
+let pickerBloqueId = null;
+let pickerTemaId = null;
+let pickerPsicoCatId = null;
+let pickerNewCatColor = PALETTE[0];
+
+let historialLevel = 'meses';
+let historialMes = null;
+let historialSemana = null;
+let historialDia = null;
+let historialOpenTest = {};
+
+let statsCatLevel = 'root';
+let statsCatBloque = null;
+let statsSubLevel = 'root';
+let statsSubKey = null;
+
+let catLevel = 'root';
+let catBloque = null;
+
+let temaDetailId = null;
+let temaDetailView = 'subcats';
+let temaDetailVuelta = null;
+
+let testFormTipo = null;
+let testFormEditingId = null;
+let testFormTemas = [];
+let testPickerBloque = null;
 
 // ========== STORAGE ==========
 function getCategorias(){ try{ return JSON.parse(localStorage.getItem('estudio_categorias')||'[]'); }catch{ return []; } }
 function saveCategorias(c){ localStorage.setItem('estudio_categorias', JSON.stringify(c)); }
 function getDias(){ try{ return JSON.parse(localStorage.getItem('estudio_dias')||'[]'); }catch{ return []; } }
 function saveDias(d){ localStorage.setItem('estudio_dias', JSON.stringify(d)); }
+function getTests(){ try{ return JSON.parse(localStorage.getItem('estudio_tests')||'[]'); }catch{ return []; } }
+function saveTests(t){ localStorage.setItem('estudio_tests', JSON.stringify(t)); }
 
 // ========== UTILS ==========
-// Formateo en hora local (nunca toISOString) para evitar que el desfase UTC
-// (p.ej. Europe/Madrid) desplace la fecha un día.
 function toLocalISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function todayStr(){ return toLocalISO(new Date()); }
 function formatDate(s){ if(!s) return ''; const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; }
@@ -789,17 +925,12 @@ function getWeekStart(dateStr){
 function getOpoInicio(){ return localStorage.getItem('estudio_opo_inicio') || null; }
 function setOpoInicio(fecha){ localStorage.setItem('estudio_opo_inicio', fecha); }
 
-// Días opositando: cuenta días naturales desde la fecha de inicio elegida
-// por el usuario (incluyéndola), no días con estudio registrado (eso ya
-// lo cubre la racha). Las medias/mejor-semana/% activos caen de vuelta al
-// primer día con registros si aún no se ha configurado el inicio, para que
-// esos datos no se queden vacíos antes de que el usuario los configure.
 function diasEntre(desde,hasta){
   const d1 = new Date(desde+'T12:00:00'), d2 = new Date(hasta+'T12:00:00');
   return Math.round((d2-d1)/86400000)+1;
 }
 function primerDiaRegistrado(){
-  const fechas = getDias().filter(d=>totalDia(d)>0).map(d=>d.fecha).sort();
+  const fechas = diasConDatos().sort();
   return fechas.length ? fechas[0] : null;
 }
 function computeOpoStats(){
@@ -820,12 +951,7 @@ function computeOpoStats(){
     if(t>mejorSemana) mejorSemana = t;
     ws = addDays(ws,7);
   }
-
-  let activos = 0;
-  for(let i=0;i<dias;i++){ if(totalFecha(addDays(inicio,i))>0) activos++; }
-  const pctActivos = Math.round(activos/dias*100);
-
-  return { dias, semanas, mediaSemanal, mediaDiaria, mejorSemana, pctActivos };
+  return { dias, semanas, mediaSemanal, mediaDiaria, mejorSemana };
 }
 function renderOpoCard(){
   const inicio = getOpoInicio();
@@ -859,20 +985,11 @@ function saveOpoInicio(){
   showToast('Guardado ✓','green');
 }
 
+// ---- Psicotécnicos (estudio_categorias, modelo antiguo intacto) ----
 function getCategoria(id){ return getCategorias().find(c=>c.id===id); }
 function getCategoriaNombre(id){ const c = getCategoria(id); return c?c.nombre:'(borrada)'; }
 function getCategoriaColor(id){ const c = getCategoria(id); return c?c.color:'#666'; }
 function nextSuggestedColor(){ const cats = getCategorias(); return PALETTE[cats.length % PALETTE.length]; }
-
-function getDia(fecha){ return getDias().find(d=>d.fecha===fecha); }
-function totalDia(dia){ if(!dia) return 0; return dia.entradas.reduce((a,e)=>a+e.minutos,0); }
-function totalFecha(fecha){ return totalDia(getDia(fecha)); }
-
-function sumEnRango(desde,hasta){
-  let total = 0;
-  getDias().forEach(d=>{ if(d.fecha>=desde && d.fecha<=hasta) total += totalDia(d); });
-  return total;
-}
 
 function getOrCreateCategoria(nombre,color){
   const cats = getCategorias();
@@ -888,7 +1005,7 @@ function getSubcategoria(catId,subId){ const c = getCategoria(catId); return c &
 function getSubcategoriaNombre(catId,subId){ if(!subId) return ''; const s = getSubcategoria(catId,subId); return s?s.nombre:''; }
 function sumMinutosSubcategoria(catId,subId){
   let total = 0;
-  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===catId && e.subcategoriaId===subId) total += e.minutos; }));
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===catId && e.subcategoriaId===subId) total += e.minutos; }));
   return total;
 }
 function getOrCreateSubcategoria(catId,nombre){
@@ -903,9 +1020,24 @@ function getOrCreateSubcategoria(catId,nombre){
   saveCategorias(cats);
   return sub.id;
 }
+function sumMinutosCategoria(id){
+  let total = 0;
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===id) total += e.minutos; }));
+  return total;
+}
+function countEntradasCategoria(id){
+  let n = 0;
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===id) n++; }));
+  return n;
+}
+function sumMinutosPsicoTotal(){
+  let total = 0;
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico') total += e.minutos; }));
+  return total;
+}
 
-// Migra datos antiguos: subcategoria (texto libre por registro) -> subcategoriaId
-// (lista fija por categoría). Se ejecuta una vez en el arranque; es idempotente.
+// Migra datos antiguos: subcategoria (texto libre por registro) -> subcategoriaId.
+// Se ejecuta una vez en el arranque; es idempotente. Sin cambios respecto a la v1.
 function migrateSubcategorias(){
   const cats = getCategorias();
   let catsChanged = false;
@@ -913,7 +1045,7 @@ function migrateSubcategorias(){
   const dias = getDias();
   let diasChanged = false;
   dias.forEach(d=>d.entradas.forEach(e=>{
-    if(e.subcategoriaId===undefined){
+    if(e.subcategoriaId===undefined && e.tipo===undefined){
       diasChanged = true;
       const text = (e.subcategoria||'').trim();
       if(text){
@@ -936,6 +1068,178 @@ function migrateSubcategorias(){
   if(diasChanged) saveDias(dias);
 }
 
+// ========== AGREGACIÓN (temas / psico / tests) ==========
+function getDia(fecha){ return getDias().find(d=>d.fecha===fecha); }
+function totalTestsFecha(fecha){ return getTests().filter(t=>t.fecha===fecha).reduce((a,t)=>a+t.minutosTotal,0); }
+function totalFecha(fecha){
+  const dia = getDia(fecha);
+  const entradasTotal = dia ? dia.entradas.reduce((a,e)=>a+e.minutos,0) : 0;
+  return entradasTotal + totalTestsFecha(fecha);
+}
+function totalDia(dia){ return dia ? totalFecha(dia.fecha) : 0; }
+function sumEnRango(desde,hasta){
+  let total = 0;
+  getDias().forEach(d=>{ if(d.fecha>=desde && d.fecha<=hasta) total += d.entradas.reduce((a,e)=>a+e.minutos,0); });
+  getTests().forEach(t=>{ if(t.fecha>=desde && t.fecha<=hasta) total += t.minutosTotal; });
+  return total;
+}
+function diasConDatos(){
+  const set = new Set();
+  getDias().forEach(d=>{ if(d.entradas.length>0) set.add(d.fecha); });
+  getTests().forEach(t=>set.add(t.fecha));
+  return Array.from(set);
+}
+
+function sumMinutosTema(temaId){
+  let total = 0;
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='tema' && e.temaId===temaId) total += e.minutos; }));
+  getTests().forEach(t=>{ (t.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
+  return total;
+}
+function temaTieneTiempo(temaId){ return sumMinutosTema(temaId) > 0; }
+function sumMinutosTemaSubcat(temaId, subKey){
+  let total = 0;
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='tema' && e.temaId===temaId && e.subKey===subKey) total += e.minutos; }));
+  if(subKey==='TEST'){
+    getTests().forEach(t=>{ (t.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
+  }
+  return total;
+}
+function sumMinutosBloque(bloqueId){
+  const b = BLOQUES_TEMAS.find(x=>x.id===bloqueId);
+  if(!b) return 0;
+  let total = 0;
+  for(let n=b.desde;n<=b.hasta;n++) total += sumMinutosTema(temaIdFromNum(n));
+  return total;
+}
+function sumMinutosTestsTotal(){ return getTests().reduce((a,t)=>a+t.minutosTotal,0); }
+function sumMinutosTestsSinDesglose(){
+  return getTests().filter(t=>!t.temas || t.temas.length===0).reduce((a,t)=>a+t.minutosTotal,0);
+}
+function sumMinutosTemasTotal(){
+  let total = 0;
+  BLOQUES_TEMAS.forEach(b=>{ total += sumMinutosBloque(b.id); });
+  total += sumMinutosTestsSinDesglose();
+  return total;
+}
+function sumMinutosSubcatGlobal(subKey){
+  let total = 0;
+  for(let n=1;n<=TOTAL_TEMAS;n++) total += sumMinutosTemaSubcat(temaIdFromNum(n), subKey);
+  return total;
+}
+function maxVueltaConTiempo(temaId){
+  let max = 0;
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='tema' && e.temaId===temaId && e.subKey==='LIBRO_RESUMEN' && e.vuelta>max) max=e.vuelta; }));
+  return max;
+}
+
+function entradaLabel(e){
+  if(e.tipo==='tema'){
+    let s = temaNombre(e.temaId)+' · '+subcatTemaNombre(e.subKey);
+    if(e.subKey==='LIBRO_RESUMEN') s += ' · Vuelta '+e.vuelta;
+    return s;
+  }
+  if(e.tipo==='psico'){
+    const sub = getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
+    return getCategoriaNombre(e.categoriaId) + (sub?' · '+sub:'');
+  }
+  return '';
+}
+function entradaColor(e){
+  if(e.tipo==='tema') return temaColor(e.temaId);
+  if(e.tipo==='psico') return getCategoriaColor(e.categoriaId);
+  return '#666';
+}
+function entradaLabelCat(e){ return e.tipo==='tema' ? temaNombre(e.temaId) : getCategoriaNombre(e.categoriaId); }
+function entradaLabelSub(e){
+  if(e.tipo==='tema'){ let s=subcatTemaNombre(e.subKey); if(e.subKey==='LIBRO_RESUMEN') s+=' vuelta '+e.vuelta; return s; }
+  return getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
+}
+
+// ========== MIGRACIÓN v2 (Bloque C) ==========
+function sumEntradasMinutos(dias){
+  let total = 0;
+  dias.forEach(d=>d.entradas.forEach(e=>{ total += e.minutos; }));
+  return total;
+}
+function normNombre(s){ return String(s||'').trim().toUpperCase().replace(/\s+/g,' '); }
+function mapSubNombreV2(nombre){
+  const n = normNombre(nombre);
+  if(n==='REPASO') return 'ESTUDIO';
+  if(n==='RESPASO INNOTEST' || n==='REPASO INNOTEST') return 'REPASO_INNOTEST';
+  const found = SUBCATS_TEMA.find(s=>normNombre(s.nombre)===n);
+  if(found) return found.key;
+  return 'OTROS';
+}
+
+// Se ejecuta una sola vez (flag estudio_migracion_v2_done). Opera sobre copias
+// en memoria y solo escribe en localStorage si el total de minutos antes y
+// después coincide exactamente — si no, aborta sin tocar nada (ver plan).
+function migrateToV2(){
+  if(localStorage.getItem('estudio_migracion_v2_done')) return;
+
+  const categoriasOriginal = getCategorias();
+  const diasOriginal = getDias();
+  localStorage.setItem('estudio_backup_pre_v2', JSON.stringify({categorias:categoriasOriginal, dias:diasOriginal}));
+
+  let categorias = JSON.parse(JSON.stringify(categoriasOriginal));
+  let dias = JSON.parse(JSON.stringify(diasOriginal));
+  const totalAntes = sumEntradasMinutos(dias);
+
+  const temaCats = categorias.filter(c=>/^TEMA\s*\d+$/i.test(normNombre(c.nombre)));
+  const testCsCat = categorias.find(c=>normNombre(c.nombre)==='TEST C/S');
+
+  temaCats.forEach(cat=>{
+    const m = normNombre(cat.nombre).match(/^TEMA\s*(\d+)$/i);
+    const temaId = temaIdFromNum(parseInt(m[1],10));
+    const subNombrePorId = {};
+    (cat.subcategorias||[]).forEach(s=>{ subNombrePorId[s.id] = s.nombre; });
+    dias.forEach(dia=>{
+      const restantes = [];
+      dia.entradas.forEach(e=>{
+        if(e.categoriaId!==cat.id){ restantes.push(e); return; }
+        const subNombre = e.subcategoriaId ? (subNombrePorId[e.subcategoriaId]||'') : '';
+        const subKey = subNombre ? mapSubNombreV2(subNombre) : 'OTROS';
+        const existing = restantes.find(o=>o.tipo==='tema' && o.temaId===temaId && o.subKey===subKey);
+        if(existing) existing.minutos += e.minutos;
+        else restantes.push({id:uid(), tipo:'tema', temaId, subKey, minutos:e.minutos});
+      });
+      dia.entradas = restantes;
+    });
+  });
+
+  const tests = getTests().slice();
+  if(testCsCat){
+    dias.forEach(dia=>{
+      const restantes = [];
+      dia.entradas.forEach(e=>{
+        if(e.categoriaId!==testCsCat.id){ restantes.push(e); return; }
+        tests.push({id:uid(), tipo:'simulacro', fecha:dia.fecha, minutosTotal:e.minutos, temas:[], nota:null, totalPreguntas:null});
+      });
+      dia.entradas = restantes;
+    });
+  }
+
+  dias.forEach(dia=>{ dia.entradas.forEach(e=>{ if(!e.tipo) e.tipo = 'psico'; }); });
+  dias = dias.filter(d=>d.entradas.length>0);
+
+  const removedIds = new Set(temaCats.map(c=>c.id).concat(testCsCat ? [testCsCat.id] : []));
+  categorias = categorias.filter(c=>!removedIds.has(c.id));
+
+  const totalDespues = sumEntradasMinutos(dias) + tests.reduce((a,t)=>a+t.minutosTotal,0);
+
+  if(totalDespues !== totalAntes){
+    console.error('Migración v2 abortada: los totales no cuadran', {totalAntes, totalDespues});
+    showToast('Error en la migración de datos — revisa la consola','red');
+    return;
+  }
+
+  saveCategorias(categorias);
+  saveDias(dias);
+  saveTests(tests);
+  localStorage.setItem('estudio_migracion_v2_done','1');
+}
+
 // ========== HOY ==========
 function onHoyDateChange(){
   currentHoyDate = document.getElementById('hoy-date-input').value || todayStr();
@@ -955,109 +1259,62 @@ function renderHoy(){
 
   const dia = getDia(currentHoyDate);
   const entradas = dia ? dia.entradas.slice() : [];
-  const total = entradas.reduce((a,e)=>a+e.minutos,0);
-  document.getElementById('hoy-total').textContent = formatHM(total);
-  document.getElementById('hoy-num-entradas').textContent = entradas.length;
-  document.getElementById('hoy-num-categorias').textContent = new Set(entradas.map(e=>e.categoriaId)).size;
+  const tests = getTests().filter(t=>t.fecha===currentHoyDate);
+  document.getElementById('hoy-total').textContent = formatHM(totalFecha(currentHoyDate));
+  document.getElementById('hoy-num-entradas').textContent = entradas.length + tests.length;
+  const catSet = new Set(entradas.map(e=> e.tipo==='tema' ? e.temaId : 'psico-'+e.categoriaId));
+  if(tests.length) catSet.add('tests');
+  document.getElementById('hoy-num-categorias').textContent = catSet.size;
 
-  refreshAddCardCategories();
+  renderEntryPickerLabel();
 
   const list = document.getElementById('hoy-list');
-  if(!entradas.length){
+  if(!entradas.length && !tests.length){
     list.innerHTML = '<div class="empty-state">Sin registros este día</div>';
     return;
   }
-  list.innerHTML = '<div class="entry-list">' + entradas.map(e=>{
-    const color = getCategoriaColor(e.categoriaId);
-    const sub = getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
-    return `<div class="entry-row">
-      <span class="entry-dot" style="background:${color};color:${color}"></span>
-      <span class="entry-name">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span>
+  let rows = entradas.map(e=>`<div class="entry-row">
+      <span class="entry-dot" style="background:${entradaColor(e)};color:${entradaColor(e)}"></span>
+      <span class="entry-name">${escapeHtml(entradaLabel(e))}</span>
       <span class="entry-time">${formatHM(e.minutos)}</span>
-    </div>`;
-  }).join('') + '</div>';
+    </div>`).join('');
+  rows += tests.map(t=>`<div class="entry-row">
+      <span class="entry-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS}"></span>
+      <span class="entry-name">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'}${t.nota!=null?` <span class="entry-sub">· Nota ${t.nota}</span>`:''}</span>
+      <span class="entry-time">${formatHM(t.minutosTotal)}</span>
+    </div>`).join('');
+  list.innerHTML = '<div class="entry-list">' + rows + '</div>';
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-function refreshAddCardCategories(){
-  const catSel = document.getElementById('entry-cat-select');
-  if(!catSel) return;
-  const prevCat = catSel.value && catSel.value!=='__new__' ? catSel.value : null;
-  const subSel = document.getElementById('entry-subcat-select');
-  const prevSub = subSel && subSel.value!=='__new__' ? subSel.value : '';
-  populateEntryCatSelect(prevCat);
-  if(prevCat) populateEntrySubcatSelect(prevCat, prevSub);
-}
-function populateEntrySubcatSelect(catId, selectedSubId){
-  const cat = getCategoria(catId);
-  const subs = (cat && cat.subcategorias) || [];
-  const sel = document.getElementById('entry-subcat-select');
-  sel.innerHTML = `<option value="">— Sin subcategoría —</option>`
-    + subs.map(s=>`<option value="${s.id}">${escapeHtml(s.nombre)}</option>`).join('')
-    + `<option value="__new__">+ Nueva subcategoría…</option>`;
-  sel.value = selectedSubId || '';
-  onEntrySubcatChange();
-}
-function onEntrySubcatChange(){
-  const isNew = document.getElementById('entry-subcat-select').value==='__new__';
-  document.getElementById('entry-newsubcat-row').style.display = isNew ? 'block' : 'none';
-  if(isNew) document.getElementById('entry-newsubcat-name').value = '';
-}
-function populateEntryCatSelect(selectedId){
-  const cats = getCategorias();
-  const sel = document.getElementById('entry-cat-select');
-  sel.innerHTML = cats.map(c=>`<option value="${c.id}">${escapeHtml(c.nombre)}</option>`).join('')
-    + `<option value="__new__">+ Nueva categoría…</option>`;
-  if(cats.length===0){
-    sel.value = '__new__';
-  } else if(selectedId){
-    sel.value = selectedId;
+function renderEntryPickerLabel(){
+  const el = document.getElementById('entry-picker-label');
+  const vueltaRow = document.getElementById('entry-vuelta-row');
+  if(!entrySelection){ el.textContent='Elegir categoría…'; el.style.opacity='0.6'; vueltaRow.style.display='none'; return; }
+  el.style.opacity='1';
+  if(entrySelection.kind==='tema'){
+    const {temaId, subKey} = entrySelection;
+    el.textContent = `${temaNombre(temaId)} · ${subcatTemaNombre(subKey)}`;
+    if(subKey==='LIBRO_RESUMEN'){
+      vueltaRow.style.display='block';
+      document.getElementById('entry-vuelta-val').textContent = entryVuelta;
+    } else vueltaRow.style.display='none';
+  } else if(entrySelection.kind==='psico'){
+    const cat = getCategoria(entrySelection.categoriaId);
+    const sub = entrySelection.subcategoriaId ? getSubcategoria(entrySelection.categoriaId, entrySelection.subcategoriaId) : null;
+    el.textContent = `${cat?cat.nombre:'(borrada)'}${sub?' · '+sub.nombre:''}`;
+    vueltaRow.style.display='none';
   } else {
-    sel.value = cats[0].id;
-  }
-  onEntryCatChange();
-}
-function onEntryCatChange(){
-  const catSel = document.getElementById('entry-cat-select');
-  const isNew = catSel.value==='__new__';
-  document.getElementById('entry-newcat-row').style.display = isNew ? 'block' : 'none';
-  if(isNew){
-    entryNewCatColor = nextSuggestedColor();
-    document.getElementById('entry-newcat-name').value = '';
-    renderSwatches('entry-newcat-colors', entryNewCatColor, 'selectEntryNewColor');
-    populateEntrySubcatSelect(null, '');
-  } else {
-    populateEntrySubcatSelect(catSel.value, '');
+    el.textContent='Elegir categoría…'; el.style.opacity='0.6'; vueltaRow.style.display='none';
   }
 }
-function selectEntryNewColor(c){ entryNewCatColor = c; renderSwatches('entry-newcat-colors', c, 'selectEntryNewColor'); }
-function renderSwatches(containerId, selected, fn){
-  document.getElementById(containerId).innerHTML = PALETTE.map(c=>
-    `<div class="color-swatch ${c===selected?'selected':''}" style="background:${c}" onclick="${fn}('${c}')"></div>`
-  ).join('');
+function changeEntryVuelta(delta){
+  entryVuelta = Math.max(1, entryVuelta+delta);
+  document.getElementById('entry-vuelta-val').textContent = entryVuelta;
 }
 
-// Añadir tiempo: SIEMPRE suma (a la entrada existente de esa categoría+subcategoría
-// en el día seleccionado, o crea una nueva). Quitar/editar un tiempo ya registrado
-// se hace desde el modal de edición (openEditEntryModal) o desde el detalle de subcategoría.
 function addTime(){
-  const sel = document.getElementById('entry-cat-select');
-  let categoriaId;
-  if(sel.value==='__new__'){
-    const nombre = document.getElementById('entry-newcat-name').value.trim();
-    if(!nombre){ showToast('Ponle un nombre a la categoría'); return; }
-    categoriaId = getOrCreateCategoria(nombre, entryNewCatColor);
-  } else {
-    categoriaId = sel.value;
-  }
-  const subSel = document.getElementById('entry-subcat-select');
-  let subcategoriaId = '';
-  if(subSel.value==='__new__'){
-    const subNombre = document.getElementById('entry-newsubcat-name').value.trim();
-    if(subNombre) subcategoriaId = getOrCreateSubcategoria(categoriaId, subNombre);
-  } else {
-    subcategoriaId = subSel.value;
-  }
+  if(!entrySelection){ showToast('Elige una categoría'); return; }
   const timeRaw = document.getElementById('entry-time-input').value.trim();
   const delta = parseTiempo(timeRaw);
   if(delta==null || delta<=0){ showToast('Introduce un tiempo válido'); return; }
@@ -1065,11 +1322,22 @@ function addTime(){
   const dias = getDias();
   let dia = dias.find(d=>d.fecha===currentHoyDate);
   if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
-  const existing = dia.entradas.find(e=>e.categoriaId===categoriaId && e.subcategoriaId===subcategoriaId);
-  if(existing){
-    existing.minutos += delta;
-  } else {
-    dia.entradas.push({id:uid(), categoriaId, subcategoriaId, minutos:delta});
+
+  if(entrySelection.kind==='tema'){
+    const {temaId, subKey} = entrySelection;
+    const isLibro = subKey==='LIBRO_RESUMEN';
+    const existing = dia.entradas.find(e=>e.tipo==='tema' && e.temaId===temaId && e.subKey===subKey && (!isLibro || e.vuelta===entryVuelta));
+    if(existing){ existing.minutos += delta; }
+    else {
+      const entry = {id:uid(), tipo:'tema', temaId, subKey, minutos:delta};
+      if(isLibro) entry.vuelta = entryVuelta;
+      dia.entradas.push(entry);
+    }
+  } else if(entrySelection.kind==='psico'){
+    const {categoriaId, subcategoriaId} = entrySelection;
+    const existing = dia.entradas.find(e=>e.tipo==='psico' && e.categoriaId===categoriaId && e.subcategoriaId===subcategoriaId);
+    if(existing){ existing.minutos += delta; }
+    else { dia.entradas.push({id:uid(), tipo:'psico', categoriaId, subcategoriaId, minutos:delta}); }
   }
   saveDias(dias);
   document.getElementById('entry-time-input').value = '';
@@ -1096,11 +1364,22 @@ function openEditEntryModal(fecha,id){
   if(!entrada) return;
   editingEntryFecha = fecha;
   editingEntryId = id;
-  const catNombre = getCategoriaNombre(entrada.categoriaId);
-  const subNombre = getSubcategoriaNombre(entrada.categoriaId, entrada.subcategoriaId);
-  document.getElementById('edit-entry-meta').textContent = `${catNombre}${subNombre?' · '+subNombre:''} · ${formatDate(fecha)}`;
+  document.getElementById('edit-entry-meta').textContent = `${entradaLabel(entrada)} · ${formatDate(fecha)}`;
   document.getElementById('edit-entry-time-input').value = formatHM(entrada.minutos);
+  const vueltaRow = document.getElementById('edit-entry-vuelta-row');
+  if(entrada.tipo==='tema' && entrada.subKey==='LIBRO_RESUMEN'){
+    editingEntryVuelta = entrada.vuelta;
+    document.getElementById('edit-entry-vuelta-val').textContent = editingEntryVuelta;
+    vueltaRow.style.display = 'block';
+  } else {
+    editingEntryVuelta = null;
+    vueltaRow.style.display = 'none';
+  }
   document.getElementById('edit-entry-modal').classList.add('open');
+}
+function changeEditVuelta(delta){
+  editingEntryVuelta = Math.max(1, editingEntryVuelta+delta);
+  document.getElementById('edit-entry-vuelta-val').textContent = editingEntryVuelta;
 }
 function saveEditEntry(){
   const dias = getDias();
@@ -1109,7 +1388,18 @@ function saveEditEntry(){
   if(!e) return;
   const minutos = parseTiempo(document.getElementById('edit-entry-time-input').value.trim());
   if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
-  e.minutos = minutos;
+  if(e.tipo==='tema' && e.subKey==='LIBRO_RESUMEN' && editingEntryVuelta!=null && editingEntryVuelta!==e.vuelta){
+    const destino = dia.entradas.find(o=>o.id!==e.id && o.tipo==='tema' && o.temaId===e.temaId && o.subKey==='LIBRO_RESUMEN' && o.vuelta===editingEntryVuelta);
+    if(destino){
+      destino.minutos += minutos;
+      dia.entradas = dia.entradas.filter(o=>o.id!==e.id);
+    } else {
+      e.vuelta = editingEntryVuelta;
+      e.minutos = minutos;
+    }
+  } else {
+    e.minutos = minutos;
+  }
   saveDias(dias);
   closeModal('edit-entry-modal');
   renderHoy(); renderHistorial(); renderCategoriasList();
@@ -1120,150 +1410,354 @@ function deleteEditingEntry(){
   closeModal('edit-entry-modal');
 }
 
-// ========== HISTORIAL ==========
-function renderHistorial(){
-  const list = document.getElementById('historial-list');
-  const dias = getDias().filter(d=>d.entradas.length>0).sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  if(!dias.length){ list.innerHTML = '<div class="empty-state">Sin días registrados aún</div>'; return; }
-  const today = todayStr();
-  list.innerHTML = dias.map((dia,i)=>{
-    const total = totalDia(dia);
-    const numCats = new Set(dia.entradas.map(e=>e.categoriaId)).size;
-    const isToday = dia.fecha===today;
-    const porCategoria = {};
-    dia.entradas.forEach(e=>{ porCategoria[e.categoriaId] = (porCategoria[e.categoriaId]||0) + e.minutos; });
-    const chips = Object.keys(porCategoria).map(cid=>
-      `<span class="hist-chip"><span class="d" style="background:${getCategoriaColor(cid)}"></span>${escapeHtml(getCategoriaNombre(cid))} · ${formatHM(porCategoria[cid])}</span>`
-    ).join('');
-    const rows = dia.entradas.map(e=>{
-      const sub = getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
-      return `<div class="history-row"><span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${getCategoriaColor(e.categoriaId)};flex-shrink:0;"></span><span class="n">${escapeHtml(getCategoriaNombre(e.categoriaId))}${sub?` <span class="entry-sub">· ${escapeHtml(sub)}</span>`:''}</span></span><span class="history-row-val">${formatHM(e.minutos)}</span><button class="edit-date-btn" onclick="openEditEntryModal('${dia.fecha}','${e.id}')">${ICON_EDIT}</button></div>`;
-    }).join('');
-    return `<div class="history-session">
-      <div class="history-session-header" onclick="toggleHistDay(${i})" style="cursor:pointer;">
-        <div style="flex:1;min-width:0;">
-          <div class="history-session-title">${formatDate(dia.fecha)}${isToday?' · HOY':''}</div>
-          <div class="history-session-sub">${dia.entradas.length} registro(s) · ${numCats} categoría(s)</div>
-        </div>
-        <div class="history-session-total">${formatHM(total)}</div>
-        <button class="toggle-btn" id="hist-arr-${i}">${ICON_CHEVRON}</button>
-      </div>
-      <div class="history-session-body" id="hist-body-${i}">
-        <div class="body-inner">
-          <div class="hist-chips">${chips}</div>
-          ${rows}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+// ========== SELECTOR DE CATEGORÍA POR NIVELES (Añadir tiempo) ==========
+function openPicker(){
+  pickerStep = 'root'; pickerBloqueId=null; pickerTemaId=null; pickerPsicoCatId=null;
+  renderPicker();
+  document.getElementById('picker-modal').classList.add('open');
 }
-function toggleHistDay(i){
-  const b = document.getElementById('hist-body-'+i);
-  const a = document.getElementById('hist-arr-'+i);
-  const o = b.classList.toggle('open');
-  a.classList.toggle('open', o);
+function pickerBack(){
+  if(pickerStep==='temas-bloques') pickerStep='root';
+  else if(pickerStep==='temas-lista'){ pickerStep='temas-bloques'; pickerTemaId=null; }
+  else if(pickerStep==='temas-sub'){ pickerStep='temas-lista'; }
+  else if(pickerStep==='tests-choice'){ pickerStep='temas-bloques'; }
+  else if(pickerStep==='psico-lista'){ pickerStep='root'; pickerPsicoCatId=null; }
+  else if(pickerStep==='psico-sub'){ pickerStep='psico-lista'; }
+  else if(pickerStep==='psico-new'){ pickerStep='psico-lista'; }
+  else if(pickerStep==='psico-newsub'){ pickerStep='psico-sub'; }
+  else { pickerStep='root'; }
+  renderPicker();
+}
+function renderPicker(){
+  const back = document.getElementById('picker-back-btn');
+  const title = document.getElementById('picker-title');
+  back.style.display = pickerStep==='root' ? 'none' : 'flex';
+  const body = document.getElementById('picker-body');
+
+  if(pickerStep==='root'){
+    title.textContent = 'Categoría';
+    body.innerHTML = `
+      <button class="lvl-block-btn" onclick="pickerGoTemasBloques()"><div class="t">TEMAS</div><div class="s">${TOTAL_TEMAS} temas · ${formatHM(sumMinutosTemasTotal())}</div></button>
+      <button class="lvl-block-btn" onclick="pickerGoPsico()"><div class="t">PSICOTÉCNICOS</div><div class="s">${formatHM(sumMinutosPsicoTotal())}</div></button>
+      <button class="lvl-block-btn" onclick="pickerGoIngles()"><div class="t">INGLÉS</div><div class="s">Próximamente</div></button>`;
+    return;
+  }
+  if(pickerStep==='temas-bloques'){
+    title.textContent = 'Temas';
+    body.innerHTML = BLOQUES_TEMAS.map(b=>`
+      <button class="lvl-block-btn" style="border-left:3px solid ${b.color};" onclick="pickerGoBloque('${b.id}')">
+        <div class="t">${b.nombre}</div><div class="s">Temas ${b.desde}–${b.hasta} · ${formatHM(sumMinutosBloque(b.id))}</div>
+      </button>`).join('') +
+      `<button class="lvl-block-btn" style="border-left:3px solid ${COLOR_TESTS};" onclick="pickerGoTests()">
+        <div class="t">TESTS</div><div class="s">Test a la carta / Simulacro</div>
+      </button>`;
+    return;
+  }
+  if(pickerStep==='temas-lista'){
+    const b = BLOQUES_TEMAS.find(x=>x.id===pickerBloqueId);
+    title.textContent = b.nombre;
+    let rows = '';
+    for(let n=b.desde;n<=b.hasta;n++){
+      const tid = temaIdFromNum(n);
+      const on = temaTieneTiempo(tid);
+      rows += `<div class="lvl-row" onclick="pickerGoTema('${tid}')">
+        <span class="lvl-dot ${on?'':'off'}" style="background:${on?b.color:'transparent'};color:${b.color};"></span>
+        <span class="lvl-name">TEMA ${n}</span>
+        ${on?`<span class="lvl-val">${formatHM(sumMinutosTema(tid))}</span>`:''}
+      </div>`;
+    }
+    body.innerHTML = rows;
+    return;
+  }
+  if(pickerStep==='temas-sub'){
+    title.textContent = temaNombre(pickerTemaId);
+    let rows = SUBCATS_TEMA.map(s=>{
+      const mins = sumMinutosTemaSubcat(pickerTemaId, s.key);
+      return `<div class="lvl-row" onclick="pickerSelectTemaSub('${s.key}')">
+        <span class="lvl-name">${s.nombre}</span>
+        ${mins>0?`<span class="lvl-val">${formatHM(mins)}</span>`:''}
+      </div>`;
+    }).join('');
+    const libroMins = sumMinutosTemaSubcat(pickerTemaId,'LIBRO_RESUMEN');
+    rows += `<div class="lvl-row" onclick="pickerSelectTemaSub('LIBRO_RESUMEN')">
+      <span class="lvl-name">LIBRO RESUMEN</span>
+      ${libroMins>0?`<span class="lvl-val">${formatHM(libroMins)}</span>`:''}
+    </div>`;
+    body.innerHTML = rows;
+    return;
+  }
+  if(pickerStep==='tests-choice'){
+    title.textContent = 'Tests';
+    body.innerHTML = `
+      <div class="lvl-row" onclick="closeModal('picker-modal');openTestForm('carta')"><span class="lvl-name">+ Test a la carta</span></div>
+      <div class="lvl-row" onclick="closeModal('picker-modal');openTestForm('simulacro')"><span class="lvl-name">+ Simulacro</span></div>
+      <div class="lvl-row" onclick="closeModal('picker-modal');openTestsView()"><span class="lvl-name">Ver tests y simulacros</span></div>`;
+    return;
+  }
+  if(pickerStep==='psico-lista'){
+    title.textContent = 'Psicotécnicos';
+    const cats = getCategorias();
+    let rows = cats.map(c=>`<div class="lvl-row" onclick="pickerGoPsicoCat('${c.id}')">
+      <span class="lvl-dot" style="background:${c.color};color:${c.color};"></span>
+      <span class="lvl-name">${escapeHtml(c.nombre)}</span>
+      <span class="lvl-val">${formatHM(sumMinutosCategoria(c.id))}</span>
+    </div>`).join('');
+    rows += `<div class="lvl-row" onclick="pickerStep='psico-new';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva entidad</span></div>`;
+    body.innerHTML = (cats.length?'':'<div class="empty-sub">Sin entidades aún</div>') + rows;
+    return;
+  }
+  if(pickerStep==='psico-new'){
+    title.textContent = 'Nueva entidad';
+    pickerNewCatColor = nextSuggestedColor();
+    body.innerHTML = `
+      <label class="modal-label">Nombre</label>
+      <input type="text" class="modal-input" id="picker-newcat-name" placeholder="p.ej. PSI ÓMNIBUS" style="font-family:var(--font-sans);">
+      <label class="modal-label">Color</label>
+      <div class="color-swatch-row" id="picker-newcat-colors"></div>
+      <button class="save-btn" onclick="pickerSavePsicoCat()">Guardar</button>`;
+    renderSwatches('picker-newcat-colors', pickerNewCatColor, 'pickerSelectNewCatColor');
+    return;
+  }
+  if(pickerStep==='psico-sub'){
+    const cat = getCategoria(pickerPsicoCatId);
+    title.textContent = cat ? cat.nombre : 'Psicotécnicos';
+    const subs = (cat && cat.subcategorias) || [];
+    let rows = `<div class="lvl-row" onclick="pickerSelectPsicoSub('')"><span class="lvl-name" style="font-style:italic;color:var(--text2);">Sin subcategoría</span></div>`;
+    rows += subs.map(s=>`<div class="lvl-row" onclick="pickerSelectPsicoSub('${s.id}')">
+      <span class="lvl-name">${escapeHtml(s.nombre)}</span>
+      <span class="lvl-val">${formatHM(sumMinutosSubcategoria(pickerPsicoCatId,s.id))}</span>
+    </div>`).join('');
+    rows += `<div class="lvl-row" onclick="pickerStep='psico-newsub';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva subcategoría</span></div>`;
+    body.innerHTML = rows;
+    return;
+  }
+  if(pickerStep==='psico-newsub'){
+    title.textContent = 'Nueva subcategoría';
+    body.innerHTML = `
+      <label class="modal-label">Nombre</label>
+      <input type="text" class="modal-input" id="picker-newsub-name" placeholder="p.ej. AGILIDAD MENTAL" style="font-family:var(--font-sans);">
+      <button class="save-btn" onclick="pickerSavePsicoSub()">Guardar</button>`;
+    return;
+  }
+  if(pickerStep==='ingles'){
+    title.textContent = 'Inglés';
+    body.innerHTML = `<div class="empty-sub">Todavía no hay nada que registrar en Inglés.</div>`;
+    return;
+  }
+}
+function pickerGoTemasBloques(){ pickerStep='temas-bloques'; renderPicker(); }
+function pickerGoBloque(id){ pickerBloqueId=id; pickerStep='temas-lista'; renderPicker(); }
+function pickerGoTema(temaId){ pickerTemaId=temaId; pickerStep='temas-sub'; renderPicker(); }
+function pickerGoTests(){ pickerStep='tests-choice'; renderPicker(); }
+function pickerSelectTemaSub(subKey){
+  entrySelection = {kind:'tema', temaId:pickerTemaId, subKey};
+  if(subKey==='LIBRO_RESUMEN') entryVuelta = Math.max(1, maxVueltaConTiempo(pickerTemaId));
+  closeModal('picker-modal');
+  renderEntryPickerLabel();
+}
+function pickerGoPsico(){ pickerStep='psico-lista'; renderPicker(); }
+function pickerGoIngles(){ pickerStep='ingles'; renderPicker(); }
+function pickerGoPsicoCat(id){ pickerPsicoCatId=id; pickerStep='psico-sub'; renderPicker(); }
+function pickerSelectNewCatColor(c){ pickerNewCatColor=c; renderSwatches('picker-newcat-colors', c, 'pickerSelectNewCatColor'); }
+function pickerSavePsicoCat(){
+  const nombre = document.getElementById('picker-newcat-name').value.trim();
+  if(!nombre){ showToast('Ponle un nombre'); return; }
+  const id = getOrCreateCategoria(nombre, pickerNewCatColor);
+  pickerPsicoCatId = id;
+  pickerStep = 'psico-sub';
+  renderPicker();
+}
+function pickerSelectPsicoSub(subId){
+  entrySelection = {kind:'psico', categoriaId:pickerPsicoCatId, subcategoriaId:subId};
+  closeModal('picker-modal');
+  renderEntryPickerLabel();
+}
+function pickerSavePsicoSub(){
+  const nombre = document.getElementById('picker-newsub-name').value.trim();
+  if(!nombre){ showToast('Ponle un nombre'); return; }
+  const subId = getOrCreateSubcategoria(pickerPsicoCatId, nombre);
+  pickerSelectPsicoSub(subId);
+}
+function renderSwatches(containerId, selected, fn){
+  document.getElementById(containerId).innerHTML = PALETTE.map(c=>
+    `<div class="color-swatch ${c===selected?'selected':''}" style="background:${c}" onclick="${fn}('${c}')"></div>`
+  ).join('');
 }
 
+// ========== HISTORIAL (mes -> semana -> día) ==========
+function renderHistorial(){
+  const list = document.getElementById('historial-list');
+  if(historialLevel==='meses') return renderHistorialMeses(list);
+  if(historialLevel==='semanas') return renderHistorialSemanas(list);
+  if(historialLevel==='dias') return renderHistorialDias(list);
+  return renderHistorialEntradas(list);
+}
+function histBackBtn(fn){ return `<button class="lvl-back" onclick="${fn}">‹</button>`; }
+
+function renderHistorialMeses(list){
+  const fechas = diasConDatos();
+  if(!fechas.length){ list.innerHTML = '<div class="empty-state">Sin días registrados aún</div>'; return; }
+  const meses = {};
+  fechas.forEach(f=>{ const mk=f.slice(0,7); meses[mk]=(meses[mk]||0)+totalFecha(f); });
+  const keys = Object.keys(meses).sort((a,b)=>b.localeCompare(a));
+  list.innerHTML = keys.map(mk=>{
+    const [y,m] = mk.split('-').map(Number);
+    return `<div class="history-session"><div class="history-session-header" style="cursor:pointer;" onclick="goHistorialMes('${mk}')">
+      <div style="flex:1;"><div class="history-session-title">${MONTH_NAMES[m-1]} ${y}</div></div>
+      <div class="history-session-total">${formatHM(meses[mk])}</div>
+    </div></div>`;
+  }).join('');
+}
+function goHistorialMes(mk){ historialMes=mk; historialLevel='semanas'; renderHistorial(); }
+
+function renderHistorialSemanas(list){
+  const fechas = diasConDatos().filter(f=>f.slice(0,7)===historialMes);
+  const [y,m] = historialMes.split('-').map(Number);
+  const semanas = {};
+  fechas.forEach(f=>{ const ws=getWeekStart(f); semanas[ws]=(semanas[ws]||0)+totalFecha(f); });
+  const keys = Object.keys(semanas).sort((a,b)=>b.localeCompare(a));
+  list.innerHTML = `<div class="lvl-header">${histBackBtn("goHistorialBackMeses()")}<div class="lvl-header-title">${MONTH_NAMES[m-1]} ${y}</div></div>` +
+    (keys.length ? keys.map(ws=>`<div class="history-session"><div class="history-session-header" style="cursor:pointer;" onclick="goHistorialSemana('${ws}')">
+      <div style="flex:1;"><div class="history-session-title">${formatDate(ws)} – ${formatDate(addDays(ws,6))}</div></div>
+      <div class="history-session-total">${formatHM(semanas[ws])}</div>
+    </div></div>`).join('') : '<div class="empty-state">Sin semanas este mes</div>');
+}
+function goHistorialBackMeses(){ historialLevel='meses'; renderHistorial(); }
+function goHistorialSemana(ws){ historialSemana=ws; historialLevel='dias'; renderHistorial(); }
+
+function renderHistorialDias(list){
+  const desde = historialSemana, hasta = addDays(historialSemana,6);
+  const fechas = diasConDatos().filter(f=>f>=desde && f<=hasta).sort((a,b)=>b.localeCompare(a));
+  const today = todayStr();
+  list.innerHTML = `<div class="lvl-header">${histBackBtn("goHistorialBackSemanas()")}<div class="lvl-header-title">${formatDate(desde)} – ${formatDate(hasta)}</div></div>` +
+    (fechas.length ? fechas.map(f=>`<div class="history-session"><div class="history-session-header" style="cursor:pointer;" onclick="goHistorialDia('${f}')">
+      <div style="flex:1;"><div class="history-session-title">${formatDate(f)}${f===today?' · HOY':''}</div></div>
+      <div class="history-session-total">${formatHM(totalFecha(f))}</div>
+    </div></div>`).join('') : '<div class="empty-state">Sin registros esta semana</div>');
+}
+function goHistorialBackSemanas(){ historialLevel='semanas'; renderHistorial(); }
+function goHistorialDia(f){ historialDia=f; historialLevel='entradas'; renderHistorial(); }
+
+function renderHistorialEntradas(list){
+  const fecha = historialDia;
+  const dia = getDia(fecha);
+  const entradas = dia ? dia.entradas.slice() : [];
+  const tests = getTests().filter(t=>t.fecha===fecha);
+  let rows = entradas.map(e=>`<div class="history-row">
+      <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${entradaColor(e)};flex-shrink:0;margin-top:4px;"></span><span class="n">${escapeHtml(entradaLabel(e))}</span></span>
+      <span class="history-row-val">${formatHM(e.minutos)}</span>
+      <button class="edit-date-btn" onclick="openEditEntryModal('${fecha}','${e.id}')">${ICON_EDIT}</button>
+    </div>`).join('');
+  rows += tests.map(t=>{
+    const open = !!historialOpenTest[t.id];
+    const sub = (t.temas||[]).map(tt=>`<div class="history-row" style="padding-left:14px;">
+        <span class="history-row-name"><span class="n">${escapeHtml(temaNombre(tt.temaId))} · ${tt.preguntas}p</span></span>
+        <span class="history-row-val">${formatHM(tt.minutos)}</span>
+      </div>`).join('');
+    return `<div class="history-row" style="flex-wrap:wrap;cursor:pointer;" onclick="toggleHistTest('${t.id}')">
+        <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${COLOR_TESTS};flex-shrink:0;margin-top:4px;"></span><span class="n">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'}${t.nota!=null?' · Nota '+t.nota:''}</span></span>
+        <span class="history-row-val">${formatHM(t.minutosTotal)}</span>
+        ${open && sub ? `<div style="width:100%;margin-top:6px;">${sub}</div>` : ''}
+      </div>`;
+  }).join('');
+  list.innerHTML = `<div class="lvl-header">${histBackBtn("goHistorialBackDias()")}<div class="lvl-header-title">${formatDate(fecha)}</div></div>` +
+    `<div class="history-session"><div class="body-inner" style="padding:2px 16px 8px;">${rows || '<div class="empty-state">Sin registros</div>'}</div></div>`;
+}
+function goHistorialBackDias(){ historialLevel='dias'; renderHistorial(); }
+function toggleHistTest(id){ historialOpenTest[id] = !historialOpenTest[id]; renderHistorial(); }
+
 // ========== ESTADÍSTICAS ==========
-function calcRacha(){
-  const totales = {};
-  getDias().forEach(d=>{ totales[d.fecha] = totalDia(d); });
-  let cursor = new Date();
-  if(!(totales[todayStr()]>0)) cursor.setDate(cursor.getDate()-1);
-  let streak = 0;
-  while(true){
-    const ds = toLocalISO(cursor);
-    if(totales[ds]>0){ streak++; cursor.setDate(cursor.getDate()-1); }
-    else break;
-  }
-  return streak;
-}
-// Racha en marcas de galón (como las franjas de rango de una bocamanga): una
-// franja se enciende por cada umbral de constancia alcanzado (3/7/14/30 días).
-const RACHA_TIERS = [3,7,14,30];
-function renderRachaChevrons(streak){
-  const chevron = '<svg viewBox="0 0 16 8" width="15" height="7"><path d="M1 7 L8 1 L15 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  return RACHA_TIERS.map(t => `<span class="${streak>=t?'on':'off'}">${chevron}</span>`).join('');
-}
 function renderEstadisticas(){
   const today = todayStr();
-  const totalAll = sumEnRango('0000-00-00', '9999-99-99');
-  document.getElementById('est-total').textContent = formatHM(totalAll);
+  document.getElementById('est-total').textContent = formatHM(sumEnRango('0000-00-00','9999-99-99'));
+
+  const monthStart = today.slice(0,8)+'01';
+  const monthEnd = new Date(parseInt(today.slice(0,4)), parseInt(today.slice(5,7)), 0);
+  document.getElementById('est-mes-lbl').textContent = MONTH_NAMES[parseInt(today.slice(5,7),10)-1];
+  document.getElementById('est-mes').textContent = formatHM(sumEnRango(monthStart, toLocalISO(monthEnd)));
 
   const weekStart = getWeekStart(today);
   document.getElementById('est-semana').textContent = formatHM(sumEnRango(weekStart, addDays(weekStart,6)));
 
-  const monthStart = today.slice(0,8)+'01';
-  const monthEnd = new Date(parseInt(today.slice(0,4)), parseInt(today.slice(5,7)), 0);
-  document.getElementById('est-mes').textContent = formatHM(sumEnRango(monthStart, toLocalISO(monthEnd)));
-
-  const racha = calcRacha();
-  document.getElementById('est-racha').textContent = racha;
-  document.getElementById('est-racha-chevrons').innerHTML = renderRachaChevrons(racha);
   document.getElementById('est-media7').textContent = formatHM(sumEnRango(addDays(today,-6), today)/7);
   document.getElementById('est-media30').textContent = formatHM(sumEnRango(addDays(today,-29), today)/30);
 
   renderOpoCard();
   const opoStats = computeOpoStats();
   document.getElementById('est-mejor-semana').textContent = opoStats ? formatHM(opoStats.mejorSemana) : '0:00';
-  document.getElementById('est-pct-activos').textContent = opoStats ? opoStats.pctActivos+'%' : '0%';
   document.getElementById('est-media-dia').textContent = opoStats ? formatHM(opoStats.mediaDiaria) : '0:00';
 
-  renderCatBreakdown();
-  renderSubcatBreakdown();
+  renderStatsCatBreakdown();
+  renderStatsSubBreakdown();
   renderChartSemanal();
   renderChartDiario();
   renderHeatmap();
 }
-function renderCatBreakdown(){
-  const cats = getCategorias();
+function statsBackRow(onclick){ return `<button class="lvl-back" style="margin-bottom:10px;" onclick="${onclick}">‹</button>`; }
+function statBarRow(nombre,color,total,max,onclick){
+  return `<div class="cat-bar-row" ${onclick?`style="cursor:pointer;" onclick="${onclick}"`:''}>
+    <div class="cat-bar-top">
+      <span class="cat-bar-name"><span class="entry-dot" style="width:9px;height:9px;background:${color};color:${color};box-shadow:none;"></span><span class="n">${escapeHtml(nombre)}</span></span>
+      <span class="cat-bar-val">${formatHM(total)}</span>
+    </div>
+    <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(total/max).toFixed(4)});background:${color}"></div></div>
+  </div>`;
+}
+function renderStatsCatBreakdown(){
   const el = document.getElementById('est-cat-breakdown');
-  if(!cats.length){ el.innerHTML = '<div class="empty-state">Crea categorías en Ajustes</div>'; return; }
-  const totals = cats.map(c=>({cat:c, total:sumMinutosCategoria(c.id)})).sort((a,b)=>b.total-a.total);
-  const max = Math.max(1, ...totals.map(t=>t.total));
-  el.innerHTML = totals.map(t=>`
-    <div class="cat-bar-row">
-      <div class="cat-bar-top">
-        <span class="cat-bar-name"><span class="entry-dot" style="width:9px;height:9px;background:${t.cat.color};color:${t.cat.color};box-shadow:none;"></span><span class="n">${escapeHtml(t.cat.nombre)}</span></span>
-        <span class="cat-bar-val">${formatHM(t.total)}</span>
-      </div>
-      <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(t.total/max).toFixed(4)});background:${t.cat.color}"></div></div>
-    </div>`).join('');
+  if(statsCatLevel==='root'){
+    const temasTotal = sumMinutosTemasTotal();
+    const psicoTotal = sumMinutosPsicoTotal();
+    const rows = [
+      {nombre:'TEMAS', color:'#38bdf8', total:temasTotal, onclick:"statsCatLevel='temas-bloques';renderStatsCatBreakdown();"},
+      {nombre:'PSICOTÉCNICOS', color:COLOR_PSICO, total:psicoTotal, onclick:"statsCatLevel='psico';renderStatsCatBreakdown();"},
+      {nombre:'INGLÉS', color:COLOR_INGLES, total:0, onclick:null},
+    ];
+    const max = Math.max(1, ...rows.map(r=>r.total));
+    if(temasTotal+psicoTotal<=0){ el.innerHTML = '<div class="empty-state">Sin registros aún</div>'; return; }
+    el.innerHTML = rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,x.onclick)).join('');
+    return;
+  }
+  if(statsCatLevel==='temas-bloques'){
+    const rows = BLOQUES_TEMAS.map(b=>({nombre:b.corto, color:b.color, total:sumMinutosBloque(b.id), onclick:`statsCatLevel='temas-lista';statsCatBloque='${b.id}';renderStatsCatBreakdown();`}));
+    rows.push({nombre:'TESTS', color:COLOR_TESTS, total:sumMinutosTestsSinDesglose(), onclick:'openTestsView();'});
+    const max = Math.max(1, ...rows.map(r=>r.total));
+    el.innerHTML = statsBackRow("statsCatLevel='root';renderStatsCatBreakdown();") + rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,x.onclick)).join('');
+    return;
+  }
+  if(statsCatLevel==='temas-lista'){
+    const b = BLOQUES_TEMAS.find(x=>x.id===statsCatBloque);
+    const rows = [];
+    for(let n=b.desde;n<=b.hasta;n++){ const tid=temaIdFromNum(n); const t=sumMinutosTema(tid); if(t>0) rows.push({nombre:'TEMA '+n, color:b.color, total:t, onclick:`openTemaDetail('${tid}')`}); }
+    const max = Math.max(1, ...rows.map(r=>r.total));
+    el.innerHTML = statsBackRow("statsCatLevel='temas-bloques';renderStatsCatBreakdown();") +
+      (rows.length ? rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,x.onclick)).join('') : '<div class="empty-sub">Sin temas con tiempo en este bloque</div>');
+    return;
+  }
+  if(statsCatLevel==='psico'){
+    const cats = getCategorias().map(c=>({nombre:c.nombre, color:c.color, total:sumMinutosCategoria(c.id)})).filter(c=>c.total>0);
+    const max = Math.max(1, ...cats.map(c=>c.total));
+    el.innerHTML = statsBackRow("statsCatLevel='root';renderStatsCatBreakdown();") +
+      (cats.length ? cats.map(x=>statBarRow(x.nombre,x.color,x.total,max,null)).join('') : '<div class="empty-sub">Sin registros aún</div>');
+    return;
+  }
 }
-function renderSubcatBreakdown(){
+function renderStatsSubBreakdown(){
   const el = document.getElementById('est-subcat-breakdown');
-  const groups = getCategorias().map(c=>{
-    const subs = (c.subcategorias||[]).map(s=>({nombre:s.nombre, total:sumMinutosSubcategoria(c.id,s.id)})).filter(s=>s.total>0).sort((a,b)=>b.total-a.total);
-    return {cat:c, subs};
-  }).filter(g=>g.subs.length>0);
-  if(!groups.length){ el.innerHTML = '<div class="empty-state">Sin subcategorías aún</div>'; return; }
-  el.innerHTML = groups.map(g=>{
-    const max = Math.max(1, ...g.subs.map(s=>s.total));
-    const rows = g.subs.map(s=>`
-      <div class="cat-bar-row">
-        <div class="cat-bar-top">
-          <span class="cat-bar-name"><span class="entry-dot" style="width:9px;height:9px;background:${g.cat.color};color:${g.cat.color};box-shadow:none;opacity:.75;"></span><span class="n">${escapeHtml(s.nombre)}</span></span>
-          <span class="cat-bar-val">${formatHM(s.total)}</span>
-        </div>
-        <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(s.total/max).toFixed(4)});background:${g.cat.color}"></div></div>
-      </div>`).join('');
-    return `<div style="margin-bottom:16px;">
-      <div style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-        <span class="entry-dot" style="width:7px;height:7px;background:${g.cat.color};color:${g.cat.color};box-shadow:none;"></span>${escapeHtml(g.cat.nombre)}
-      </div>
-      ${rows}
-    </div>`;
-  }).join('');
-}
-function sumMinutosCategoria(id){
-  let total = 0;
-  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===id) total += e.minutos; }));
-  return total;
-}
-function countEntradasCategoria(id){
-  let n = 0;
-  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===id) n++; }));
-  return n;
+  if(statsSubLevel==='root'){
+    const keys = SUBCATS_TEMA_ALL.map(s=>s.key).concat(['OTROS']);
+    const rows = keys.map(k=>({key:k, nombre:subcatTemaNombre(k), total:sumMinutosSubcatGlobal(k)})).filter(r=>r.total>0);
+    if(!rows.length){ el.innerHTML = '<div class="empty-state">Sin subcategorías aún</div>'; return; }
+    const max = Math.max(1, ...rows.map(r=>r.total));
+    el.innerHTML = rows.map(r=>statBarRow(r.nombre,'#8fdcff',r.total,max,`statsSubLevel='tema';statsSubKey='${r.key}';renderStatsSubBreakdown();`)).join('');
+    return;
+  }
+  const rows = [];
+  for(let n=1;n<=TOTAL_TEMAS;n++){ const tid=temaIdFromNum(n); const t=sumMinutosTemaSubcat(tid, statsSubKey); if(t>0) rows.push({nombre:'TEMA '+n, color:temaColor(tid), total:t}); }
+  const max = Math.max(1, ...rows.map(r=>r.total));
+  el.innerHTML = statsBackRow("statsSubLevel='root';renderStatsSubBreakdown();") +
+    `<div style="font-size:11px;color:var(--text3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.4px;font-weight:700;">${escapeHtml(subcatTemaNombre(statsSubKey))}</div>` +
+    (rows.length ? rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,null)).join('') : '<div class="empty-sub">Sin temas con tiempo</div>');
 }
 
 function renderBarChart(id, labels, data, color){
@@ -1321,7 +1815,7 @@ function renderHeatmap(){
   const [y,m] = estHeatmapMonth.split('-').map(Number);
   document.getElementById('heatmap-lbl').textContent = MONTH_NAMES[m-1]+' '+y;
 
-  const allTotals = getDias().map(d=>totalDia(d)).filter(t=>t>0);
+  const allTotals = diasConDatos().map(f=>totalFecha(f)).filter(t=>t>0);
   const maxMin = Math.max(1, ...allTotals);
 
   const daysInMonth = new Date(y,m,0).getDate();
@@ -1354,12 +1848,54 @@ function heatColor(mins, maxMin){
   return { bg: `rgba(56,189,248,${alpha})`, fg: alpha>0.6 ? 'rgba(3,15,23,0.75)' : 'rgba(255,255,255,0.9)' };
 }
 
-// ========== CATEGORÍAS (+ subcategorías) ==========
+// ========== CATEGORÍAS (niveles: TEMAS / PSICOTÉCNICOS / INGLÉS) ==========
 function renderCategoriasList(){
-  const cats = getCategorias();
   const list = document.getElementById('categorias-list');
-  if(!cats.length){ list.innerHTML = '<div class="empty-state" style="padding:24px 16px;">Aún no tienes categorías</div>'; return; }
-  list.innerHTML = cats.map((c,i)=>{
+  const addBtn = document.getElementById('categorias-add-btn');
+  addBtn.style.display = catLevel==='psico' ? 'flex' : 'none';
+
+  if(catLevel==='root'){
+    list.innerHTML = `
+      <button class="lvl-block-btn" onclick="catLevel='temas-bloques';renderCategoriasList();"><div class="t">TEMAS</div><div class="s">${TOTAL_TEMAS} temas · ${formatHM(sumMinutosTemasTotal())}</div></button>
+      <button class="lvl-block-btn" onclick="catLevel='psico';renderCategoriasList();"><div class="t">PSICOTÉCNICOS</div><div class="s">${formatHM(sumMinutosPsicoTotal())}</div></button>
+      <button class="lvl-block-btn" onclick="catLevel='ingles';renderCategoriasList();"><div class="t">INGLÉS</div><div class="s">Próximamente</div></button>`;
+    return;
+  }
+  if(catLevel==='temas-bloques'){
+    list.innerHTML = statsBackRow("catLevel='root';renderCategoriasList();") + BLOQUES_TEMAS.map(b=>`
+      <button class="lvl-block-btn" style="border-left:3px solid ${b.color};" onclick="catBloque='${b.id}';catLevel='temas-lista';renderCategoriasList();">
+        <div class="t">${b.nombre}</div><div class="s">Temas ${b.desde}–${b.hasta} · ${formatHM(sumMinutosBloque(b.id))}</div>
+      </button>`).join('') +
+      `<button class="lvl-block-btn" style="border-left:3px solid ${COLOR_TESTS};" onclick="openTestsView();">
+        <div class="t">TESTS</div><div class="s">${formatHM(sumMinutosTestsTotal())} · ${getTests().length} registro(s)</div>
+      </button>`;
+    return;
+  }
+  if(catLevel==='temas-lista'){
+    const b = BLOQUES_TEMAS.find(x=>x.id===catBloque);
+    let rows = statsBackRow("catLevel='temas-bloques';renderCategoriasList();");
+    for(let n=b.desde;n<=b.hasta;n++){
+      const tid = temaIdFromNum(n);
+      const on = temaTieneTiempo(tid);
+      rows += `<div class="lvl-row" onclick="openTemaDetail('${tid}')">
+        <span class="lvl-dot ${on?'':'off'}" style="background:${on?b.color:'transparent'};color:${b.color};"></span>
+        <span class="lvl-name">TEMA ${n}</span>
+        ${on?`<span class="lvl-val">${formatHM(sumMinutosTema(tid))}</span>`:''}
+      </div>`;
+    }
+    list.innerHTML = rows;
+    return;
+  }
+  if(catLevel==='ingles'){
+    list.innerHTML = statsBackRow("catLevel='root';renderCategoriasList();") + '<div class="empty-sub">Próximamente.</div>';
+    return;
+  }
+
+  // catLevel === 'psico' — CRUD íntegro, igual que la v1, un nivel más adentro
+  const cats = getCategorias();
+  let html = statsBackRow("catLevel='root';renderCategoriasList();");
+  if(!cats.length){ html += '<div class="empty-state" style="padding:24px 16px;">Aún no tienes entidades</div>'; list.innerHTML = html; return; }
+  html += cats.map((c,i)=>{
     const subs = c.subcategorias || [];
     const totalCat = sumMinutosCategoria(c.id);
     const sinSubTotal = sumMinutosSubcategoria(c.id, '');
@@ -1402,6 +1938,7 @@ function renderCategoriasList(){
       </div>
     </div>`;
   }).join('');
+  list.innerHTML = html;
 }
 function toggleCatExpand(id){
   const b = document.getElementById('cat-body-'+id);
@@ -1453,13 +1990,12 @@ function deleteSubcategory(catId,subId){
   cat.subcategorias = (cat.subcategorias||[]).filter(s=>s.id!==subId);
   saveCategorias(cats);
   const dias = getDias();
-  dias.forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===catId && e.subcategoriaId===subId) e.subcategoriaId=''; }));
+  dias.forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===catId && e.subcategoriaId===subId) e.subcategoriaId=''; }));
   saveDias(dias);
   renderCategoriasList();
   showToast('Subcategoría borrada');
 }
 
-// ========== DETALLE DE SUBCATEGORÍA (ver / editar / quitar tiempo) ==========
 function openSubcatDetail(catId,subId){
   subcatDetailCatId = catId;
   subcatDetailSubId = subId;
@@ -1476,7 +2012,7 @@ function renderSubcatDetail(){
   const total = sumMinutosSubcategoria(subcatDetailCatId, subcatDetailSubId);
   document.getElementById('subcat-detail-total').textContent = `${cat.nombre} · Total ${formatHM(total)}`;
   const entries = [];
-  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===subcatDetailCatId && e.subcategoriaId===subcatDetailSubId) entries.push({fecha:d.fecha, e}); }));
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===subcatDetailCatId && e.subcategoriaId===subcatDetailSubId) entries.push({fecha:d.fecha, e}); }));
   entries.sort((a,b)=>b.fecha.localeCompare(a.fecha));
   const list = document.getElementById('subcat-detail-list');
   if(!entries.length){ list.innerHTML = '<div class="empty-state" style="padding:20px 0;">Sin registros aún</div>'; return; }
@@ -1506,7 +2042,7 @@ function moveCategory(id,dir){
 }
 function openNewCategoryModal(){
   editingCategoryId = null;
-  document.getElementById('category-modal-title').textContent = 'Nueva categoría';
+  document.getElementById('category-modal-title').textContent = 'Nueva entidad';
   document.getElementById('category-name-input').value = '';
   categoryModalColor = nextSuggestedColor();
   renderSwatches('category-colors', categoryModalColor, 'selectCategoryColor');
@@ -1516,7 +2052,7 @@ function openEditCategoryModal(id){
   const c = getCategoria(id);
   if(!c) return;
   editingCategoryId = id;
-  document.getElementById('category-modal-title').textContent = 'Editar categoría';
+  document.getElementById('category-modal-title').textContent = 'Editar entidad';
   document.getElementById('category-name-input').value = c.nombre;
   categoryModalColor = c.color;
   renderSwatches('category-colors', categoryModalColor, 'selectCategoryColor');
@@ -1525,10 +2061,10 @@ function openEditCategoryModal(id){
 function selectCategoryColor(c){ categoryModalColor = c; renderSwatches('category-colors', c, 'selectCategoryColor'); }
 function saveCategoryModal(){
   const nombre = document.getElementById('category-name-input').value.trim();
-  if(!nombre){ showToast('Ponle un nombre a la categoría'); return; }
+  if(!nombre){ showToast('Ponle un nombre a la entidad'); return; }
   const cats = getCategorias();
   const dup = cats.find(c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase() && c.id!==editingCategoryId);
-  if(dup){ showToast('Ya existe una categoría con ese nombre'); return; }
+  if(dup){ showToast('Ya existe una entidad con ese nombre'); return; }
   if(editingCategoryId){
     const c = cats.find(c=>c.id===editingCategoryId);
     if(c){ c.nombre = nombre; c.color = categoryModalColor; }
@@ -1547,8 +2083,8 @@ function openDeleteCategoryModal(id){
   const n = countEntradasCategoria(id);
   const mins = sumMinutosCategoria(id);
   document.getElementById('delete-cat-text').textContent = n>0
-    ? `"${c.nombre}" tiene ${n} registro(s) (${formatHM(mins)}). Puedes reasignarlos a otra categoría o borrarlos junto con la categoría.`
-    : `¿Borrar la categoría "${c.nombre}"? No tiene registros asociados.`;
+    ? `"${c.nombre}" tiene ${n} registro(s) (${formatHM(mins)}). Puedes reasignarlos a otra entidad o borrarlos junto con ella.`
+    : `¿Borrar la entidad "${c.nombre}"? No tiene registros asociados.`;
   const otherCats = getCategorias().filter(c2=>c2.id!==id);
   const selRow = document.getElementById('delete-cat-select-row');
   if(n>0 && otherCats.length){
@@ -1567,16 +2103,225 @@ function confirmDeleteCategory(){
   const reassignTo = document.getElementById('delete-cat-select').value || null;
   let dias = getDias();
   if(reassignTo){
-    dias.forEach(d=>d.entradas.forEach(e=>{ if(e.categoriaId===id) e.categoriaId = reassignTo; }));
+    dias.forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===id) e.categoriaId = reassignTo; }));
   } else {
-    dias.forEach(d=>{ d.entradas = d.entradas.filter(e=>e.categoriaId!==id); });
+    dias.forEach(d=>{ d.entradas = d.entradas.filter(e=>!(e.tipo==='psico' && e.categoriaId===id)); });
   }
   saveDias(dias.filter(d=>d.entradas.length>0));
   saveCategorias(getCategorias().filter(c=>c.id!==id));
   closeModal('delete-cat-modal');
   pendingDeleteCategoryId = null;
   renderCategoriasList();
-  showToast('Categoría borrada');
+  showToast('Entidad borrada');
+}
+
+// ========== DETALLE DE TEMA (subcategorías + libro resumen/vueltas) ==========
+function openTemaDetail(temaId){
+  temaDetailId = temaId;
+  temaDetailView = 'subcats';
+  renderTemaDetail();
+  document.getElementById('tema-detail-modal').classList.add('open');
+}
+function temaDetailBack(){
+  if(temaDetailView==='vuelta-dias'){ temaDetailView='vueltas'; }
+  else if(temaDetailView==='vueltas'){ temaDetailView='subcats'; }
+  renderTemaDetail();
+}
+function renderTemaDetail(){
+  const title = document.getElementById('tema-detail-title');
+  const back = document.getElementById('tema-detail-back');
+  const body = document.getElementById('tema-detail-body');
+  title.textContent = temaNombre(temaDetailId) + ' · ' + formatHM(sumMinutosTema(temaDetailId));
+  back.style.display = temaDetailView==='subcats' ? 'none' : 'flex';
+
+  if(temaDetailView==='subcats'){
+    let rows = SUBCATS_TEMA.map(s=>{
+      const t = sumMinutosTemaSubcat(temaDetailId, s.key);
+      if(t<=0) return '';
+      return `<div class="lvl-row"><span class="lvl-name">${s.nombre}</span><span class="lvl-val">${formatHM(t)}</span></div>`;
+    }).join('');
+    const libroTotal = sumMinutosTemaSubcat(temaDetailId,'LIBRO_RESUMEN');
+    rows += `<div class="lvl-row" onclick="temaDetailView='vueltas';renderTemaDetail();"><span class="lvl-name">LIBRO RESUMEN</span>${libroTotal>0?`<span class="lvl-val">${formatHM(libroTotal)}</span>`:''}</div>`;
+    body.innerHTML = rows || '<div class="empty-sub">Sin tiempo registrado todavía</div>';
+    return;
+  }
+  if(temaDetailView==='vueltas'){
+    const vueltas = {};
+    getDias().forEach(d=>d.entradas.forEach(e=>{
+      if(e.tipo==='tema' && e.temaId===temaDetailId && e.subKey==='LIBRO_RESUMEN'){
+        if(!vueltas[e.vuelta]) vueltas[e.vuelta] = {total:0, min:d.fecha, max:d.fecha};
+        vueltas[e.vuelta].total += e.minutos;
+        if(d.fecha<vueltas[e.vuelta].min) vueltas[e.vuelta].min = d.fecha;
+        if(d.fecha>vueltas[e.vuelta].max) vueltas[e.vuelta].max = d.fecha;
+      }
+    }));
+    const nums = Object.keys(vueltas).map(Number).sort((a,b)=>b-a);
+    if(!nums.length){ body.innerHTML = '<div class="empty-sub">Sin vueltas registradas</div>'; return; }
+    const maxVuelta = Math.max(...nums);
+    body.innerHTML = nums.map(n=>`<div class="lvl-row" onclick="temaDetailVuelta=${n};temaDetailView='vuelta-dias';renderTemaDetail();">
+      <span class="lvl-name">VUELTA ${n}${n===maxVuelta?' · en curso':''}</span>
+      <span class="lvl-meta">${formatDate(vueltas[n].min)} – ${formatDate(vueltas[n].max)}</span>
+      <span class="lvl-val">${formatHM(vueltas[n].total)}</span>
+    </div>`).join('');
+    return;
+  }
+  const rows = [];
+  getDias().forEach(d=>d.entradas.forEach(e=>{
+    if(e.tipo==='tema' && e.temaId===temaDetailId && e.subKey==='LIBRO_RESUMEN' && e.vuelta===temaDetailVuelta){
+      rows.push({fecha:d.fecha, e});
+    }
+  }));
+  rows.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  body.innerHTML = rows.map(({fecha,e})=>`<div class="history-row">
+      <span class="history-row-name"><span class="n">${formatDate(fecha)}</span></span>
+      <span class="history-row-val">${formatHM(e.minutos)}</span>
+      <button class="edit-date-btn" onclick="closeModal('tema-detail-modal');openEditEntryModal('${fecha}','${e.id}')">${ICON_EDIT}</button>
+    </div>`).join('') || '<div class="empty-sub">Sin registros</div>';
+}
+
+// ========== TESTS (Bloque E) ==========
+// Reparto proporcional de minutos por nº de preguntas, con el sobrante de
+// redondeo ajustado en el tema con más preguntas para que la suma cuadre
+// siempre exactamente con el tiempo total.
+function testTemaRound(minutosTotal, temasConPreguntas){
+  const totalPreguntas = temasConPreguntas.reduce((a,t)=>a+t.preguntas,0);
+  if(totalPreguntas<=0) return temasConPreguntas.map(t=>({temaId:t.temaId, preguntas:t.preguntas, minutos:0}));
+  const rounded = temasConPreguntas.map(t=>({temaId:t.temaId, preguntas:t.preguntas, minutos:Math.round(minutosTotal*t.preguntas/totalPreguntas)}));
+  let diff = minutosTotal - rounded.reduce((a,r)=>a+r.minutos,0);
+  if(diff!==0){
+    let idx = 0;
+    for(let i=1;i<rounded.length;i++) if(rounded[i].preguntas>rounded[idx].preguntas) idx=i;
+    rounded[idx].minutos += diff;
+  }
+  return rounded;
+}
+
+function openTestForm(tipo, editId){
+  testFormTipo = tipo;
+  testFormEditingId = editId || null;
+  if(editId){
+    const t = getTests().find(x=>x.id===editId);
+    document.getElementById('test-form-fecha').value = t.fecha;
+    document.getElementById('test-form-tiempo').value = formatHM(t.minutosTotal);
+    testFormTemas = (t.temas||[]).map(x=>({temaId:x.temaId, preguntas:x.preguntas}));
+    if(tipo==='simulacro') document.getElementById('test-form-nota').value = t.nota!=null ? t.nota : '';
+  } else {
+    document.getElementById('test-form-fecha').value = todayStr();
+    document.getElementById('test-form-tiempo').value = '';
+    testFormTemas = [];
+    if(tipo==='simulacro') document.getElementById('test-form-nota').value = '';
+  }
+  document.getElementById('test-form-title').textContent = (editId?'Editar ':'') + (tipo==='simulacro'?'Simulacro':'Test a la carta');
+  document.getElementById('test-form-nota-row').style.display = tipo==='simulacro' ? 'block' : 'none';
+  renderTestFormTemas();
+  document.getElementById('test-form-modal').classList.add('open');
+}
+function renderTestFormTemas(){
+  const el = document.getElementById('test-form-temas-list');
+  const totalPreguntas = testFormTemas.reduce((a,t)=>a+t.preguntas,0);
+  el.innerHTML = testFormTemas.map((t,i)=>`<div class="test-tema-row">
+      <span class="nm">${escapeHtml(temaNombre(t.temaId))}</span>
+      <input type="number" class="modal-input" min="0" value="${t.preguntas}" onchange="updateTestFormPreguntas(${i}, this.value)">
+      <button class="rm" onclick="removeTestFormTema(${i})">${ICON_CLOSE}</button>
+    </div>`).join('');
+  document.getElementById('test-form-total-preguntas').textContent = totalPreguntas;
+}
+function updateTestFormPreguntas(i,v){ testFormTemas[i].preguntas = Math.max(0, parseInt(v,10)||0); renderTestFormTemas(); }
+function removeTestFormTema(i){ testFormTemas.splice(i,1); renderTestFormTemas(); }
+
+function openTestTemaPicker(){
+  testPickerBloque = null;
+  renderTestTemaPicker();
+  document.getElementById('test-tema-picker-modal').classList.add('open');
+}
+function renderTestTemaPicker(){
+  const body = document.getElementById('test-tema-picker-body');
+  const back = document.getElementById('test-tema-picker-back');
+  back.style.display = testPickerBloque ? 'flex' : 'none';
+  if(!testPickerBloque){
+    body.innerHTML = BLOQUES_TEMAS.map(b=>`<div class="lvl-row" onclick="testPickerBloque='${b.id}';renderTestTemaPicker();">
+      <span class="lvl-dot" style="background:${b.color};color:${b.color};"></span>
+      <span class="lvl-name">${b.nombre}</span></div>`).join('');
+    return;
+  }
+  const b = BLOQUES_TEMAS.find(x=>x.id===testPickerBloque);
+  let rows = '';
+  for(let n=b.desde;n<=b.hasta;n++){
+    const tid = temaIdFromNum(n);
+    const already = testFormTemas.some(t=>t.temaId===tid);
+    rows += `<div class="lvl-row" style="${already?'opacity:0.35;pointer-events:none;':''}" onclick="pickTestFormTema('${tid}')">
+      <span class="lvl-name">TEMA ${n}</span>${already?'<span class="lvl-val">Ya añadido</span>':''}
+    </div>`;
+  }
+  body.innerHTML = rows;
+}
+function testTemaPickerBack(){ testPickerBloque=null; renderTestTemaPicker(); }
+function pickTestFormTema(temaId){
+  testFormTemas.push({temaId, preguntas:1});
+  closeModal('test-tema-picker-modal');
+  renderTestFormTemas();
+}
+
+function saveTestForm(){
+  const fecha = document.getElementById('test-form-fecha').value;
+  const minutosTotal = parseTiempo(document.getElementById('test-form-tiempo').value.trim());
+  if(!fecha){ showToast('Elige una fecha'); return; }
+  if(minutosTotal==null || minutosTotal<=0){ showToast('Introduce un tiempo válido'); return; }
+  const validTemas = testFormTemas.filter(t=>t.preguntas>0);
+  if(!validTemas.length){ showToast('Añade al menos un tema con preguntas'); return; }
+  const temas = testTemaRound(minutosTotal, validTemas);
+  let nota = null;
+  if(testFormTipo==='simulacro'){
+    const notaRaw = document.getElementById('test-form-nota').value.trim().replace(',','.');
+    nota = notaRaw==='' ? null : parseFloat(notaRaw);
+  }
+  const totalPreguntas = temas.reduce((a,t)=>a+t.preguntas,0);
+  const tests = getTests();
+  if(testFormEditingId){
+    const t = tests.find(x=>x.id===testFormEditingId);
+    if(t){ t.fecha=fecha; t.minutosTotal=minutosTotal; t.temas=temas; t.nota=nota; t.totalPreguntas=totalPreguntas; }
+  } else {
+    tests.push({id:uid(), tipo:testFormTipo, fecha, minutosTotal, temas, nota, totalPreguntas});
+  }
+  saveTests(tests);
+  closeModal('test-form-modal');
+  showToast('Guardado ✓','green');
+  renderHoy(); renderHistorial(); renderEstadisticas();
+  const testsModal = document.getElementById('tests-view-modal');
+  if(testsModal.classList.contains('open')) renderTestsView();
+}
+function deleteTest(id){
+  if(!confirm('¿Borrar este registro?')) return;
+  saveTests(getTests().filter(t=>t.id!==id));
+  showToast('Borrado');
+  renderTestsView(); renderHistorial(); renderEstadisticas(); renderHoy();
+}
+
+function openTestsView(){ renderTestsView(); document.getElementById('tests-view-modal').classList.add('open'); }
+function renderTestsView(){
+  const tests = getTests().slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const simulacros = tests.filter(t=>t.tipo==='simulacro' && t.nota!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const chartWrap = document.getElementById('tests-nota-chart-wrap');
+  if(simulacros.length>=2){
+    chartWrap.style.display = 'block';
+    const ctx = document.getElementById('tests-nota-chart').getContext('2d');
+    if(charts['tests-nota']) charts['tests-nota'].destroy();
+    charts['tests-nota'] = new Chart(ctx, {
+      type: 'line',
+      data: { labels: simulacros.map(s=>formatDate(s.fecha)), datasets: [{ data: simulacros.map(s=>s.nota), borderColor:'#38bdf8', backgroundColor:'rgba(56,189,248,0.15)', tension:0.3, fill:true, pointRadius:3 }] },
+      options: { responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'rgba(255,255,255,0.32)',font:{size:9}},grid:{display:false}}, y:{ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}} } }
+    });
+  } else {
+    chartWrap.style.display = 'none';
+  }
+  const list = document.getElementById('tests-view-list');
+  if(!tests.length){ list.innerHTML = '<div class="empty-state">Sin tests aún</div>'; return; }
+  list.innerHTML = tests.map(t=>`<div class="history-row" style="align-items:center;">
+      <span class="history-row-name"><span class="n">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'} · ${formatDate(t.fecha)}${t.nota!=null?' · Nota '+t.nota:''}</span></span>
+      <span class="history-row-val">${formatHM(t.minutosTotal)}</span>
+      <button class="edit-date-btn" onclick="closeModal('tests-view-modal');openTestForm('${t.tipo}','${t.id}')">${ICON_EDIT}</button>
+      <button class="edit-date-btn" style="color:var(--red);" onclick="deleteTest('${t.id}')">${ICON_CLOSE}</button>
+    </div>`).join('');
 }
 
 // ========== UI ==========
@@ -1611,7 +2356,7 @@ function showToast(msg,cls){
 
 // ========== I/O ==========
 function exportJSON(){
-  const all = { categorias:getCategorias(), dias:getDias() };
+  const all = { categorias:getCategorias(), dias:getDias(), tests:getTests(), version:2 };
   const blob = new Blob([JSON.stringify(all,null,2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = 'estudio-backup.json'; a.click();
@@ -1626,24 +2371,35 @@ function handleImport(e){
       if(p.categorias && p.dias){
         saveCategorias(p.categorias);
         saveDias(p.dias);
-        migrateSubcategorias();
+        if(p.tests){
+          saveTests(p.tests);
+        } else {
+          saveTests([]);
+          localStorage.removeItem('estudio_migracion_v2_done');
+          migrateSubcategorias();
+          migrateToV2();
+        }
       } else {
         throw new Error('formato desconocido');
       }
       showToast('Importado ✓','green');
-      renderCategoriasList(); renderHoy(); renderHistorial();
-    }catch{
+      renderCategoriasList(); renderHoy(); renderHistorial(); renderEstadisticas();
+    }catch(err){
+      console.error(err);
       showToast('Error al importar');
     }
   };
   r.readAsText(f); e.target.value='';
 }
 function exportCSV(){
-  const rows = [['Fecha','Categoría','Subcategoría','Minutos','Tiempo']];
+  const rows = [['Fecha','Tipo','Categoría','Subcategoría','Minutos','Tiempo']];
   getDias().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(d=>{
     d.entradas.forEach(e=>{
-      rows.push([d.fecha, getCategoriaNombre(e.categoriaId), getSubcategoriaNombre(e.categoriaId,e.subcategoriaId), e.minutos, formatHM(e.minutos)]);
+      rows.push([d.fecha, e.tipo, entradaLabelCat(e), entradaLabelSub(e), e.minutos, formatHM(e.minutos)]);
     });
+  });
+  getTests().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(t=>{
+    rows.push([t.fecha, t.tipo, 'TESTS', t.tipo==='simulacro'?('Nota '+(t.nota!=null?t.nota:'')):'', t.minutosTotal, formatHM(t.minutosTotal)]);
   });
   const blob = new Blob([rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
@@ -1654,19 +2410,21 @@ function clearAllData(){
   if(!confirm('¿Seguro? Se borrará TODO: categorías y registros.')) return;
   localStorage.removeItem('estudio_categorias');
   localStorage.removeItem('estudio_dias');
+  localStorage.removeItem('estudio_tests');
+  localStorage.removeItem('estudio_migracion_v2_done');
+  localStorage.removeItem('estudio_backup_pre_v2');
   showToast('Datos borrados');
   setTimeout(()=>location.reload(), 700);
 }
 
 // ========== INIT ==========
 migrateSubcategorias();
+migrateToV2();
 currentHoyDate = todayStr();
 document.getElementById('hoy-date-input').value = currentHoyDate;
 renderHoy();
 updateNavIndicator(document.querySelector('.nav-btn.active'));
 
-// document.lastModified — mtime del archivo servido, útil para detectar una
-// copia cacheada vieja en el Home Screen.
 const luEl = document.getElementById('app-last-updated');
 if(luEl){
   const lm = new Date(document.lastModified);
