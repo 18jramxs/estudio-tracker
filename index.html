@@ -216,6 +216,8 @@ body::before {
 .entry-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); min-width: 0; overflow-wrap: anywhere; }
 .entry-sub { font-weight: 500; color: var(--text3); }
 .entry-time { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--text2); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.entry-row.clickable { cursor: pointer; margin: 0 -14px; padding: 13px 14px; border-radius: var(--r-xs); transition: background 0.15s, transform 0.12s var(--ease-pop); }
+.entry-row.clickable:active { background: rgba(56,189,248,0.07); transform: scale(0.99); }
 
 .add-btn {
   width: 100%; background: none; border: 1px solid var(--border-2); color: var(--text2);
@@ -1319,15 +1321,19 @@ function renderHoy(){
     list.innerHTML = '<div class="empty-state">Sin registros este día</div>';
     return;
   }
-  let rows = entradas.map(e=>`<div class="entry-row">
+  let rows = entradas.map(e=>`<div class="entry-row clickable"
+      onpointerdown="entryPressStart('${currentHoyDate}','${e.id}')" onpointerup="entryPressEnd()" onpointerleave="entryPressEnd()" onpointercancel="entryPressEnd()" onpointermove="entryPressEnd()"
+      onclick="entryRowTap('${currentHoyDate}','${e.id}')">
       <span class="entry-dot" style="background:${entradaColor(e)};color:${entradaColor(e)}"></span>
       <span class="entry-name">${escapeHtml(entradaLabel(e))}</span>
       <span class="entry-time">${formatHM(e.minutos)}</span>
+      <span class="lvl-chevron">${ICON_CHEVRON}</span>
     </div>`).join('');
-  rows += tests.map(t=>`<div class="entry-row">
+  rows += tests.map(t=>`<div class="entry-row clickable" onclick="openTestForm('${t.tipo}','${t.id}')">
       <span class="entry-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS}"></span>
       <span class="entry-name">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'}${t.nota!=null?` <span class="entry-sub">· Nota ${t.nota}</span>`:''}</span>
       <span class="entry-time">${formatHM(t.minutosTotal)}</span>
+      <span class="lvl-chevron">${ICON_CHEVRON}</span>
     </div>`).join('');
   list.innerHTML = '<div class="entry-list">' + rows + '</div>';
 }
@@ -1400,6 +1406,41 @@ function clearEntrySelection(){
 function changeEntryVuelta(delta){
   entryVuelta = Math.max(1, entryVuelta+delta);
   document.getElementById('entry-vuelta-val').textContent = entryVuelta;
+}
+
+// ========== ACCESO RÁPIDO DESDE LOS REGISTROS DE HOY ==========
+// Toque simple en un registro ya existente -> reabre el selector con esa
+// categoría/subcategoría ya puesta, para sumar más tiempo de un toque.
+// Pulsación larga (550ms) -> abre el modal de editar/borrar de siempre.
+// Cualquier movimiento del dedo durante la pulsación cancela el timer, así
+// un scroll no se confunde nunca con una pulsación larga.
+let entryPressTimer = null;
+let entryPressFired = false;
+function entryPressStart(fecha, id){
+  entryPressFired = false;
+  clearTimeout(entryPressTimer);
+  entryPressTimer = setTimeout(()=>{ entryPressFired = true; openEditEntryModal(fecha, id); }, 550);
+}
+function entryPressEnd(){ clearTimeout(entryPressTimer); }
+function entryRowTap(fecha, id){
+  if(entryPressFired){ entryPressFired = false; return; }
+  quickAddEntry(fecha, id);
+}
+function quickAddEntry(fecha, id){
+  const dia = getDia(fecha);
+  const entrada = dia && dia.entradas.find(e=>e.id===id);
+  if(!entrada) return;
+  if(entrada.tipo==='tema'){
+    entrySelection = {kind:'tema', temaId:entrada.temaId, subKey:entrada.subKey};
+    if(entrada.subKey==='LIBRO_RESUMEN') entryVuelta = entrada.vuelta;
+  } else if(entrada.tipo==='psico'){
+    entrySelection = {kind:'psico', categoriaId:entrada.categoriaId, subcategoriaId:entrada.subcategoriaId};
+  } else return;
+  renderEntrySelector();
+  const input = document.getElementById('entry-time-input');
+  input.value = '';
+  document.getElementById('entry-form-card').scrollIntoView({behavior:'smooth', block:'center'});
+  setTimeout(()=>input.focus(), 260);
 }
 
 function addTime(){
