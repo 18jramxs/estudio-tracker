@@ -216,6 +216,7 @@ body::before {
 .entry-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); min-width: 0; overflow-wrap: anywhere; }
 .entry-sub { font-weight: 500; color: var(--text3); }
 .entry-time { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--text2); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.entry-name-sub { display: block; font-size: 11.5px; font-weight: 500; color: var(--text3); margin-top: 3px; overflow-wrap: anywhere; }
 .entry-row.clickable { cursor: pointer; margin: 0 -14px; padding: 13px 14px; border-radius: var(--r-xs); transition: background 0.15s, transform 0.12s var(--ease-pop); }
 .entry-row.clickable:active { background: rgba(56,189,248,0.07); transform: scale(0.99); }
 
@@ -696,6 +697,28 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
+<!-- MODAL: test con tiempo (psico TEST TIEMPO / INNOTEST) -->
+<div class="modal-bg" id="test-tiempo-modal">
+  <div class="modal">
+    <div class="modal-title" id="test-tiempo-title">Test tiempo</div>
+    <div id="test-tiempo-nombre-row">
+      <label class="modal-label">Nombre</label>
+      <input type="text" class="modal-input" id="test-tiempo-nombre-input" placeholder="p.ej. Simulacro ADAMS 4" style="font-family:var(--font-sans);">
+    </div>
+    <label class="modal-label">Preguntas</label>
+    <input type="number" class="modal-input" id="test-tiempo-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 40">
+    <label class="modal-label">Tiempo</label>
+    <input type="text" class="modal-input" id="test-tiempo-tiempo-input" placeholder="h:mm o minutos" inputmode="text">
+    <label class="modal-label">Nota</label>
+    <input type="text" class="modal-input" id="test-tiempo-nota-input" placeholder="p.ej. 7,5" inputmode="decimal">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('test-tiempo-modal')">Cancelar</button>
+      <button class="modal-btn secondary" id="test-tiempo-delete-btn" style="display:none;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteTestTiempoEntry()">Borrar</button>
+    </div>
+    <button class="save-btn" style="margin-top:6px;" onclick="saveTestTiempoForm()">Guardar</button>
+  </div>
+</div>
+
 <!-- MODAL: detalle de subcategoría psicotécnica (ver/editar/quitar tiempo) -->
 <div class="modal-bg" id="subcat-detail-modal">
   <div class="modal">
@@ -905,6 +928,9 @@ let testFormEditingId = null;
 let testFormTemas = [];
 let testPickerBloque = null;
 
+let testTiempoTarget = null; // {categoriaId, subcategoriaId}
+let testTiempoEditing = null; // {fecha, id} | null
+
 // ========== STORAGE ==========
 function getCategorias(){ try{ return JSON.parse(localStorage.getItem('estudio_categorias')||'[]'); }catch{ return []; } }
 function saveCategorias(c){ localStorage.setItem('estudio_categorias', JSON.stringify(c)); }
@@ -1083,6 +1109,33 @@ function sumMinutosPsicoTotal(){
   let total = 0;
   getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico') total += e.minutos; }));
   return total;
+}
+
+// ---- Subcategorías fijas de psico (TEST / REPASO TEST / TEST TIEMPO) ----
+// INNOTEST es un apartado excepcional: no lleva estas tres subcategorías,
+// sus registros van directos con subcategoriaId='' (ver openTestTiempoForm).
+const PSICO_DEFAULT_SUBCATS = ['TEST','REPASO TEST','TEST TIEMPO'];
+function isInnotestCat(cat){ return !!cat && normNombre(cat.nombre)==='INNOTEST'; }
+function ensurePsicoDefaultSubcats(catId){
+  const cat = getCategoria(catId);
+  if(!cat || isInnotestCat(cat)) return;
+  PSICO_DEFAULT_SUBCATS.forEach(nombre=>getOrCreateSubcategoria(catId, nombre));
+}
+function isTestTiempoSub(sub){ return !!sub && normNombre(sub.nombre)==='TEST TIEMPO'; }
+function isTestTiempoEntry(e){ return e.tipo==='psico' && e.preguntas!=null; }
+function formatNota(n){ if(n==null||isNaN(n)) return ''; return (Math.round(n*100)/100).toString().replace('.', ','); }
+function formatRitmo(preguntas,minutos){ if(!minutos) return '—'; return (preguntas/minutos).toFixed(1).replace('.', ','); }
+// Líneas de presentación de un registro TEST TIEMPO: para INNOTEST todo va en
+// una sola línea (el nombre del apartado ya es el nombre del test); en el
+// resto, el apartado+subcategoría va de cabecera y el detalle del test debajo.
+function testTiempoLines(e){
+  const cat = getCategoria(e.categoriaId);
+  const innotest = isInnotestCat(cat);
+  const catNombre = cat ? cat.nombre : '(borrada)';
+  const stats = [e.preguntas+' preg', formatHM(e.minutos)+' min', formatNota(e.nota)];
+  if(innotest) return { title:null, detail: [catNombre].concat(stats).join(' · ') };
+  const detail = [e.nombreTest].filter(Boolean).concat(stats).join(' · ');
+  return { title: catNombre+' · TEST TIEMPO', detail };
 }
 
 // Migra datos antiguos: subcategoria (texto libre por registro) -> subcategoriaId.
@@ -1322,14 +1375,26 @@ function renderHoy(){
     list.innerHTML = '<div class="empty-state">Sin registros este día</div>';
     return;
   }
-  let rows = entradas.map(e=>`<div class="entry-row clickable"
+  let rows = entradas.map(e=>{
+    const tt = isTestTiempoEntry(e);
+    let nameHtml;
+    if(tt){
+      const {title, detail} = testTiempoLines(e);
+      nameHtml = title
+        ? `${escapeHtml(title)}<span class="entry-name-sub">${escapeHtml(detail)}</span>`
+        : escapeHtml(detail);
+    } else {
+      nameHtml = escapeHtml(entradaLabel(e));
+    }
+    return `<div class="entry-row clickable"
       onpointerdown="entryPressStart('${currentHoyDate}','${e.id}')" onpointerup="entryPressEnd()" onpointerleave="entryPressEnd()" onpointercancel="entryPressEnd()" onpointermove="entryPressEnd()"
       onclick="entryRowTap('${currentHoyDate}','${e.id}')">
       <span class="entry-dot" style="background:${entradaColor(e)};color:${entradaColor(e)}"></span>
-      <span class="entry-name">${escapeHtml(entradaLabel(e))}</span>
-      <span class="entry-time">${formatHM(e.minutos)}</span>
+      <span class="entry-name">${nameHtml}</span>
+      ${tt ? '' : `<span class="entry-time">${formatHM(e.minutos)}</span>`}
       <span class="lvl-chevron">${ICON_CHEVRON}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   rows += tests.map(t=>`<div class="entry-row clickable" onclick="openTestForm('${t.tipo}','${t.id}')">
       <span class="entry-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS}"></span>
       <span class="entry-name">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'}${t.nota!=null?` <span class="entry-sub">· Nota ${t.nota}</span>`:''}</span>
@@ -1425,6 +1490,9 @@ function entryPressStart(fecha, id){
 function entryPressEnd(){ clearTimeout(entryPressTimer); }
 function entryRowTap(fecha, id){
   if(entryPressFired){ entryPressFired = false; return; }
+  const dia = getDia(fecha);
+  const entrada = dia && dia.entradas.find(e=>e.id===id);
+  if(entrada && isTestTiempoEntry(entrada)){ openEditEntryModal(fecha, id); return; }
   quickAddEntry(fecha, id);
 }
 function quickAddEntry(fecha, id){
@@ -1495,6 +1563,10 @@ function openEditEntryModal(fecha,id){
   const dia = getDia(fecha);
   const entrada = dia && dia.entradas.find(e=>e.id===id);
   if(!entrada) return;
+  if(isTestTiempoEntry(entrada)){
+    openTestTiempoForm({categoriaId:entrada.categoriaId, subcategoriaId:entrada.subcategoriaId}, {fecha, id});
+    return;
+  }
   editingEntryFecha = fecha;
   editingEntryId = id;
   document.getElementById('edit-entry-meta').textContent = `${entradaLabel(entrada)} · ${formatDate(fecha)}`;
@@ -1541,6 +1613,74 @@ function saveEditEntry(){
 function deleteEditingEntry(){
   deleteEntry(editingEntryFecha, editingEntryId);
   closeModal('edit-entry-modal');
+}
+
+// ========== TEST TIEMPO (psico: subcategoría TEST TIEMPO / apartado INNOTEST) ==========
+function openTestTiempoForm(target, editing){
+  testTiempoTarget = target;
+  testTiempoEditing = editing || null;
+  const cat = getCategoria(target.categoriaId);
+  const innotest = isInnotestCat(cat);
+  document.getElementById('test-tiempo-nombre-row').style.display = innotest ? 'none' : 'block';
+  document.getElementById('test-tiempo-title').textContent = (cat?cat.nombre:'') + (innotest?'':' · TEST TIEMPO');
+  document.getElementById('test-tiempo-delete-btn').style.display = editing ? 'inline-block' : 'none';
+  if(editing){
+    const dia = getDia(editing.fecha);
+    const e = dia && dia.entradas.find(x=>x.id===editing.id);
+    if(!e) return;
+    document.getElementById('test-tiempo-nombre-input').value = e.nombreTest || '';
+    document.getElementById('test-tiempo-preguntas-input').value = e.preguntas!=null ? e.preguntas : '';
+    document.getElementById('test-tiempo-tiempo-input').value = formatHM(e.minutos);
+    document.getElementById('test-tiempo-nota-input').value = e.nota!=null ? formatNota(e.nota) : '';
+  } else {
+    document.getElementById('test-tiempo-nombre-input').value = '';
+    document.getElementById('test-tiempo-preguntas-input').value = '';
+    document.getElementById('test-tiempo-tiempo-input').value = '';
+    document.getElementById('test-tiempo-nota-input').value = '';
+  }
+  document.getElementById('test-tiempo-modal').classList.add('open');
+}
+function saveTestTiempoForm(){
+  const {categoriaId, subcategoriaId} = testTiempoTarget;
+  const cat = getCategoria(categoriaId);
+  const innotest = isInnotestCat(cat);
+  const nombreTest = innotest ? '' : document.getElementById('test-tiempo-nombre-input').value.trim();
+  const preguntas = parseInt(document.getElementById('test-tiempo-preguntas-input').value, 10);
+  const minutos = parseTiempo(document.getElementById('test-tiempo-tiempo-input').value.trim());
+  const notaRaw = document.getElementById('test-tiempo-nota-input').value.trim().replace(',', '.');
+  const nota = notaRaw==='' ? NaN : parseFloat(notaRaw);
+  if(!Number.isFinite(preguntas) || preguntas<=0){ showToast('Introduce el número de preguntas'); return; }
+  if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
+  if(!Number.isFinite(nota)){ showToast('Introduce la nota'); return; }
+
+  const dias = getDias();
+  let entry;
+  if(testTiempoEditing){
+    const dia = dias.find(d=>d.fecha===testTiempoEditing.fecha);
+    entry = dia && dia.entradas.find(e=>e.id===testTiempoEditing.id);
+    if(!entry) return;
+  } else {
+    let dia = dias.find(d=>d.fecha===currentHoyDate);
+    if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
+    entry = {id:uid(), tipo:'psico', categoriaId, subcategoriaId};
+    dia.entradas.push(entry);
+  }
+  entry.minutos = minutos;
+  entry.preguntas = preguntas;
+  entry.nota = nota;
+  if(innotest) delete entry.nombreTest;
+  else entry.nombreTest = nombreTest;
+
+  saveDias(dias);
+  closeModal('test-tiempo-modal');
+  renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
+  showToast('Guardado ✓','green');
+}
+function deleteTestTiempoEntry(){
+  if(!testTiempoEditing) return;
+  const {fecha, id} = testTiempoEditing;
+  closeModal('test-tiempo-modal');
+  deleteEntry(fecha, id);
 }
 
 // ========== SELECTOR DE CATEGORÍA POR NIVELES (Añadir tiempo) ==========
@@ -1649,10 +1789,16 @@ function renderPicker(){
     title.textContent = cat ? cat.nombre : 'Psicotécnicos';
     const subs = (cat && cat.subcategorias) || [];
     let rows = `<div class="lvl-row" onclick="pickerSelectPsicoSub('')"><span class="lvl-name" style="font-style:italic;color:var(--text2);">Sin subcategoría</span></div>`;
-    rows += subs.map(s=>`<div class="lvl-row" onclick="pickerSelectPsicoSub('${s.id}')">
+    rows += subs.map(s=>{
+      const isTT = isTestTiempoSub(s);
+      const onclick = isTT
+        ? `closeModal('picker-modal');openTestTiempoForm({categoriaId:'${pickerPsicoCatId}',subcategoriaId:'${s.id}'})`
+        : `pickerSelectPsicoSub('${s.id}')`;
+      return `<div class="lvl-row" onclick="${onclick}">
       <span class="lvl-name">${escapeHtml(s.nombre)}</span>
       <span class="lvl-val">${formatHM(sumMinutosSubcategoria(pickerPsicoCatId,s.id))}</span>
-    </div>`).join('');
+    </div>`;
+    }).join('');
     rows += `<div class="lvl-row" onclick="pickerStep='psico-newsub';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva subcategoría</span></div>`;
     body.innerHTML = rows;
     return;
@@ -1680,15 +1826,22 @@ function pickerSelectTemaSub(subKey){
   closeModal('picker-modal');
   renderEntrySelector();
 }
-function pickerGoPsicoCat(id){ pickerPsicoCatId=id; pickerStep='psico-sub'; renderPicker(); }
+function pickerGoPsicoCat(id){
+  const cat = getCategoria(id);
+  if(isInnotestCat(cat)){
+    closeModal('picker-modal');
+    openTestTiempoForm({categoriaId:id, subcategoriaId:''});
+    return;
+  }
+  ensurePsicoDefaultSubcats(id);
+  pickerPsicoCatId=id; pickerStep='psico-sub'; renderPicker();
+}
 function pickerSelectNewCatColor(c){ pickerNewCatColor=c; renderSwatches('picker-newcat-colors', c, 'pickerSelectNewCatColor'); }
 function pickerSavePsicoCat(){
   const nombre = document.getElementById('picker-newcat-name').value.trim();
   if(!nombre){ showToast('Ponle un nombre'); return; }
   const id = getOrCreateCategoria(nombre, pickerNewCatColor);
-  pickerPsicoCatId = id;
-  pickerStep = 'psico-sub';
-  renderPicker();
+  pickerGoPsicoCat(id);
 }
 function pickerSelectPsicoSub(subId){
   entrySelection = {kind:'psico', categoriaId:pickerPsicoCatId, subcategoriaId:subId};
@@ -1769,11 +1922,23 @@ function renderHistorialEntradas(list){
   const dia = getDia(fecha);
   const entradas = dia ? dia.entradas.slice() : [];
   const tests = getTests().filter(t=>t.fecha===fecha);
-  let rows = entradas.map(e=>`<div class="history-row">
-      <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${entradaColor(e)};flex-shrink:0;margin-top:4px;"></span><span class="n">${escapeHtml(entradaLabel(e))}</span></span>
-      <span class="history-row-val">${formatHM(e.minutos)}</span>
+  let rows = entradas.map(e=>{
+    const tt = isTestTiempoEntry(e);
+    let nameHtml;
+    if(tt){
+      const {title, detail} = testTiempoLines(e);
+      nameHtml = title
+        ? `${escapeHtml(title)}<span class="entry-name-sub">${escapeHtml(detail)}</span>`
+        : escapeHtml(detail);
+    } else {
+      nameHtml = escapeHtml(entradaLabel(e));
+    }
+    return `<div class="history-row">
+      <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${entradaColor(e)};flex-shrink:0;margin-top:4px;"></span><span class="n">${nameHtml}</span></span>
+      ${tt ? '' : `<span class="history-row-val">${formatHM(e.minutos)}</span>`}
       <button class="edit-date-btn" onclick="openEditEntryModal('${fecha}','${e.id}')">${ICON_EDIT}</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   rows += tests.map(t=>{
     const open = !!historialOpenTest[t.id];
     const sub = (t.temas||[]).map(tt=>`<div class="history-row" style="padding-left:14px;">
@@ -2075,31 +2240,50 @@ function renderCategoriasList(){
   }
 
   // catLevel === 'psico' — CRUD íntegro, igual que la v1, un nivel más adentro
-  const cats = getCategorias();
+  getCategorias().forEach(c=>{ if(!isInnotestCat(c)) ensurePsicoDefaultSubcats(c.id); });
+  const cats = getCategorias(); // re-leído: ya incluye las subcategorías recién sembradas
   let html = statsBackRow("catLevel='root';renderCategoriasList();");
   if(!cats.length){ html += '<div class="empty-state" style="padding:24px 16px;">Aún no tienes entidades</div>'; list.innerHTML = html; return; }
   html += cats.map((c,i)=>{
-    const subs = c.subcategorias || [];
+    const innotest = isInnotestCat(c);
+    const subs = innotest ? [] : (c.subcategorias || []);
     const totalCat = sumMinutosCategoria(c.id);
-    const sinSubTotal = sumMinutosSubcategoria(c.id, '');
-    const sinSubRow = sinSubTotal>0 ? `
+    let subRows, newSubBtn, subtitle;
+    if(innotest){
+      subtitle = `${countEntradasCategoria(c.id)} registro(s)`;
+      subRows = `
+      <div class="cat-row subcat-row" style="cursor:pointer;" onclick="openSubcatDetail('${c.id}','')">
+        <span class="entry-dot" style="width:8px;height:8px;background:${c.color};color:${c.color};box-shadow:none;opacity:.65;"></span>
+        <span class="cat-row-name">Ver registros</span>
+        <span class="cat-row-count">${formatHM(totalCat)}</span>
+      </div>`;
+      newSubBtn = '';
+    } else {
+      subtitle = `${countEntradasCategoria(c.id)} registro(s) · ${subs.length} subcategoría(s)`;
+      const sinSubTotal = sumMinutosSubcategoria(c.id, '');
+      const sinSubRow = sinSubTotal>0 ? `
       <div class="cat-row subcat-row" style="cursor:pointer;" onclick="openSubcatDetail('${c.id}','')">
         <span class="entry-dot" style="width:8px;height:8px;background:${c.color};color:${c.color};box-shadow:none;opacity:.3;"></span>
         <span class="cat-row-name" style="color:var(--text2);font-style:italic;">Sin subcategoría</span>
         <span class="cat-row-count">${formatHM(sinSubTotal)}</span>
       </div>` : '';
-    const subRows = sinSubRow + subs.map(s=>`
+      subRows = sinSubRow + subs.map(s=>`
       <div class="cat-row subcat-row" style="cursor:pointer;" onclick="openSubcatDetail('${c.id}','${s.id}')">
         <span class="entry-dot" style="width:8px;height:8px;background:${c.color};color:${c.color};box-shadow:none;opacity:.65;"></span>
         <span class="cat-row-name">${escapeHtml(s.nombre)}</span>
         <span class="cat-row-count">${formatHM(sumMinutosSubcategoria(c.id,s.id))}</span>
       </div>`).join('');
+      newSubBtn = `<div class="settings-row" style="padding:11px 4px;border-top:1px solid var(--border);margin-top:8px;cursor:pointer;" onclick="openNewSubcategoryModal('${c.id}')">
+            <div class="settings-row-icon" style="width:28px;height:28px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+            <span style="font-size:13px;">Nueva subcategoría</span>
+          </div>`;
+    }
     return `<div class="history-session">
       <div class="history-session-header" style="cursor:pointer;" onclick="toggleCatExpand('${c.id}')">
         <span class="entry-dot" style="background:${c.color};color:${c.color};flex-shrink:0;"></span>
         <div style="flex:1;min-width:0;">
           <div class="history-session-title">${escapeHtml(c.nombre)}</div>
-          <div class="history-session-sub">${countEntradasCategoria(c.id)} registro(s) · ${subs.length} subcategoría(s)</div>
+          <div class="history-session-sub">${subtitle}</div>
         </div>
         <div class="history-session-total">${formatHM(totalCat)}</div>
         <button class="toggle-btn" id="cat-arr-${c.id}">${ICON_CHEVRON}</button>
@@ -2113,10 +2297,7 @@ function renderCategoriasList(){
             <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="openDeleteCategoryModal('${c.id}')">Borrar</button>
           </div>
           ${subRows || '<div class="empty-state" style="padding:12px 0;">Sin subcategorías</div>'}
-          <div class="settings-row" style="padding:11px 4px;border-top:1px solid var(--border);margin-top:8px;cursor:pointer;" onclick="openNewSubcategoryModal('${c.id}')">
-            <div class="settings-row-icon" style="width:28px;height:28px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-            <span style="font-size:13px;">Nueva subcategoría</span>
-          </div>
+          ${newSubBtn}
         </div>
       </div>
     </div>`;
@@ -2188,7 +2369,8 @@ function openSubcatDetail(catId,subId){
 function renderSubcatDetail(){
   const cat = getCategoria(subcatDetailCatId);
   const isVirtual = subcatDetailSubId==='';
-  const sub = isVirtual ? {nombre:'Sin subcategoría'} : getSubcategoria(subcatDetailCatId, subcatDetailSubId);
+  const innotest = isInnotestCat(cat);
+  const sub = isVirtual ? {nombre: innotest?(cat?cat.nombre:'INNOTEST'):'Sin subcategoría'} : getSubcategoria(subcatDetailCatId, subcatDetailSubId);
   if(!cat || !sub){ closeModal('subcat-detail-modal'); return; }
   document.getElementById('subcat-detail-title').textContent = sub.nombre;
   document.getElementById('subcat-detail-actions').style.display = isVirtual ? 'none' : 'flex';
@@ -2198,6 +2380,34 @@ function renderSubcatDetail(){
   getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===subcatDetailCatId && e.subcategoriaId===subcatDetailSubId) entries.push({fecha:d.fecha, e}); }));
   entries.sort((a,b)=>b.fecha.localeCompare(a.fecha));
   const list = document.getElementById('subcat-detail-list');
+  const isTT = innotest || isTestTiempoSub(sub);
+
+  if(isTT){
+    const withNota = entries.filter(x=>x.e.nota!=null).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    let progressionHtml = '';
+    if(withNota.length){
+      const notas = withNota.map(x=>x.e.nota);
+      const media = notas.reduce((a,n)=>a+n,0)/notas.length;
+      const ultima = withNota[withNota.length-1].e.nota;
+      const mejor = Math.max(...notas);
+      progressionHtml = `<div class="stats-grid" style="margin-bottom:12px;">
+        <div class="stat-pill"><div class="stat-val">${formatNota(media)}</div><div class="stat-lbl">Media</div></div>
+        <div class="stat-pill"><div class="stat-val">${formatNota(ultima)}</div><div class="stat-lbl">Última</div></div>
+        <div class="stat-pill"><div class="stat-val">${formatNota(mejor)}</div><div class="stat-lbl">Mejor</div></div>
+      </div>`;
+    }
+    if(!entries.length){ list.innerHTML = progressionHtml + '<div class="empty-state" style="padding:20px 0;">Sin registros aún</div>'; return; }
+    list.innerHTML = progressionHtml + entries.map(({fecha,e})=>{
+      const ritmo = formatRitmo(e.preguntas, e.minutos);
+      const nombrePrefix = (!innotest && e.nombreTest) ? escapeHtml(e.nombreTest)+' · ' : '';
+      return `<div class="history-row">
+      <span class="history-row-name"><span class="n">${formatDate(fecha)}<span class="entry-name-sub">${nombrePrefix}${e.preguntas} preg · ${formatHM(e.minutos)} · Nota ${formatNota(e.nota)} · ${ritmo} preg/min</span></span></span>
+      <button class="edit-date-btn" onclick="closeModal('subcat-detail-modal');openEditEntryModal('${fecha}','${e.id}')">${ICON_EDIT}</button>
+    </div>`;
+    }).join('');
+    return;
+  }
+
   if(!entries.length){ list.innerHTML = '<div class="empty-state" style="padding:20px 0;">Sin registros aún</div>'; return; }
   list.innerHTML = entries.map(({fecha,e})=>`
     <div class="history-row">
@@ -2248,13 +2458,16 @@ function saveCategoryModal(){
   const cats = getCategorias();
   const dup = cats.find(c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase() && c.id!==editingCategoryId);
   if(dup){ showToast('Ya existe una entidad con ese nombre'); return; }
+  let newId = null;
   if(editingCategoryId){
     const c = cats.find(c=>c.id===editingCategoryId);
     if(c){ c.nombre = nombre; c.color = categoryModalColor; }
   } else {
-    cats.push({id:uid(), nombre, color:categoryModalColor, subcategorias:[]});
+    newId = uid();
+    cats.push({id:newId, nombre, color:categoryModalColor, subcategorias:[]});
   }
   saveCategorias(cats);
+  if(newId) ensurePsicoDefaultSubcats(newId);
   closeModal('category-modal');
   renderCategoriasList();
   showToast('Guardada ✓','green');
