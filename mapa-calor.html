@@ -1,0 +1,268 @@
+<title>Mapa de Frescura</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: una franja de control arriba, el mapa como rejilla con eje fijo a la izquierda,
+     leyenda y lectura debajo. Dark-first, como la app de estudio. */
+  :root {
+    --bg: #0c0e12;
+    --surface: #14171e;
+    --line: #232733;
+    --fg: #e8eaf0;
+    --fg-dim: #878d9e;
+    --accent: #4da3a3;
+    --f100: #2f9e7e;
+    --f75:  #a8b544;
+    --f50:  #d9893a;
+    --f25:  #c2503c;
+    --f0:   #6e2a2a;
+    --empty: #1a1d25;
+    --font-ui: 'Manrope', system-ui, -apple-system, sans-serif;
+    --font-data: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f7f7f5; --surface: #ffffff; --line: #e2e2dd;
+      --fg: #1a1d22; --fg-dim: #6b7280; --empty: #ececea;
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f7f5; --surface: #ffffff; --line: #e2e2dd;
+    --fg: #1a1d22; --fg-dim: #6b7280; --empty: #ececea;
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-ui);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 40px;
+    margin: 0;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+  h1 {
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .lede { color: var(--fg-dim); margin: 0; max-width: 62ch; font-size: 0.95rem; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    min-width: 0;
+  }
+
+  .scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  table.heat { border-collapse: separate; border-spacing: 0; font-family: var(--font-data); }
+  table.heat th.name {
+    position: sticky; left: 0; z-index: 2;
+    background: var(--surface);
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.72rem;
+    color: var(--fg-dim);
+    padding: 0 10px 0 0;
+    white-space: nowrap;
+    border-right: 1px solid var(--line);
+  }
+  table.heat td.cell { padding: 0; }
+  table.heat td.cell i {
+    display: block;
+    width: 9px; height: 13px;
+    margin: 1px 1px 1px 0;
+    border-radius: 2px;
+    background: var(--empty);
+  }
+  tr.group-head th {
+    text-align: left;
+    font-family: var(--font-ui);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 14px 10px 5px 0;
+    position: sticky; left: 0;
+    background: var(--surface);
+    white-space: nowrap;
+  }
+  tr.group-head td { padding: 14px 0 5px; }
+  .months { display: flex; font-family: var(--font-ui); font-size: 0.68rem; color: var(--fg-dim); letter-spacing: 0.06em; text-transform: uppercase; }
+  .months span { white-space: nowrap; }
+
+  .legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.76rem; color: var(--fg-dim); }
+  .ramp { display: flex; gap: 2px; }
+  .ramp i { width: 20px; height: 11px; border-radius: 2px; display: block; }
+
+  .readout {
+    font-family: var(--font-data);
+    font-size: 0.82rem;
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 9px 12px;
+    min-height: 1.3em;
+  }
+  .readout.idle { color: var(--fg-dim); }
+  .readout b { color: var(--accent); font-weight: 500; }
+
+  .notes { display: grid; gap: 10px; font-size: 0.9rem; color: var(--fg-dim); }
+  .notes p { margin: 0; }
+  .notes strong { color: var(--fg); font-weight: 500; }
+  .tag {
+    display: inline-block; width: 11px; height: 11px; border-radius: 2px;
+    vertical-align: -1px; margin-right: 3px;
+  }
+  .sim {
+    font-size: 0.76rem; color: var(--fg-dim);
+    border-top: 1px solid var(--line); padding-top: 12px;
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Mapa de frescura</h1>
+    <p class="lede">Una fila por tema, un día por columna. El color es la frescura de ese tema ese día, calculada con la curva real. Las bandas rojas largas son los periodos en que el tema se te cayó.</p>
+  </header>
+
+  <div class="panel">
+    <div class="scroller" id="scroller">
+      <div class="months" id="months"></div>
+      <table class="heat" id="heat"></table>
+    </div>
+  </div>
+
+  <div class="readout idle" id="readout">Toca una celda para ver el dato.</div>
+
+  <div class="legend">
+    <span>Olvidado</span>
+    <span class="ramp">
+      <i style="background:var(--f0)"></i>
+      <i style="background:var(--f25)"></i>
+      <i style="background:var(--f50)"></i>
+      <i style="background:var(--f75)"></i>
+      <i style="background:var(--f100)"></i>
+    </span>
+    <span>Fresco</span>
+    <span style="margin-left:6px"><i class="tag" style="background:var(--empty)"></i>sin estudiar</span>
+  </div>
+
+  <div class="notes">
+    <p><strong>Lo que se lee de un vistazo:</strong> el tema 26 se estudió una vez el 12 de septiembre y no se volvió a tocar — la fila entera se va a rojo y se queda. El tema 9, con seis repasos, mantiene la banda verde casi todo el periodo y cada vez tarda más en apagarse: eso es la estabilidad creciendo.</p>
+    <p>El bloque técnico-científico está casi entero en rojo. Es el tipo de agujero que no se ve mirando las horas totales, porque las horas dicen cuánto has estudiado y esto dice qué te queda.</p>
+    <p class="sim">Datos simulados para enseñar el formato. Del 1 de septiembre al 20 de octubre, 14 temas de los 45.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var FACTOR = 19 / 81, DECAY = -0.5;
+  function frescura(dias, S) { return Math.pow(1 + FACTOR * dias / S, DECAY); }
+
+  var DIAS = 50; // 1 sep - 20 oct
+  var grupos = [
+    { nombre: 'Ciencias Jurídicas', temas: [
+      { n: 'TEMA 1',  r: [0, 3, 10, 28] },
+      { n: 'TEMA 2',  r: [1, 5, 14, 35] },
+      { n: 'TEMA 9',  r: [2, 6, 12, 22, 40, 48] },
+      { n: 'TEMA 14', r: [4, 8, 20, 45] },
+      { n: 'TEMA 24', r: [7, 15] },
+      { n: 'TEMA 25', r: [9, 18, 33] },
+      { n: 'TEMA 26', r: [11] }
+    ]},
+    { nombre: 'Ciencias Sociales', temas: [
+      { n: 'TEMA 27', r: [13, 19, 30, 44] },
+      { n: 'TEMA 31', r: [16, 25] },
+      { n: 'TEMA 33', r: [21, 38] },
+      { n: 'TEMA 35', r: [] }
+    ]},
+    { nombre: 'Técnico-Científicas', temas: [
+      { n: 'TEMA 38', r: [24] },
+      { n: 'TEMA 40', r: [27, 42] },
+      { n: 'TEMA 43', r: [31] }
+    ]}
+  ];
+
+  // Serie de frescura diaria a partir de las fechas de repaso
+  function serie(repasos) {
+    var out = new Array(DIAS).fill(null), S = 1, ultimo = null;
+    for (var d = 0; d < DIAS; d++) {
+      if (repasos.indexOf(d) !== -1) {
+        if (ultimo !== null) {
+          var R = frescura(d - ultimo, S);
+          var bonus = 1 + (0.9 - R) * 2;
+          S = S * (1 + (2.5 * bonus - 1) / (1 + S / 60));
+        }
+        ultimo = d;
+      }
+      out[d] = ultimo === null ? null : frescura(d - ultimo, S);
+    }
+    return out;
+  }
+
+  function color(v) {
+    if (v === null) return 'var(--empty)';
+    if (v >= 0.90) return 'var(--f100)';
+    if (v >= 0.75) return 'var(--f75)';
+    if (v >= 0.55) return 'var(--f50)';
+    if (v >= 0.35) return 'var(--f25)';
+    return 'var(--f0)';
+  }
+
+  var meses = ['sep', 'sep', 'oct'];
+  function fechaDe(d) {
+    var dia = d + 1, mes = 'sep';
+    if (dia > 30) { dia -= 30; mes = 'oct'; }
+    return dia + ' ' + mes;
+  }
+
+  var tabla = document.getElementById('heat');
+  var readout = document.getElementById('readout');
+  var html = '';
+
+  grupos.forEach(function (g) {
+    html += '<tr class="group-head"><th>' + g.nombre + '</th><td colspan="' + DIAS + '"></td></tr>';
+    g.temas.forEach(function (t) {
+      var s = serie(t.r);
+      html += '<tr><th class="name">' + t.n + '</th>';
+      for (var d = 0; d < DIAS; d++) {
+        var v = s[d];
+        html += '<td class="cell"><i style="background:' + color(v) + '" data-t="' + t.n +
+                '" data-d="' + d + '" data-v="' + (v === null ? '' : Math.round(v * 100)) + '"></i></td>';
+      }
+      html += '</tr>';
+    });
+  });
+  tabla.innerHTML = html;
+
+  // Cabecera de meses alineada con las celdas (10px por columna)
+  document.getElementById('months').innerHTML =
+    '<span style="width:70px"></span>' +
+    '<span style="width:300px">septiembre</span>' +
+    '<span>octubre</span>';
+
+  function mostrar(el) {
+    var v = el.getAttribute('data-v');
+    readout.classList.remove('idle');
+    readout.innerHTML = el.getAttribute('data-t') + ' · ' + fechaDe(+el.getAttribute('data-d')) +
+      ' · ' + (v === '' ? 'sin estudiar' : '<b>' + v + '%</b> de frescura');
+  }
+  tabla.addEventListener('mouseover', function (e) { if (e.target.tagName === 'I') mostrar(e.target); });
+  tabla.addEventListener('click', function (e) { if (e.target.tagName === 'I') mostrar(e.target); });
+
+  document.getElementById('scroller').scrollLeft = 9999;
+})();
+</script>

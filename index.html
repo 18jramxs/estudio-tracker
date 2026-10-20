@@ -42,18 +42,36 @@
   --gold2:    #8fdcff;
   --gold-bg:  rgba(56,189,248,0.14);
   --blue2:    #6ea8ff;
-  --green:    #5ce39a;
+  --green:    #22c37c; /* más cuerpo que el verde lavado anterior (#5ce39a): más saturación, algo menos de luz */
+  --green-bg: rgba(34,195,124,0.16);
   --red:      #ff453a;
   --orange:   #ff8a3d;
 
   /* Colores por sección/bloque (único sitio donde se ajustan) */
-  --col-temas:      #ff2e4f; /* parte del rosa de psico, más intenso/saturado y tirando a rojo */
+  --col-temas:      #ff1744; /* rojo-rosa de TEMAS, más saturado que antes */
   --col-juridicas:  #ff4433; /* rojo claramente más vivo/brillante que --col-temas */
-  --col-psico:      #ff7d9b; /* el mismo rosa, más claro que el de temas */
-  --col-ingles:     #7ed95c; /* verde con más saturación y vida, sin llegar a neón */
+  --col-psico:      #ff5c9d; /* rosa de PSICOTÉCNICOS, más saturado que antes */
+  --col-ingles:     #3b7dff; /* antes verde: ahora azul vivo, con cuerpo, distinto del rojo/rosa */
   --col-sociales:   #a3e635; /* verde lima, más claro y amarillento */
-  --col-tecnicas:   #38bdf8; /* azul */
+  --col-tecnicas:   #38bdf8; /* azul (bloque técnico-científico dentro de TEMAS) */
   --col-tests:      #e3a71e; /* ámbar dorado, saturado */
+
+  /* Escala de 5 pasos del mapa de frescura (Bloque A): semántica, independiente
+     de los colores de sección de arriba — progresión continua sin saltos de tono. */
+  --heat-90: var(--green);     /* 90–100%: fresco */
+  --heat-75: #9bc23f;          /* 75–90%: verde amarillento */
+  --heat-55: #d99a2b;          /* 55–75%: ámbar */
+  --heat-35: #d9672f;          /* 35–55%: naranja rojizo */
+  --heat-0:  #a93131;          /* 0–35%: rojo profundo (olvidado) */
+  --heat-empty: #2a2e38;       /* sin estudiar: gris apagado, nunca rojo */
+
+  /* Colores semánticos de frescura/vencido usados en listas y fichas (distintos
+     de la escala del mapa: aquí son 4 bandas + gris, para el estado "vencido") */
+  --col-fr-verde:    var(--green);
+  --col-fr-amarillo: #e3c21e;
+  --col-fr-naranja:  #ff8a3d;
+  --col-fr-rojo:     #ff453a;
+  --col-fr-gris:     #6b7280;
 
   --r-xs: 10px; --r-sm: 14px; --r: 20px; --r-lg: 26px; --r-pill: 100px;
 
@@ -131,14 +149,14 @@ body::before {
 }
 .nav-btn {
   flex: 1; background: none; border: none; color: var(--text3);
-  padding: 9px 4px 7px; font-size: 9.5px; font-family: inherit; font-weight: 600; letter-spacing: 0.4px;
-  cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 13px 4px; font-family: inherit; min-height: 44px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
   border-radius: var(--r-pill); position: relative; z-index: 1;
   transition: color 0.28s ease, transform 0.22s var(--ease-pop);
 }
 .nav-btn.active { color: #fff; }
 .nav-btn:active { transform: scale(0.92); }
-.nav-icon svg { display: block; }
+.nav-icon svg { display: block; width: 26px; height: 26px; }
 .nav-indicator {
   position: absolute; top: 6px; bottom: 6px; left: 0; height: auto;
   border-radius: var(--r-pill);
@@ -150,7 +168,13 @@ body::before {
 }
 
 .screen { display: none; padding: 14px 16px 8px; }
-.screen.active { display: block; animation: pageIn 0.32s var(--ease-out-soft) both; }
+/* Bloque E: sin "both" — con fill-mode both, si Safari no llega a arrancar la
+   animación al pasar de display:none a block en el mismo tick (lo que pasaba
+   sobre todo al volver a HERRAMIENTAS, la única pantalla que no se re-renderiza
+   al activarse), el contenido se queda congelado en el opacity:0 del 0% para
+   siempre. Sin "both" el peor caso es que no se vea la animación de entrada,
+   nunca una pantalla invisible. */
+.screen.active { display: block; animation: pageIn 0.32s var(--ease-out-soft); }
 @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 .card, .history-session, .settings-group, .entry-list, .stat-pill {
@@ -292,7 +316,7 @@ body::before {
 .hist-chip .d { width: 6px; height: 6px; border-radius: 1px; }
 .edit-date-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px 7px; opacity: 0.65; display: inline-flex; align-items: center; justify-content: center; }
 .edit-date-btn:active { opacity: 1; color: var(--gold2); }
-.toggle-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.32s var(--ease-out-soft), color 0.2s; }
+.toggle-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 14px; min-width: 44px; min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.32s var(--ease-out-soft), color 0.2s; }
 .toggle-btn.open { transform: rotate(180deg); color: var(--gold2); }
 .empty-state { text-align: center; color: var(--text3); padding: 48px 16px; font-size: 14px; font-family: var(--font-mono); }
 
@@ -307,7 +331,7 @@ body::before {
 .stat-accordion-inner { padding: 0 16px 16px; }
 
 /* —— STATS: carrusel de gráficas —— */
-.chart-carousel-card { overflow: hidden; border-radius: var(--r); background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-card); margin-bottom: 14px; }
+.chart-carousel-card { overflow: hidden; border-radius: var(--r); background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-card); margin-bottom: 14px; backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); }
 .chart-carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .chart-carousel-track::-webkit-scrollbar { display: none; }
 .chart-carousel-slide { min-width: 100%; box-sizing: border-box; scroll-snap-align: start; padding: 16px; height: 262px; }
@@ -348,7 +372,7 @@ body::before {
 
 .nav-arrow-btn {
   background: none; border: 1px solid var(--border); color: var(--text2);
-  width: 28px; height: 28px; border-radius: var(--r-xs); font-size: 15px; cursor: pointer;
+  width: 44px; height: 44px; border-radius: var(--r-xs); font-size: 15px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: inherit;
   transition: transform 0.16s var(--ease-pop), background 0.2s, color 0.2s, border-color 0.2s;
 }
@@ -367,18 +391,26 @@ body::before {
 .act-day.future { background: transparent; border-color: var(--border); color: var(--text4); cursor: default; }
 .act-day.empty { background: transparent; border-color: transparent; pointer-events: none; }
 
-.modal-bg { display: none; position: fixed; inset: 0; background: rgba(4,6,10,0.72); z-index: 1000; align-items: flex-end; opacity: 0; transition: opacity 0.3s ease; }
-.modal-bg.open { display: flex; opacity: 1; }
-.modal {
-  width: 100%; background: rgba(10,10,12,0.86);
-  backdrop-filter: var(--glass-strong); -webkit-backdrop-filter: var(--glass-strong);
-  border: 1px solid var(--border-2); border-bottom: none; border-top: 2px solid var(--gold);
-  border-radius: var(--r-lg) var(--r-lg) 0 0;
-  padding: 14px 20px calc(env(safe-area-inset-bottom) + 24px); max-height: 82vh; overflow-y: auto;
-  box-shadow: var(--shadow-card-lg); transform: translateY(100%); transition: transform 0.4s var(--ease-drawer);
+/* —— Panel flotante (Bloque D): centrado, translúcido, sin línea azul —— */
+.modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  align-items: center; justify-content: center; padding: 20px;
+  background: rgba(4,6,10,0.55);
+  backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+  opacity: 0; transition: opacity 0.2s ease;
 }
-.modal-bg.open .modal { transform: translateY(0); }
-.modal::before { content: ""; display: block; width: 34px; height: 4px; background: var(--border-2); border-radius: 2px; margin: 10px auto 16px; }
+.modal-bg.open { display: flex; opacity: 1; transition: opacity 0.28s cubic-bezier(.32,.72,0,1); }
+.modal {
+  width: 100%; max-width: 420px; background: rgba(22,23,28,0.78);
+  backdrop-filter: var(--glass-strong); -webkit-backdrop-filter: var(--glass-strong);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r);
+  padding: 10px 20px calc(env(safe-area-inset-bottom) + 20px); max-height: 82vh; overflow-y: auto;
+  box-shadow: var(--shadow-card-lg); transform: scale(0.96); opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.modal-bg.open .modal { transform: scale(1); opacity: 1; transition: transform 0.28s cubic-bezier(.32,.72,0,1), opacity 0.28s cubic-bezier(.32,.72,0,1); }
+.modal::before { content: ""; display: block; width: 34px; height: 4px; background: var(--border-2); border-radius: 2px; margin: 8px auto 14px; cursor: grab; }
 .modal-title { font-family: var(--font-disp); font-size: 20px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 14px; }
 .modal-input, .modal-select {
   background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--r-xs); color: var(--text);
@@ -446,7 +478,7 @@ body::before {
   z-index: 999; pointer-events: none; white-space: nowrap; box-shadow: var(--shadow-card-lg); max-width: 88vw; overflow: hidden; text-overflow: ellipsis;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast.green { border-color: rgba(92,227,154,0.5); color: var(--green); }
+.toast.green { border-color: rgba(34,195,124,0.5); color: var(--green); }
 .toast.amber { border-color: rgba(56,189,248,0.5); color: var(--gold2); }
 .toast.red { border-color: rgba(255,69,58,0.5); color: var(--red); }
 
@@ -468,7 +500,12 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .lvl-header-title { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; text-transform: uppercase; flex: 1; color: var(--text); }
 .lvl-back { background: none; border: 1px solid var(--border); color: var(--text2); width: 30px; height: 30px; border-radius: var(--r-xs); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: inherit; }
 .lvl-back:active { transform: scale(0.92); border-color: var(--border-3); color: var(--gold2); }
-.lvl-block-btn { display: block; width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 16px; margin-bottom: 10px; cursor: pointer; font-family: inherit; transition: transform 0.16s var(--ease-pop), border-color 0.2s; color: var(--text); }
+.lvl-block-btn {
+  display: block; width: 100%; text-align: left;
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0) 60%), var(--panel);
+  backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
+  border: 1px solid var(--border); border-radius: var(--r-sm); padding: 16px; margin-bottom: 10px; cursor: pointer; font-family: inherit; transition: transform 0.16s var(--ease-pop), border-color 0.2s; color: var(--text);
+}
 .lvl-block-btn:active { transform: scale(0.98); border-color: var(--border-3); }
 .lvl-block-btn .t { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .lvl-block-btn .s { font-size: 11.5px; color: var(--text3); margin-top: 4px; }
@@ -497,9 +534,14 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .valoracion-btn { flex: 1; padding: 12px 4px; border-radius: var(--r-sm); border: 1px solid var(--border-2); background: none; color: var(--text2); font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: 0.3px; transition: transform 0.16s var(--ease-pop), background 0.15s, border-color 0.15s, color 0.15s; }
 .valoracion-btn:active { transform: scale(0.96); }
 .valoracion-btn.sel-mal { background: rgba(255,69,58,0.18); border-color: var(--red); color: var(--red); }
-.valoracion-btn.sel-regular { background: rgba(227,194,30,0.16); border-color: #e3c21e; color: #e3c21e; }
-.valoracion-btn.sel-bien { background: rgba(92,227,154,0.16); border-color: var(--green); color: var(--green); }
-.curva-tool-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 14px; cursor: pointer; font-family: inherit; color: var(--text); transition: transform 0.16s var(--ease-pop), border-color 0.2s; }
+.valoracion-btn.sel-regular { background: rgba(227,194,30,0.16); border-color: var(--col-fr-amarillo); color: var(--col-fr-amarillo); }
+.valoracion-btn.sel-bien { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.curva-tool-btn {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0) 60%), var(--panel);
+  backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
+  border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 14px; cursor: pointer; font-family: inherit; color: var(--text); transition: transform 0.16s var(--ease-pop), border-color 0.2s;
+}
 .curva-tool-btn:active { transform: scale(0.98); border-color: var(--border-3); }
 .curva-tool-btn .t { font-family: var(--font-disp); font-size: 15px; letter-spacing: 0.4px; }
 .curva-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 4px; }
@@ -512,11 +554,45 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .curva-list-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
 .curva-list-meta { font-size: 10.5px; color: var(--text3); margin-top: 2px; font-weight: 500; }
 .curva-list-fresc { font-family: var(--font-mono); font-weight: 700; font-size: 15px; flex-shrink: 0; }
-.tema-map-grid { display: grid; grid-template-columns: repeat(9,1fr); gap: 4px; }
-.tema-map-cell { aspect-ratio: 1; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: var(--font-mono); cursor: pointer; transition: transform 0.15s var(--ease-pop); }
-.tema-map-cell:active { transform: scale(0.88); }
-.tema-map-bloque-lbl { font-size: 9.5px; color: var(--text3); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin: 14px 0 6px; }
-.tema-map-bloque-lbl:first-child { margin-top: 0; }
+/* —— MAPA DE FRESCURA (Bloque A): una fila por tema, un día por columna —— */
+.range-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.range-tab {
+  flex: 1; min-height: 44px; background: var(--panel); border: 1px solid var(--border); color: var(--text2);
+  border-radius: var(--r-xs); padding: 8px 4px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.3px;
+  font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.16s var(--ease-pop), background 0.2s, color 0.2s, border-color 0.2s;
+}
+.range-tab.active { background: var(--gold-bg); border-color: var(--gold); color: var(--gold2); }
+.heat-scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; padding: 0 4px; }
+.heat-months { display: flex; font-size: 9.5px; color: var(--text3); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding-left: 74px; margin-bottom: 4px; }
+.heat-months span { white-space: nowrap; }
+table.heat-table { border-collapse: separate; border-spacing: 0; }
+table.heat-table th.heat-name {
+  position: sticky; left: 0; z-index: 2; background: var(--bg-2);
+  text-align: left; font-weight: 600; font-size: 10.5px; color: var(--text2);
+  padding: 0 8px 0 0; white-space: nowrap; width: 74px; font-family: var(--font-mono);
+}
+table.heat-table td.heat-cell { padding: 0; }
+table.heat-table td.heat-cell i {
+  display: block; width: 9px; height: 13px; margin: 1px 1px 1px 0; border-radius: 2px;
+  background: var(--heat-empty); transition: transform 0.12s var(--ease-pop);
+}
+tr.heat-group-head th {
+  text-align: left; font-size: 9.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
+  padding: 12px 8px 4px 0; position: sticky; left: 0; background: var(--bg-2); white-space: nowrap;
+}
+tr.heat-group-head:first-child th { padding-top: 0; }
+.heat-readout {
+  font-family: var(--font-mono); font-size: 12.5px; color: var(--text); background: var(--bg-input);
+  border: 1px solid var(--border); border-radius: var(--r-xs); padding: 10px 12px; margin-top: 10px; min-height: 1.3em;
+}
+.heat-readout.idle { color: var(--text3); }
+.heat-readout b { color: var(--gold2); font-weight: 700; }
+.heat-legend { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--text3); margin-top: 10px; }
+.heat-ramp { display: flex; gap: 2px; }
+.heat-ramp i { width: 18px; height: 10px; border-radius: 2px; display: block; }
+.heat-legend-empty { display: flex; align-items: center; gap: 4px; margin-left: 4px; }
+.heat-legend-empty i { width: 10px; height: 10px; border-radius: 2px; display: block; }
 .epi-table-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 12px; }
 .epi-table-row:first-of-type { border-top: none; }
 .epi-table-name { flex: 1; color: var(--text2); overflow-wrap: anywhere; }
@@ -556,7 +632,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 /* —— FEEDBACK AL PULSAR (Bloque D): un único mecanismo reutilizado en toda la app —— */
 .tap,
 .lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn,
-.modal-btn, .f-btn, .epi-check-row, .curva-list-row, .tema-map-cell, .curva-tool-btn,
+.modal-btn, .f-btn, .epi-check-row, .curva-list-row, .range-tab, .curva-tool-btn,
 .nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable,
 .entry-row.clickable, .nav-arrow-btn, .toggle-btn, button {
   -webkit-tap-highlight-color: transparent;
@@ -568,7 +644,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .tap:active,
 .lvl-row:active, .lvl-block-btn:active, .cat-row:active, .settings-row:active, .cat-picker-btn:active,
 .add-btn:active, .save-btn:active, .modal-btn:active, .f-btn:active, .epi-check-row:active,
-.curva-list-row:active, .tema-map-cell:active, .curva-tool-btn:active, .nav-btn:active,
+.curva-list-row:active, .range-tab:active, .curva-tool-btn:active, .nav-btn:active,
 .edit-date-btn:active, .opo-edit-btn:active, .history-session-header:active, .act-day.clickable:active,
 .entry-row.clickable:active, .nav-arrow-btn:active, .toggle-btn:active, button:active {
   transform: scale(0.97);
@@ -576,7 +652,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .tap::after,
 .lvl-row::after, .lvl-block-btn::after, .cat-row::after, .settings-row::after, .cat-picker-btn::after,
 .add-btn::after, .save-btn::after, .modal-btn::after, .f-btn::after, .epi-check-row::after,
-.curva-list-row::after, .tema-map-cell::after, .curva-tool-btn::after, .nav-btn::after,
+.curva-list-row::after, .range-tab::after, .curva-tool-btn::after, .nav-btn::after,
 .edit-date-btn::after, .opo-edit-btn::after, .history-session-header::after, .act-day.clickable::after,
 .entry-row.clickable::after, .nav-arrow-btn::after, .toggle-btn::after, button::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -807,20 +883,20 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 
 <nav class="bottom-nav">
   <span class="nav-indicator" id="nav-indicator" aria-hidden="true"></span>
-  <button class="nav-btn active" onclick="showScreen('hoy',this)">
-    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>Hoy
+  <button class="nav-btn active" onclick="showScreen('hoy',this)" aria-label="Hoy">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>
   </button>
-  <button class="nav-btn" onclick="showScreen('herramientas',this)">
-    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Herramientas
+  <button class="nav-btn" onclick="showScreen('herramientas',this)" aria-label="Herramientas">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>
   </button>
-  <button class="nav-btn" onclick="showScreen('estadisticas',this)">
-    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg></span>Stats
+  <button class="nav-btn" onclick="showScreen('estadisticas',this)" aria-label="Estadísticas">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg></span>
   </button>
-  <button class="nav-btn" onclick="showScreen('categorias',this)">
-    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1"/></svg></span>Categorías
+  <button class="nav-btn" onclick="showScreen('categorias',this)" aria-label="Categorías">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1"/></svg></span>
   </button>
-  <button class="nav-btn" onclick="showScreen('ajustes',this)">
-    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 018.4 12 3.6 3.6 0 0112 8.4a3.6 3.6 0 013.6 3.6 3.6 3.6 0 01-3.6 3.6z" stroke="none" fill="currentColor"/></svg></span>Ajustes
+  <button class="nav-btn" onclick="showScreen('ajustes',this)" aria-label="Ajustes">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 018.4 12 3.6 3.6 0 0112 8.4a3.6 3.6 0 013.6 3.6 3.6 3.6 0 01-3.6 3.6z" stroke="none" fill="currentColor"/></svg></span>
   </button>
 </nav>
 
@@ -1513,7 +1589,15 @@ function frescuraBand(fr){
   return 'rojo';
 }
 function frescuraColor(band){
-  return { verde:'#5ce39a', amarillo:'#e3c21e', naranja:'#ff8a3d', rojo:'#ff453a', gris:'#555' }[band] || '#666';
+  return { verde:cssVar('--col-fr-verde'), amarillo:cssVar('--col-fr-amarillo'), naranja:cssVar('--col-fr-naranja'), rojo:cssVar('--col-fr-rojo'), gris:cssVar('--col-fr-gris') }[band] || cssVar('--col-fr-gris');
+}
+function frescuraHeatColor(fr){
+  if(fr==null) return 'var(--heat-empty)';
+  if(fr>=0.90) return 'var(--heat-90)';
+  if(fr>=0.75) return 'var(--heat-75)';
+  if(fr>=0.55) return 'var(--heat-55)';
+  if(fr>=0.35) return 'var(--heat-35)';
+  return 'var(--heat-0)';
 }
 
 // ===== Checklist de epígrafes (compartida entre el modal de sesión y el de TEST) =====
@@ -1819,7 +1903,7 @@ function formatBackupStamp(ts){
 // arriba) — brillo al soltar y vibración corta solo en un click real, nunca
 // durante un scroll (un touchmove cancela el click del navegador).
 (function setupTapFeedback(){
-  const SELECTOR = '.tap, .lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn, .modal-btn, .f-btn, .epi-check-row, .curva-list-row, .tema-map-cell, .curva-tool-btn, .nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable, .entry-row.clickable, .nav-arrow-btn, .toggle-btn, button';
+  const SELECTOR = '.tap, .lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn, .modal-btn, .f-btn, .epi-check-row, .curva-list-row, .range-tab, .curva-tool-btn, .nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable, .entry-row.clickable, .nav-arrow-btn, .toggle-btn, button';
   document.addEventListener('click', e=>{
     const el = e.target.closest(SELECTOR);
     if(!el) return;
@@ -1828,6 +1912,37 @@ function formatBackupStamp(ts){
     el.classList.add('tap-shine');
     setTimeout(()=>el.classList.remove('tap-shine'), 420);
     if(navigator.vibrate) navigator.vibrate(10);
+  });
+})();
+
+// Panel flotante (Bloque D): cerrar tocando el velo fuera del panel, o
+// deslizando el panel hacia abajo desde su asidero superior.
+(function setupModalDismiss(){
+  document.addEventListener('click', e=>{
+    if(e.target.classList && e.target.classList.contains('modal-bg')) closeModal(e.target.id);
+  });
+  let dragEl = null, bgEl = null, startY = 0, dy = 0;
+  document.addEventListener('touchstart', e=>{
+    const modal = e.target.closest && e.target.closest('.modal');
+    if(!modal) return;
+    const bg = modal.closest('.modal-bg');
+    if(!bg || !bg.classList.contains('open')) return;
+    const r = modal.getBoundingClientRect();
+    if(e.touches[0].clientY - r.top > 28) return; // solo arrastrando desde el asidero
+    dragEl = modal; bgEl = bg; startY = e.touches[0].clientY; dy = 0;
+    modal.style.transition = 'none';
+  }, {passive:true});
+  document.addEventListener('touchmove', e=>{
+    if(!dragEl) return;
+    dy = Math.max(0, e.touches[0].clientY - startY);
+    dragEl.style.transform = `translateY(${dy}px)`;
+  }, {passive:true});
+  document.addEventListener('touchend', ()=>{
+    if(!dragEl) return;
+    dragEl.style.transition = '';
+    if(dy>80) closeModal(bgEl.id);
+    dragEl.style.transform = '';
+    dragEl = null; bgEl = null;
   });
 })();
 
@@ -3012,7 +3127,7 @@ function statBarRow(nombre,color,total,max,onclick){
       <span class="cat-bar-name"><span class="entry-dot" style="width:9px;height:9px;background:${color};color:${color};box-shadow:none;"></span><span class="n">${escapeHtml(nombre)}</span></span>
       <span class="cat-bar-val">${formatHM(total)}</span>
     </div>
-    <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(total/max).toFixed(4)});background:${color}"></div></div>
+    <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(total/max).toFixed(4)});background:linear-gradient(90deg, ${color}99, ${color})"></div></div>
   </div>`;
 }
 function renderStatsCatBreakdown(){
@@ -3107,6 +3222,17 @@ function renderBarChart(id, labels, data, opts){
   if(charts[id]) charts[id].destroy();
   const ctx = document.getElementById(id).getContext('2d');
 
+  // Degradado vertical por barra (Bloque H): más intenso abajo, más claro arriba.
+  // Se recalcula en cada resize porque el gradiente depende del área del chart.
+  function gradientFor(chart, hex){
+    const area = chart.chartArea;
+    if(!area) return hex;
+    const g = chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    g.addColorStop(0, hex+'f2');
+    g.addColorStop(1, hex+'88');
+    return g;
+  }
+  let activeIndex = -1;
   const valueLabelPlugin = {
     id: 'valueLabel-'+id,
     afterDatasetsDraw(chart){
@@ -3143,13 +3269,26 @@ function renderBarChart(id, labels, data, opts){
     }
   } : null;
 
+  const baseColors = colors.map(c=>c.slice(0,7));
   charts[id] = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: colors.map(c=>c.length>7?c:c+'cc'), borderColor: colors.map(c=>c.slice(0,7)), borderWidth: 1, borderRadius: 4 }] },
+    data: { labels, datasets: [{
+      data,
+      backgroundColor: ctx2 => ctx2.dataIndex===activeIndex ? baseColors[ctx2.dataIndex % baseColors.length] : gradientFor(ctx2.chart, baseColors[ctx2.dataIndex % baseColors.length]),
+      hoverBackgroundColor: ctx2 => baseColors[ctx2.dataIndex % baseColors.length],
+      borderColor: baseColors, borderWidth: 1,
+      borderRadius: { topLeft:6, topRight:6, bottomLeft:0, bottomRight:0 },
+    }] },
     plugins: monthGroups ? [valueLabelPlugin, monthLabelPlugin] : [valueLabelPlugin],
     options: {
       responsive: true,
       layout: { padding: { top: 22, bottom: monthGroups ? 40 : 0 } },
+      animation: { duration: 500, delay: ctx2 => ctx2.type==='data' ? ctx2.dataIndex*30 : 0, easing: 'easeOutQuart' },
+      onClick(evt, elements, chart){
+        if(!elements.length) return;
+        activeIndex = elements[0].index===activeIndex ? -1 : elements[0].index;
+        chart.update();
+      },
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toFixed(2)+' h' } } },
       scales: {
         x: { ticks: { color: 'rgba(255,255,255,0.32)', font: { size: 9 }, maxRotation: 0, autoSkip: opts.autoSkip!==false }, grid: { display: false } },
@@ -3842,7 +3981,7 @@ function renderCurva(){
     curvaView==='editar' ? 'Editar epígrafes · ' + temaNombre(curvaTemaId) :
     temaNombre(curvaTemaId);
   const body = document.getElementById('curva-body');
-  if(curvaView==='resumen'){ body.innerHTML = renderCurvaResumenHtml(); return; }
+  if(curvaView==='resumen'){ body.innerHTML = renderCurvaResumenHtml(); setTimeout(renderMapaFrescura, 0); return; }
   if(curvaView==='editar'){ body.innerHTML = renderCurvaEditorHtml(curvaTemaId); return; }
   body.innerHTML = renderCurvaTemaHtml(curvaTemaId);
   setTimeout(()=>renderCurvaChart(curvaTemaId), 0);
@@ -3884,30 +4023,123 @@ function renderCurvaResumenHtml(){
     </div>`;
   }).join('') : '<div class="empty-sub">Nada vencido — vas al día</div>';
 
-  const mapaHtml = BLOQUES_TEMAS.map(b=>{
-    let cells = '';
-    for(let n=b.desde;n<=b.hasta;n++){
-      const tid = temaIdFromNum(n);
-      const comp = todos.find(t=>t.temaId===tid).comp;
-      const band = comp.ultimoContacto==null ? 'gris' : frescuraBand(comp.frescuraTema);
-      const col = frescuraColor(band);
-      cells += `<div class="tema-map-cell" style="background:${col}22;color:${col};border:1px solid ${col}66;" onclick="openCurvaTema('${tid}')" title="${temaNombre(tid)}">${n}</div>`;
-    }
-    return `<div class="tema-map-bloque-lbl">${escapeHtml(b.corto)}</div><div class="tema-map-grid">${cells}</div>`;
-  }).join('');
-
   return `
     <div class="curva-stats-row">
       <div class="curva-stat"><div class="v" style="color:var(--red);">${vencidos}</div><div class="l">Vencidos</div></div>
-      <div class="curva-stat"><div class="v" style="color:#e3c21e;">${hoyMismo}</div><div class="l">Hoy mismo</div></div>
+      <div class="curva-stat"><div class="v" style="color:var(--col-fr-amarillo);">${hoyMismo}</div><div class="l">Hoy mismo</div></div>
       <div class="curva-stat"><div class="v" style="color:var(--green);">${alDia}</div><div class="l">Al día</div></div>
     </div>
     ${examenHtml}
     <div class="chart-card-label" style="margin-top:18px;">Lo más olvidado</div>
     <div class="card" style="padding:4px 16px;">${listaHtml}</div>
-    <div class="chart-card-label" style="margin-top:18px;">Mapa de los 45</div>
-    <div class="card" style="padding:14px 16px;">${mapaHtml}</div>
+    <div class="chart-card-label" style="margin-top:18px;">Mapa de frescura</div>
+    <div class="card" style="padding:14px 16px;" id="mapa-frescura"></div>
   `;
+}
+
+// ===== Mapa de frescura (Bloque A): una fila por tema, un día por columna.
+// Se recalcula al vuelo recorriendo los registros reales hasta cada fecha —
+// nada se precalcula ni se guarda, igual que el resto del modelo de frescura.
+let mapaFrescuraRango = '90D';
+function setMapaFrescuraRango(r){ mapaFrescuraRango = r; renderMapaFrescura(); }
+function fechaMasAntiguaGlobal(){
+  let min = null;
+  getDias().forEach(d=>{ if(d.entradas && d.entradas.length && (min==null||d.fecha<min)) min = d.fecha; });
+  getTests().forEach(t=>{ if(min==null||t.fecha<min) min = t.fecha; });
+  return min;
+}
+function fechaMasAntiguaContactoTema(temaId){
+  let min = null;
+  entradasCrudasTema(temaId).forEach(e=>{ if(min==null||e.fecha<min) min = e.fecha; });
+  testsCartaDeTema(temaId).forEach(t=>{ if(min==null||t.fecha<min) min = t.fecha; });
+  return min;
+}
+function heatMapFechas(hoyStr, rango){
+  let dias;
+  if(rango==='30D') dias = 30;
+  else if(rango==='90D') dias = 90;
+  else { const inicio = fechaMasAntiguaGlobal() || hoyStr; dias = Math.max(1, diasEntreFechas(inicio, hoyStr)+1); }
+  const fechas = [];
+  for(let i=dias-1;i>=0;i--) fechas.push(addDays(hoyStr,-i));
+  return fechas;
+}
+// Serie diaria de frescura de un tema: para cada fecha, recorre solo los
+// registros con fecha <= esa fecha (dos punteros, sin recorrer todo cada día).
+function calcularSerieFrescuraTema(temaId, fechas){
+  const temaConfig = getTemaConfig(temaId);
+  const modelo = getModeloParams();
+  const entradas = entradasCrudasTema(temaId).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const testsCarta = testsCartaDeTema(temaId).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  let ei = 0, ti = 0;
+  const entradasAcc = [], testsAcc = [];
+  return fechas.map(f=>{
+    while(ei<entradas.length && entradas[ei].fecha<=f){ entradasAcc.push(entradas[ei]); ei++; }
+    while(ti<testsCarta.length && testsCarta[ti].fecha<=f){ testsAcc.push(testsCarta[ti]); ti++; }
+    if(!entradasAcc.length) return null;
+    const leaves = construirDatosTema(entradasAcc, testsAcc, temaConfig, modelo);
+    let ultimoContacto = null;
+    leaves.forEach(l=>{ if(l.ultimoContacto && (ultimoContacto==null||l.ultimoContacto>ultimoContacto)) ultimoContacto = l.ultimoContacto; });
+    if(ultimoContacto==null) return null;
+    const dHE = diasHastaExamen(f);
+    return frescuraTemaDesdeLeaves(leaves, f, dHE);
+  });
+}
+function heatMonthsHeaderHtml(fechas){
+  const spans = [];
+  let cur = null, count = 0;
+  fechas.forEach(f=>{
+    const mes = MONTH_NAMES[parseInt(f.slice(5,7),10)-1].toLowerCase();
+    if(mes!==cur){ if(cur!=null) spans.push({mes:cur,count}); cur = mes; count = 1; }
+    else count++;
+  });
+  if(cur!=null) spans.push({mes:cur,count});
+  return spans.map(s=>`<span style="width:${s.count*11}px">${s.count>=4?s.mes:''}</span>`).join('');
+}
+function renderMapaFrescura(){
+  const wrap = document.getElementById('mapa-frescura');
+  if(!wrap) return;
+  const hoy = todayStr();
+  const fechas = heatMapFechas(hoy, mapaFrescuraRango);
+  const tabsHtml = ['30D','90D','TODO'].map(r=>
+    `<button class="range-tab tap${r===mapaFrescuraRango?' active':''}" onclick="setMapaFrescuraRango('${r}')">${r}</button>`
+  ).join('');
+  let filas = '';
+  BLOQUES_TEMAS.forEach(b=>{
+    filas += `<tr class="heat-group-head"><th style="color:${b.color}">${escapeHtml(b.nombre)}</th><td colspan="${fechas.length}"></td></tr>`;
+    for(let n=b.desde;n<=b.hasta;n++){
+      const tid = temaIdFromNum(n);
+      const serie = calcularSerieFrescuraTema(tid, fechas);
+      filas += `<tr><th class="heat-name tap" onclick="openCurvaTema('${tid}')">${temaNombre(tid)}</th>`;
+      filas += serie.map((fr,i)=>{
+        const v = fr==null ? '' : Math.round(fr*100);
+        return `<td class="heat-cell"><i class="tap" style="background:${frescuraHeatColor(fr)}" onclick="mostrarHeatReadout('${tid}','${fechas[i]}','${v}')"></i></td>`;
+      }).join('');
+      filas += `</tr>`;
+    }
+  });
+  wrap.innerHTML = `
+    <div class="range-tabs">${tabsHtml}</div>
+    <div class="heat-scroller" id="heat-scroller">
+      <div class="heat-months">${heatMonthsHeaderHtml(fechas)}</div>
+      <table class="heat-table">${filas}</table>
+    </div>
+    <div class="heat-readout idle" id="heat-readout">Toca una celda para ver el dato.</div>
+    <div class="heat-legend">
+      <span>Olvidado</span>
+      <span class="heat-ramp">
+        <i style="background:var(--heat-0)"></i><i style="background:var(--heat-35)"></i><i style="background:var(--heat-55)"></i><i style="background:var(--heat-75)"></i><i style="background:var(--heat-90)"></i>
+      </span>
+      <span>Fresco</span>
+      <span class="heat-legend-empty"><i style="background:var(--heat-empty)"></i>sin estudiar</span>
+    </div>`;
+  const scroller = document.getElementById('heat-scroller');
+  if(scroller) scroller.scrollLeft = scroller.scrollWidth;
+}
+function mostrarHeatReadout(temaId, fecha, valorStr){
+  const el = document.getElementById('heat-readout');
+  if(!el) return;
+  el.classList.remove('idle');
+  el.innerHTML = `${temaNombre(temaId)} · ${formatDate(fecha)} · ` + (valorStr==='' ? 'sin estudiar' : `<b>${valorStr}%</b> de frescura`);
 }
 function renderCurvaTemaHtml(temaId){
   const hoy = todayStr();
@@ -3941,62 +4173,164 @@ function renderCurvaTemaHtml(temaId){
     <div class="curva-examen-row" style="text-align:left;padding:0 0 14px;">Tiempo total ${formatHM(totalMin)} · Último contacto ${ultimoTxt}</div>
     ${epigrafesSection}
     <div class="chart-card-label">Curva</div>
+    <div class="range-tabs" id="curva-chart-tabs">
+      ${['7D','30D','TODO'].map(r=>`<button class="range-tab tap${r===curvaChartRango?' active':''}" data-r="${r}" onclick="setCurvaChartRango('${r}')">${r}</button>`).join('')}
+    </div>
     <div class="card" style="padding:14px 16px;">
-      <canvas id="curva-chart-canvas" height="180"></canvas>
-      <div id="curva-chart-meta" style="font-size:11px;color:var(--text3);margin-top:8px;"></div>
+      <div style="position:relative;height:200px;">
+        <canvas id="curva-chart-canvas"></canvas>
+      </div>
+      <div id="curva-chart-meta" style="font-size:11px;color:var(--text3);margin-top:8px;min-height:14px;"></div>
     </div>
   `;
+}
+// Estado de rango de la curva (Bloque B): se recuerda mientras dure la sesión,
+// no por tema — así no hay que volver a elegirlo cada vez que cambias de tema.
+let curvaChartRango = '30D';
+function setCurvaChartRango(r){
+  curvaChartRango = r;
+  document.querySelectorAll('#curva-chart-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.r===r));
+  renderCurvaChart(curvaTemaId);
 }
 function renderCurvaChart(temaId){
   const canvas = document.getElementById('curva-chart-canvas');
   if(!canvas) return;
   const hoy = todayStr();
   const comp = getTemaComputado(temaId, hoy);
-  const dHE = diasHastaExamen(hoy);
-  let fechaMin = null;
-  comp.leaves.forEach(l=>{ if(l.ultimoContacto && (fechaMin==null||l.ultimoContacto<fechaMin)) fechaMin = l.ultimoContacto; });
   const metaEl = document.getElementById('curva-chart-meta');
-  if(!fechaMin){ metaEl.textContent = 'Sin registros todavía para dibujar la curva.'; return; }
+  if(!comp.ultimoContacto){ if(charts['curva']) charts['curva'].destroy(); metaEl.textContent = 'Sin registros todavía para dibujar la curva.'; return; }
 
-  const diasPasados = diasEntreFechas(fechaMin, hoy);
-  const diasTotales = diasPasados + 30;
-  const serie = [];
-  for(let d=0; d<=diasTotales; d++){
-    const fechaD = addDays(fechaMin, d);
+  // --- Pasado: serie real día a día (Bloque A), recortada al rango elegido ---
+  const rangoDias = curvaChartRango==='7D' ? 7 : curvaChartRango==='30D' ? 30 : null;
+  const fechaPrimerContacto = fechaMasAntiguaContactoTema(temaId) || comp.ultimoContacto;
+  const fechaInicio = rangoDias==null ? fechaPrimerContacto : (addDays(hoy,-(rangoDias-1)) > fechaPrimerContacto ? addDays(hoy,-(rangoDias-1)) : fechaPrimerContacto);
+  const fechasPasado = [];
+  for(let f=fechaInicio; f<=hoy; f=addDays(f,1)) fechasPasado.push(f);
+  const seriePasado = calcularSerieFrescuraTema(temaId, fechasPasado).map(v=>v==null?0:v*100);
+  const diasPasados = fechasPasado.length-1;
+
+  // --- Futuro: proyección desde el estado actual (sin más estudio) hasta vencimiento ---
+  const umbral = umbralVencido();
+  const CAP_FUTURO = 400;
+  const serieFuturo = [];
+  let diasVencimiento = null;
+  for(let d=1; d<=CAP_FUTURO; d++){
+    const fechaD = addDays(hoy, d);
+    const dHEf = diasHastaExamen(fechaD);
     let suma = 0;
     comp.leaves.forEach(l=>{
-      if(l.ultimoContacto==null || fechaD<l.ultimoContacto) return;
+      if(l.ultimoContacto==null) return;
       const dias = diasEntreFechas(l.ultimoContacto, fechaD);
-      suma += frescura(Math.max(0,dias), estabilidadEfectiva(l.S,dHE)) * l.pesoSobreTema;
+      suma += frescura(Math.max(0,dias), estabilidadEfectiva(l.S,dHEf)) * l.pesoSobreTema;
     });
-    serie.push(suma); // ya está en base 0-100 (pesoSobreTema suma 100)
+    serieFuturo.push(suma);
+    if(diasVencimiento==null && suma < umbral*100){ diasVencimiento = d; break; }
   }
-  const puntos = getMeasurementPoints().filter(p=>p.tema===temaId);
-  const scatterData = puntos.map(p=>{
-    const idx = diasEntreFechas(fechaMin, p.fecha);
+  const diasTotales = diasPasados + serieFuturo.length;
+  const fechaVencimiento = diasVencimiento!=null ? addDays(hoy, diasVencimiento) : null;
+
+  // --- Puntos: repasos (de la propia serie) y tests (score real) ---
+  const fechasConRepaso = Array.from(new Set(entradasCrudasTema(temaId).filter(e=>e.valoracion!=null && e.fecha>=fechaInicio && e.fecha<=hoy).map(e=>e.fecha))).sort();
+  let repasoPoints = fechasConRepaso.map(f=>{
+    const idx = diasEntreFechas(fechaInicio, f);
+    return { x: idx, y: Math.round(seriePasado[idx]), meta:{tipo:'repaso', fecha:f} };
+  });
+  if(curvaChartRango==='TODO' && repasoPoints.length>40){
+    const paso = Math.ceil(repasoPoints.length/40);
+    repasoPoints = repasoPoints.filter((p,i)=> i%paso===0 || i===repasoPoints.length-1);
+  }
+  const puntos = getMeasurementPoints().filter(p=>p.tema===temaId && p.fecha>=fechaInicio);
+  const testPoints = puntos.map(p=>{
     const ratio = p.aciertos!=null && p.preguntas>0 ? p.aciertos/p.preguntas : (p.nota!=null ? p.nota/10 : null);
     if(ratio==null) return null;
-    return { x: idx, y: Math.round(ratio*100) };
+    const idx = diasEntreFechas(fechaInicio, p.fecha);
+    return { x: idx, y: Math.round(ratio*100), meta:{tipo:'test', fecha:p.fecha, aciertos:p.aciertos, preguntas:p.preguntas, nota:p.nota} };
   }).filter(p=>p && p.x>=0 && p.x<=diasTotales);
+
+  // --- Marcas del eje X según el rango ---
+  const tickIdx = [];
+  if(curvaChartRango==='7D'){ for(let i=0;i<=diasTotales;i++) tickIdx.push(i); }
+  else if(curvaChartRango==='30D'){ for(let i=0;i<=diasTotales;i+=5) tickIdx.push(i); if(tickIdx[tickIdx.length-1]!==diasTotales) tickIdx.push(diasTotales); }
+  else {
+    let curMes = null;
+    for(let i=0;i<=diasTotales;i++){ const f = addDays(fechaInicio,i); const mes = f.slice(0,7); if(mes!==curMes){ tickIdx.push(i); curMes = mes; } }
+  }
 
   if(typeof charts!=='object') window.charts = {};
   if(charts['curva']) charts['curva'].destroy();
   const ctx = canvas.getContext('2d');
+
+  const refLinesPlugin = {
+    id:'curvaRefLines',
+    beforeDatasetsDraw(chart){
+      const {ctx:c, chartArea:a, scales:{y}} = chart;
+      c.save();
+      [[90,'rgba(255,255,255,0.16)'],[50,'rgba(255,255,255,0.1)']].forEach(([val,col])=>{
+        const yy = y.getPixelForValue(val);
+        c.strokeStyle = col; c.setLineDash([3,3]); c.lineWidth = 1;
+        c.beginPath(); c.moveTo(a.left,yy); c.lineTo(a.right,yy); c.stroke();
+      });
+      c.restore();
+    }
+  };
+  const vencimientoPlugin = {
+    id:'curvaVencimiento',
+    afterDraw(chart){
+      if(diasVencimiento==null) return;
+      const {ctx:c, chartArea:a, scales:{x}} = chart;
+      const xx = x.getPixelForValue(diasPasados+diasVencimiento);
+      if(xx<a.left || xx>a.right) return;
+      c.save();
+      c.strokeStyle = 'rgba(255,69,58,0.5)'; c.setLineDash([3,3]); c.lineWidth = 1;
+      c.beginPath(); c.moveTo(xx,a.top); c.lineTo(xx,a.bottom); c.stroke();
+      c.setLineDash([]);
+      c.fillStyle = 'rgba(255,255,255,0.55)'; c.font = '700 9px -apple-system, sans-serif'; c.textAlign = 'center';
+      c.fillText(formatDate(fechaVencimiento).slice(0,5), xx, a.top-4);
+      c.restore();
+    }
+  };
+  const testLabelPlugin = {
+    id:'curvaTestLabel',
+    afterDatasetsDraw(chart){
+      const meta = chart.getDatasetMeta(3);
+      const c = chart.ctx;
+      c.save(); c.font = '700 10px -apple-system, sans-serif'; c.textAlign = 'center'; c.fillStyle = cssVar('--col-tests');
+      meta.data.forEach((pt,i)=>{ const p = testPoints[i]; if(!p) return; c.fillText(p.y+'%', pt.x, pt.y-10); });
+      c.restore();
+    }
+  };
+
   charts['curva'] = new Chart(ctx, {
     type:'line',
     data:{ datasets:[
-      { label:'Estimada', data: serie.map((v,i)=>({x:i,y:Math.round(v)})).filter((p,i)=>i<=diasPasados), borderColor:'#38bdf8', backgroundColor:'rgba(56,189,248,0.12)', tension:0.25, fill:true, pointRadius:0, borderWidth:2 },
-      { label:'Proyección', data: serie.map((v,i)=>({x:i,y:Math.round(v)})).filter((p,i)=>i>=diasPasados), borderColor:'rgba(56,189,248,0.4)', borderDash:[4,4], tension:0.25, fill:false, pointRadius:0, borderWidth:2 },
-      { label:'Tests', data: scatterData, showLine:false, backgroundColor:'#e3a71e', pointRadius:4, pointHoverRadius:5 },
+      { label:'Estimada', data: seriePasado.map((v,i)=>({x:i,y:Math.round(v)})), borderColor:cssVar('--gold'), backgroundColor:'rgba(56,189,248,0.12)', tension:0.25, fill:true, pointRadius:0, borderWidth:2 },
+      { label:'Proyección', data: [{x:diasPasados,y:Math.round(seriePasado[diasPasados])}].concat(serieFuturo.map((v,i)=>({x:diasPasados+i+1,y:Math.round(v)}))), borderColor:'rgba(56,189,248,0.4)', borderDash:[4,4], tension:0.25, fill:false, pointRadius:0, borderWidth:2 },
+      { label:'Repasos', data: repasoPoints, showLine:false, backgroundColor:cssVar('--gold'), borderColor:'#04212e', borderWidth:1.5, pointRadius:4, pointHoverRadius:6, pointHitRadius:10 },
+      { label:'Tests', data: testPoints, showLine:false, backgroundColor:cssVar('--col-tests'), pointRadius:5, pointHoverRadius:7, pointHitRadius:10 },
     ]},
-    options:{ responsive:true, plugins:{legend:{display:false}},
+    plugins:[refLinesPlugin, vencimientoPlugin, testLabelPlugin],
+    options:{ responsive:true, maintainAspectRatio:false,
+      onClick(evt, els, chart){
+        const el = chart.getElementsAtEventForMode(evt,'nearest',{intersect:true},true)[0];
+        if(!el) return;
+        const ds = chart.data.datasets[el.datasetIndex];
+        const p = ds.data[el.index];
+        if(!p || !p.meta) return;
+        metaEl.innerHTML = p.meta.tipo==='repaso'
+          ? `${formatDate(p.meta.fecha)} · repaso · frescura ${p.y}%`
+          : `${formatDate(p.meta.fecha)} · test${p.meta.preguntas?` · ${p.meta.aciertos}/${p.meta.preguntas} aciertos`:(p.meta.nota!=null?` · nota ${p.meta.nota}`:'')} · ${p.y}%`;
+      },
+      plugins:{legend:{display:false}},
       scales:{
-        x:{ type:'linear', min:0, max:diasTotales, ticks:{ color:'rgba(255,255,255,0.32)', font:{size:8}, maxTicksLimit:6, callback:v=>formatDate(addDays(fechaMin,Math.round(v))).slice(0,5) }, grid:{display:false} },
-        y:{ min:0, max:110, ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'} }
+        x:{ type:'linear', min:0, max:diasTotales,
+          afterBuildTicks: ax => { ax.ticks = tickIdx.map(v=>({value:v})); },
+          ticks:{ color:'rgba(255,255,255,0.32)', font:{size:8}, callback:v=>{ const f=addDays(fechaInicio,Math.round(v)); return curvaChartRango==='TODO' ? MONTH_NAMES[parseInt(f.slice(5,7),10)-1].slice(0,3) : formatDate(f).slice(0,5); } },
+          grid:{display:false} },
+        y:{ min:0, max:100, ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}, stepSize:25}, grid:{color:'rgba(255,255,255,0.04)'} }
       }
     }
   });
-  metaEl.textContent = puntos.length ? `Puntos medidos: ${puntos.length}` : '';
+  if(!metaEl.innerHTML) metaEl.textContent = puntos.length ? `Puntos medidos: ${puntos.length}` : '';
 }
 
 // ========== EDITOR DE EPÍGRAFES (desde la ficha del tema) ==========
