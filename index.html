@@ -377,6 +377,24 @@ body::before {
 .modal-btn.secondary { background: none; border: 1px solid var(--border-2); color: var(--text2); }
 .modal-note { font-size: 12.5px; color: var(--text2); line-height: 1.5; margin-bottom: 14px; }
 
+.sys-banner-top, .sys-banner-bottom {
+  position: fixed; left: 50%; width: calc(100% - 32px); max-width: 420px; z-index: 300;
+  background: rgba(14,14,18,0.82);
+  backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid var(--border-2); border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 11px 14px; font-size: 12.5px; font-weight: 600; color: var(--text2);
+  box-shadow: var(--shadow-card);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s var(--ease-out-soft), transform 0.3s var(--ease-out-soft);
+}
+.sys-banner-top { top: calc(env(safe-area-inset-top) + 10px); transform: translateX(-50%) translateY(-14px); }
+.sys-banner-bottom { bottom: 86px; transform: translateX(-50%) translateY(14px); }
+.sys-banner-top.show, .sys-banner-bottom.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+.sys-banner-text { flex: 1; min-width: 0; }
+.sys-banner-btn { background: var(--gold); color: #04212e; border: none; border-radius: var(--r-xs); padding: 7px 12px; font-size: 11.5px; font-weight: 800; cursor: pointer; flex-shrink: 0; font-family: inherit; }
+.sys-banner-close { background: none; border: none; color: var(--text3); font-size: 15px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
+
 .color-swatch-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
 .color-swatch { width: 30px; height: 30px; border-radius: var(--r-xs); cursor: pointer; border: 2px solid transparent; transition: transform 0.15s var(--ease-pop), border-color 0.15s; }
 .color-swatch:active { transform: scale(0.9); }
@@ -825,6 +843,28 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 
 <div class="toast" id="toast"></div>
 
+<div class="sys-banner-top" id="export-reminder-banner">
+  <span class="sys-banner-text" id="export-reminder-text"></span>
+  <button class="sys-banner-btn" onclick="exportFromReminder()">EXPORTAR</button>
+  <button class="sys-banner-close" onclick="dismissExportReminder()" aria-label="Cerrar">✕</button>
+</div>
+
+<div class="sys-banner-bottom" id="update-banner">
+  <span class="sys-banner-text">Hay una versión nueva</span>
+  <button class="sys-banner-btn" onclick="reloadForUpdate()">ACTUALIZAR</button>
+</div>
+
+<div class="modal-bg" id="restore-backup-modal">
+  <div class="modal">
+    <div class="modal-title">Backup disponible</div>
+    <div class="modal-note">No hay datos, pero hay una copia de seguridad del <span id="restore-backup-stamp"></span>.</div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="dismissRestoreOffer()">Empezar vacío</button>
+      <button class="modal-btn primary" onclick="restoreFromBackup()">Restaurar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ========== CONFIG ==========
 const PALETTE = ['#ff4848','#ff952f','#f5cc00','#9ff512','#28eb6f','#18d5bd','#1db9ff','#5a9cff','#9572ff','#ff53ad'];
@@ -879,6 +919,132 @@ function temaBloque(numOrId){
   return BLOQUES_TEMAS.find(b=>n>=b.desde && n<=b.hasta) || null;
 }
 function temaColor(temaId){ const b = temaBloque(temaId); return b ? b.color : '#666'; }
+
+// ========== VERSIÓN Y BACKUPS ==========
+const APP_VERSION = 1;
+const APP_BUILD_DATE = '20 oct 2026 14:01';
+
+const IDB_NAME = 'estudio_backups_db';
+const IDB_STORE = 'snapshots';
+const IDB_MAX = 10;
+
+function openBackupDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = ()=>{
+      const db = req.result;
+      if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE,{keyPath:'id',autoIncrement:true});
+    };
+    req.onsuccess = ()=>resolve(req.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function snapshotAllLocalStorage(){
+  const data = {};
+  for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); data[k] = localStorage.getItem(k); }
+  return data;
+}
+// Guarda una copia completa de localStorage en IndexedDB. Llamar con un motivo
+// descriptivo antes de cualquier migración futura que toque la forma de los datos
+// (p.ej. writeBackupSnapshot('antes-de-migracion-x')) para poder deshacerla si falla.
+function writeBackupSnapshot(reason){
+  return openBackupDB().then(db=>new Promise(resolve=>{
+    const snapshot = { ts: Date.now(), reason: reason||'auto', data: snapshotAllLocalStorage() };
+    const tx = db.transaction(IDB_STORE,'readwrite');
+    tx.objectStore(IDB_STORE).add(snapshot);
+    tx.oncomplete = ()=>pruneOldBackups(db).then(resolve).catch(resolve);
+    tx.onerror = ()=>resolve();
+  })).catch(()=>{});
+}
+function pruneOldBackups(db){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(IDB_STORE,'readwrite');
+    const store = tx.objectStore(IDB_STORE);
+    const req = store.getAll();
+    req.onsuccess = ()=>{
+      const all = req.result || [];
+      if(all.length > IDB_MAX){
+        all.sort((a,b)=>a.ts-b.ts);
+        all.slice(0, all.length-IDB_MAX).forEach(item=>store.delete(item.id));
+      }
+      resolve();
+    };
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function getLatestBackup(){
+  return openBackupDB().then(db=>new Promise((resolve,reject)=>{
+    const tx = db.transaction(IDB_STORE,'readonly');
+    const req = tx.objectStore(IDB_STORE).getAll();
+    req.onsuccess = ()=>{
+      const all = req.result || [];
+      if(!all.length) return resolve(null);
+      all.sort((a,b)=>b.ts-a.ts);
+      resolve(all[0]);
+    };
+    req.onerror = ()=>reject(req.error);
+  })).catch(()=>null);
+}
+function formatBackupStamp(ts){
+  const d = new Date(ts);
+  const pad = n=>String(n).padStart(2,'0');
+  return `${d.getDate()} ${MONTH_NAMES[d.getMonth()].slice(0,3).toLowerCase()} a las ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// Cada escritura en localStorage programa (con un pequeño debounce) una copia
+// completa en IndexedDB, un almacén aparte que sobrevive aunque localStorage
+// se borre (p.ej. al reinstalar la PWA en iOS, que fue la causa de la pérdida
+// de datos que motivó todo este sistema).
+(function setupAutoBackup(){
+  const proto = Object.getPrototypeOf(localStorage);
+  const nativeSetItem = proto.setItem;
+  let timer = null;
+  proto.setItem = function(key, value){
+    nativeSetItem.call(this, key, value);
+    clearTimeout(timer);
+    timer = setTimeout(()=>writeBackupSnapshot('auto'), 800);
+  };
+})();
+
+function checkBackupRestoreOffer(){
+  if(localStorage.length > 0) return;
+  getLatestBackup().then(backup=>{
+    if(!backup) return;
+    document.getElementById('restore-backup-stamp').textContent = formatBackupStamp(backup.ts);
+    window._pendingRestoreBackup = backup;
+    document.getElementById('restore-backup-modal').classList.add('open');
+  });
+}
+function restoreFromBackup(){
+  const backup = window._pendingRestoreBackup;
+  if(!backup) return;
+  Object.keys(backup.data).forEach(k=>localStorage.setItem(k, backup.data[k]));
+  closeModal('restore-backup-modal');
+  location.reload();
+}
+function dismissRestoreOffer(){
+  closeModal('restore-backup-modal');
+}
+
+function checkExportReminder(){
+  const lastTs = parseInt(localStorage.getItem('estudio_last_export_ts')||'0',10);
+  const days = lastTs ? Math.floor((Date.now()-lastTs)/86400000) : null;
+  if(days !== null && days < 7) return;
+  const today = todayStr();
+  if(localStorage.getItem('estudio_export_reminder_seen') === today) return;
+  const msg = days===null ? 'Nunca se ha hecho un backup' : `Hace ${days} días del último backup`;
+  document.getElementById('export-reminder-text').textContent = msg;
+  document.getElementById('export-reminder-banner').classList.add('show');
+}
+function dismissExportReminder(){
+  localStorage.setItem('estudio_export_reminder_seen', todayStr());
+  document.getElementById('export-reminder-banner').classList.remove('show');
+}
+function exportFromReminder(){
+  dismissExportReminder();
+  exportJSON();
+}
+function reloadForUpdate(){ location.reload(); }
 
 // ========== STATE ==========
 let currentHoyDate = null;
@@ -2752,10 +2918,15 @@ function showToast(msg,cls){
 
 // ========== I/O ==========
 function exportJSON(){
-  const all = { categorias:getCategorias(), dias:getDias(), tests:getTests(), version:2 };
-  const blob = new Blob([JSON.stringify(all,null,2)], {type:'application/json'});
+  const payload = { app:'estudio', appVersion:APP_VERSION, exportedAt:new Date().toISOString(), data:snapshotAllLocalStorage() };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const d = new Date();
+  const pad = n=>String(n).padStart(2,'0');
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = 'estudio-backup.json'; a.click();
+  a.href = URL.createObjectURL(blob);
+  a.download = `estudio-backup-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}.json`;
+  a.click();
+  localStorage.setItem('estudio_last_export_ts', String(Date.now()));
   showToast('Backup exportado ✓','green');
 }
 function handleImport(e){
@@ -2764,22 +2935,17 @@ function handleImport(e){
   r.onload = ev => {
     try{
       const p = JSON.parse(ev.target.result);
-      if(p.categorias && p.dias){
-        saveCategorias(p.categorias);
-        saveDias(p.dias);
-        if(p.tests){
-          saveTests(p.tests);
-        } else {
-          saveTests([]);
-          localStorage.removeItem('estudio_migracion_v2_done');
-          migrateSubcategorias();
-          migrateToV2();
-        }
-      } else {
-        throw new Error('formato desconocido');
+      let data = p.data;
+      if(!data && p.categorias && p.dias){
+        // Compatibilidad con el formato de export antiguo (solo categorías/días/tests).
+        data = { estudio_categorias: JSON.stringify(p.categorias), estudio_dias: JSON.stringify(p.dias) };
+        data.estudio_tests = JSON.stringify(p.tests||[]);
       }
+      if(!data) throw new Error('formato desconocido');
+      if(!confirm('Esto sobrescribirá todos los datos actuales con los del archivo importado. ¿Continuar?')) return;
+      Object.keys(data).forEach(k=>localStorage.setItem(k, data[k]));
       showToast('Importado ✓','green');
-      renderCategoriasList(); renderHoy(); renderHistorial(); renderEstadisticas();
+      setTimeout(()=>location.reload(), 500);
     }catch(err){
       console.error(err);
       showToast('Error al importar');
@@ -2809,25 +2975,35 @@ function clearAllData(){
   localStorage.removeItem('estudio_tests');
   localStorage.removeItem('estudio_migracion_v2_done');
   localStorage.removeItem('estudio_backup_pre_v2');
+  // Marca explícita para no ofrecer restaurar el backup justo después de un borrado intencional.
+  localStorage.setItem('estudio_cleared_at', String(Date.now()));
   showToast('Datos borrados');
   setTimeout(()=>location.reload(), 700);
 }
 
 // ========== INIT ==========
+checkBackupRestoreOffer();
 migrateSubcategorias();
 migrateToV2();
 currentHoyDate = todayStr();
 document.getElementById('hoy-date-input').value = currentHoyDate;
 renderHoy();
 updateNavIndicator(document.querySelector('.nav-btn.active'));
+checkExportReminder();
 
 const luEl = document.getElementById('app-last-updated');
-if(luEl){
-  const lm = new Date(document.lastModified);
-  if(!isNaN(lm)){
-    const pad = n=>String(n).padStart(2,'0');
-    luEl.textContent = `Actualizado ${pad(lm.getDate())}/${pad(lm.getMonth()+1)}/${lm.getFullYear()} · ${pad(lm.getHours())}:${pad(lm.getMinutes())}`;
-  }
+if(luEl) luEl.textContent = `v${APP_VERSION} · ${APP_BUILD_DATE}`;
+
+// ========== SERVICE WORKER ==========
+if('serviceWorker' in navigator){
+  let hadController = !!navigator.serviceWorker.controller;
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+  navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+    if(!hadController){ hadController = true; return; }
+    document.getElementById('update-banner').classList.add('show');
+  });
 }
 </script>
 </body>
