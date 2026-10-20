@@ -456,10 +456,58 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .vuelta-stepper { display: flex; align-items: center; gap: 10px; }
 .vuelta-val { font-family: var(--font-mono); font-weight: 700; font-size: 17px; min-width: 24px; text-align: center; }
 .empty-sub { text-align: center; color: var(--text3); padding: 28px 12px; font-size: 13px; }
-.test-tema-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.test-tema-row .nm { flex: 1; font-size: 13px; color: var(--text2); overflow-wrap: anywhere; }
-.test-tema-row input { width: 72px; flex-shrink: 0; margin-bottom: 0; text-align: center; }
+.test-tema-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.test-tema-row .nm { flex: 1; font-size: 12.5px; color: var(--text2); overflow-wrap: anywhere; }
+.test-tema-row input { width: 52px; flex-shrink: 0; margin-bottom: 0; text-align: center; padding: 9px 4px; }
 .test-tema-row .rm { background: none; border: none; color: var(--red); cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+/* —— EPÍGRAFES: checklist y valoración —— */
+.epi-check-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); cursor: pointer; }
+.epi-check-row:first-of-type { border-top: none; }
+.epi-check-row.hijo { padding-left: 24px; }
+.epi-checkbox { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border-2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; }
+.epi-checkbox svg { opacity: 0; }
+.epi-checkbox.checked { background: var(--gold); border-color: var(--gold); }
+.epi-checkbox.checked svg { opacity: 1; }
+.epi-checkbox.indeterminate { background: rgba(56,189,248,0.3); border-color: var(--gold); }
+.epi-checkbox.indeterminate svg { opacity: 1; }
+.epi-check-name { flex: 1; font-size: 13.5px; color: var(--text); overflow-wrap: anywhere; }
+.epi-check-peso { font-size: 11px; color: var(--text3); font-family: var(--font-mono); flex-shrink: 0; }
+.epi-marcar-todo { background: none; border: none; color: var(--gold2); font-size: 11px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; padding: 4px 0; font-family: inherit; }
+.valoracion-row { display: flex; gap: 8px; margin: 10px 0 4px; }
+.valoracion-btn { flex: 1; padding: 12px 4px; border-radius: var(--r-sm); border: 1px solid var(--border-2); background: none; color: var(--text2); font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: 0.3px; transition: transform 0.16s var(--ease-pop), background 0.15s, border-color 0.15s, color 0.15s; }
+.valoracion-btn:active { transform: scale(0.96); }
+.valoracion-btn.sel-mal { background: rgba(255,69,58,0.18); border-color: var(--red); color: var(--red); }
+.valoracion-btn.sel-regular { background: rgba(227,194,30,0.16); border-color: #e3c21e; color: #e3c21e; }
+.valoracion-btn.sel-bien { background: rgba(92,227,154,0.16); border-color: var(--green); color: var(--green); }
+.curva-tool-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 14px; cursor: pointer; font-family: inherit; color: var(--text); transition: transform 0.16s var(--ease-pop), border-color 0.2s; }
+.curva-tool-btn:active { transform: scale(0.98); border-color: var(--border-3); }
+.curva-tool-btn .t { font-family: var(--font-disp); font-size: 15px; letter-spacing: 0.4px; }
+.curva-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 4px; }
+.curva-stat { text-align: center; padding: 14px 6px; }
+.curva-stat .v { font-family: var(--font-mono); font-weight: 600; font-size: 22px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
+.curva-stat .l { font-size: 9.5px; color: var(--text3); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.curva-examen-row { text-align: center; font-size: 12px; color: var(--text2); padding: 10px 0 2px; }
+.curva-list-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border); cursor: pointer; }
+.curva-list-row:first-of-type { border-top: none; }
+.curva-list-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+.curva-list-meta { font-size: 10.5px; color: var(--text3); margin-top: 2px; font-weight: 500; }
+.curva-list-fresc { font-family: var(--font-mono); font-weight: 700; font-size: 15px; flex-shrink: 0; }
+.tema-map-grid { display: grid; grid-template-columns: repeat(9,1fr); gap: 4px; }
+.tema-map-cell { aspect-ratio: 1; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: var(--font-mono); cursor: pointer; transition: transform 0.15s var(--ease-pop); }
+.tema-map-cell:active { transform: scale(0.88); }
+.tema-map-bloque-lbl { font-size: 9.5px; color: var(--text3); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin: 14px 0 6px; }
+.tema-map-bloque-lbl:first-child { margin-top: 0; }
+.epi-table-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 12px; }
+.epi-table-row:first-of-type { border-top: none; }
+.epi-table-name { flex: 1; color: var(--text2); overflow-wrap: anywhere; }
+.epi-table-val { font-family: var(--font-mono); width: 42px; text-align: right; flex-shrink: 0; }
+.epi-weight-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); }
+.epi-weight-row:first-of-type { border-top: none; }
+.epi-weight-name { flex: 1; font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
+.epi-weight-input { width: 56px; flex-shrink: 0; margin-bottom: 0; text-align: center; padding: 8px 4px; }
+.epi-lock-btn { background: none; border: none; cursor: pointer; padding: 4px; flex-shrink: 0; color: var(--text3); }
+.epi-lock-btn.on { color: var(--gold2); }
 </style>
 </head>
 <body>
@@ -471,6 +519,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 
 <!-- HOY -->
 <div id="screen-hoy" class="screen active">
+
+  <button class="curva-tool-btn" onclick="openCurva()">
+    <span class="t">CURVA DEL OLVIDO</span>
+    <span style="color:var(--text3);">›</span>
+  </button>
 
   <div class="today-hero">
     <div class="today-bg-shield" aria-hidden="true">CNP</div>
@@ -618,6 +671,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 
   <div class="settings-group">
+    <div class="settings-group-title">Planificación</div>
+    <div class="settings-row" onclick="openFechaExamenModal()">
+      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <span>Fecha del examen</span>
+      <span id="ajustes-fecha-examen-val" style="margin-left:auto;font-size:12px;color:var(--text3);font-weight:600;"></span>
+    </div>
+    <div class="settings-row" onclick="openModeloModal()">
+      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2" fill="var(--bg)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="16" cy="17" r="2" fill="var(--bg)"/></svg></div>
+      <span>Ajustes avanzados</span>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="settings-group-title">Herramientas</div>
+    <div class="settings-row" onclick="openHerramientas()">
+      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
+      <span>Herramientas</span>
+    </div>
+  </div>
+
+  <div class="settings-group">
     <div class="settings-group-title">Peligro</div>
     <div class="settings-row danger" onclick="clearAllData()">
       <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></div>
@@ -684,6 +758,72 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <button class="modal-btn secondary" style="color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteEditingEntry()">Borrar</button>
     </div>
     <button class="save-btn" style="font-size:15px;padding:13px;" onclick="saveEditEntry()">Guardar</button>
+  </div>
+</div>
+
+<!-- MODAL: epígrafes trabajados + valoración (sesión de estudio de un tema) -->
+<div class="modal-bg" id="tema-epi-modal">
+  <div class="modal">
+    <div class="modal-title" id="tema-epi-title">Tema · Estudio</div>
+    <div id="tema-epi-checklist-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+        <label class="modal-label" style="margin-bottom:0;">¿Qué has trabajado?</label>
+        <button type="button" class="epi-marcar-todo" onclick="marcarTodoEpi()">MARCAR TODO</button>
+      </div>
+      <div id="tema-epi-checklist"></div>
+    </div>
+    <label class="modal-label" style="margin-top:14px;">¿Cómo ha ido?</label>
+    <div class="valoracion-row" id="tema-epi-valoracion-row">
+      <button type="button" class="valoracion-btn" data-v="MAL" onclick="elegirValoracion('MAL')">MAL</button>
+      <button type="button" class="valoracion-btn" data-v="REGULAR" onclick="elegirValoracion('REGULAR')">REGULAR</button>
+      <button type="button" class="valoracion-btn" data-v="BIEN" onclick="elegirValoracion('BIEN')">BIEN</button>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="cancelarTemaEpiModal()">Cancelar</button>
+      <button class="modal-btn primary" onclick="confirmTemaSesion()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TEST / REPASO TEST de un tema (preguntas, aciertos, fuente, epígrafes) -->
+<div class="modal-bg" id="tema-test-modal">
+  <div class="modal">
+    <div class="modal-title" id="tema-test-title">Tema · Test</div>
+    <label class="modal-label">Tiempo</label>
+    <input type="text" class="modal-input" id="tema-test-tiempo-input" placeholder="h:mm o minutos" inputmode="text">
+    <div style="display:flex;gap:8px;">
+      <div style="flex:1;">
+        <label class="modal-label">Preguntas</label>
+        <input type="number" class="modal-input" id="tema-test-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 20" oninput="updateTemaTestNota()">
+      </div>
+      <div style="flex:1;">
+        <label class="modal-label">Aciertos</label>
+        <input type="number" class="modal-input" id="tema-test-aciertos-input" min="0" inputmode="numeric" placeholder="p.ej. 15" oninput="updateTemaTestNota()">
+      </div>
+    </div>
+    <div id="tema-test-nota-auto" style="font-size:12px;color:var(--gold2);font-weight:700;margin:-4px 0 12px;min-height:14px;"></div>
+    <label class="modal-label">O nota directa <span style="text-transform:none;font-weight:500;opacity:0.7;">(si no tienes el desglose)</span></label>
+    <input type="text" class="modal-input" id="tema-test-nota-input" placeholder="p.ej. 7,5" inputmode="decimal" oninput="onTemaTestNotaDirectaInput()">
+    <label class="modal-label">Fuente</label>
+    <select class="modal-select" id="tema-test-fuente-input">
+      <option value="">Sin especificar</option>
+      <option value="Jurispol">Jurispol</option>
+      <option value="InoTest">InoTest</option>
+      <option value="Oficial">Oficial</option>
+      <option value="Otra">Otra</option>
+    </select>
+    <div id="tema-test-checklist-wrap" style="margin-top:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+        <label class="modal-label" style="margin-bottom:0;">¿De qué epígrafes?</label>
+        <button type="button" class="epi-marcar-todo" onclick="marcarTodoEpi()">MARCAR TODO</button>
+      </div>
+      <div id="tema-test-checklist"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('tema-test-modal')">Cancelar</button>
+      <button class="modal-btn secondary" id="tema-test-delete-btn" style="display:none;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteTemaTestEntry()">Borrar</button>
+    </div>
+    <button class="save-btn" style="margin-top:6px;" onclick="saveTemaTestForm()">Guardar</button>
   </div>
 </div>
 
@@ -841,6 +981,66 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
+<!-- MODAL: fecha del examen -->
+<div class="modal-bg" id="fecha-examen-modal">
+  <div class="modal">
+    <div class="modal-title">Fecha del examen</div>
+    <div class="modal-note">Sin ella el sistema funciona igual, pero sin recortar los intervalos según se acerca la convocatoria.</div>
+    <label class="modal-label">Fecha</label>
+    <input type="date" class="modal-input" id="fecha-examen-input">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('fecha-examen-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveFechaExamenModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ajustes avanzados del modelo de frescura -->
+<div class="modal-bg" id="modelo-modal">
+  <div class="modal">
+    <div class="modal-title">Ajustes avanzados</div>
+    <div class="modal-note">Parámetros del modelo de frescura. Si no sabes qué es esto, probablemente no necesites tocarlo.</div>
+    <label class="modal-label">Ganancia BIEN</label>
+    <input type="text" class="modal-input" id="modelo-gananciaBien-input" inputmode="decimal">
+    <label class="modal-label">Ganancia REGULAR</label>
+    <input type="text" class="modal-input" id="modelo-gananciaRegular-input" inputmode="decimal">
+    <label class="modal-label">Penalización MAL</label>
+    <input type="text" class="modal-input" id="modelo-penalizacionMal-input" inputmode="decimal">
+    <label class="modal-label">Umbral de vencido (%)</label>
+    <input type="text" class="modal-input" id="modelo-umbralVencido-input" inputmode="decimal">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="restaurarModeloDefaultModal()">Restaurar</button>
+      <button class="modal-btn primary" onclick="saveModeloModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Herramientas -->
+<div class="modal-bg" id="herramientas-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <div class="lvl-header-title">Herramientas</div>
+      <button class="toggle-btn" onclick="closeModal('herramientas-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <button class="curva-tool-btn" style="margin-bottom:0;" onclick="closeModal('herramientas-modal');openCurva()">
+      <span class="t">CURVA DEL OLVIDO</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+  </div>
+</div>
+
+<!-- MODAL: Curva del olvido -->
+<div class="modal-bg" id="curva-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <button class="lvl-back" id="curva-back-btn" style="display:none;" onclick="curvaBack()">‹</button>
+      <div class="lvl-header-title" id="curva-header-title">Curva del olvido</div>
+      <button class="toggle-btn" onclick="closeModal('curva-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div id="curva-body"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <div class="sys-banner-top" id="export-reminder-banner">
@@ -871,6 +1071,8 @@ const PALETTE = ['#ff4848','#ff952f','#f5cc00','#9ff512','#28eb6f','#18d5bd','#1
 const ICON_EDIT = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 const ICON_CLOSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
 const ICON_CHEVRON = '<svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg>';
+const ICON_CHECK_SMALL = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#04212e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const ICON_LOCK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 const DOW_NAMES_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -920,9 +1122,473 @@ function temaBloque(numOrId){
 }
 function temaColor(temaId){ const b = temaBloque(temaId); return b ? b.color : '#666'; }
 
+// ========== EPÍGRAFES, FRESCURA Y DOMINIO ==========
+// Principio de arquitectura: nada de esto se guarda. Frescura, dominio y
+// estabilidad se recalculan al vuelo cada vez recorriendo registros + ajustes.
+// Lo único persistido son los registros (con sus campos nuevos) y los ajustes
+// (epígrafes/pesos, fecha de examen, parámetros del modelo).
+
+const DEFAULT_MODELO = { gananciaBien: 2.5, gananciaRegular: 1.5, penalizacionMal: 0.4, umbralVencido: 0.90 };
+const FRESH_FACTOR = 19/81, FRESH_DECAY = -0.5;
+
+function getTemasConfig(){ try{ return JSON.parse(localStorage.getItem('estudio_temas_config')||'{}'); }catch{ return {}; } }
+function saveTemasConfig(cfg){ localStorage.setItem('estudio_temas_config', JSON.stringify(cfg)); }
+function getTemaConfig(temaId){ const all = getTemasConfig(); return all[temaId] || { epigrafes: [] }; }
+function setTemaConfig(temaId, temaConfig){ const all = getTemasConfig(); all[temaId] = temaConfig; saveTemasConfig(all); }
+function temaTieneEpigrafes(temaId){ const c = getTemaConfig(temaId); return !!(c.epigrafes && c.epigrafes.length); }
+
+function getAjustesSpaced(){
+  try{ return JSON.parse(localStorage.getItem('estudio_ajustes_spaced')||'{}'); }catch{ return {}; }
+}
+function saveAjustesSpaced(a){ localStorage.setItem('estudio_ajustes_spaced', JSON.stringify(a)); }
+function getFechaExamen(){ return getAjustesSpaced().fechaExamen || null; }
+function setFechaExamen(fecha){ const a = getAjustesSpaced(); a.fechaExamen = fecha || null; saveAjustesSpaced(a); }
+function getModeloParams(){ return Object.assign({}, DEFAULT_MODELO, getAjustesSpaced().modelo || {}); }
+function setModeloParams(m){ const a = getAjustesSpaced(); a.modelo = Object.assign({}, getModeloParams(), m); saveAjustesSpaced(a); }
+function restaurarModeloDefault(){ const a = getAjustesSpaced(); delete a.modelo; saveAjustesSpaced(a); }
+
+function getMeasurementPoints(){ try{ return JSON.parse(localStorage.getItem('estudio_measurement_points')||'[]'); }catch{ return []; } }
+function addMeasurementPoint(pt){ const pts = getMeasurementPoints(); pts.push(pt); localStorage.setItem('estudio_measurement_points', JSON.stringify(pts)); }
+
+// --- Fórmulas (Bloque B) ---
+function frescura(dias, estabilidad){
+  const S = estabilidad>0 ? estabilidad : 1;
+  return Math.pow(1 + FRESH_FACTOR*dias/S, FRESH_DECAY);
+}
+function nuevaEstabilidad(S, valoracion, frescuraPrevia, modelo){
+  modelo = modelo || getModeloParams();
+  if(valoracion==='MAL') return Math.max(1, S*modelo.penalizacionMal);
+  const ganancia = valoracion==='REGULAR' ? modelo.gananciaRegular : modelo.gananciaBien;
+  const bonus = 1 + (0.9 - frescuraPrevia)*2;
+  const efectiva = 1 + (ganancia*bonus - 1)/(1+S/60);
+  return S*efectiva;
+}
+function valoracionDeNota(nota){ if(nota<5) return 'MAL'; if(nota<=7) return 'REGULAR'; return 'BIEN'; }
+function dominioDeTests(tests){
+  const ratios = tests.slice().sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(t=>{
+    if(t.aciertos!=null && t.preguntas>0) return t.aciertos/t.preguntas;
+    if(t.nota!=null) return t.nota/10;
+    return null;
+  }).filter(r=>r!=null);
+  if(!ratios.length) return null;
+  let suma=0, pesos=0;
+  ratios.forEach((r,i)=>{ const p = Math.pow(1.5,i); suma += r*p; pesos += p; });
+  return { valor: suma/pesos, nTests: ratios.length, pocoFiable: ratios.length<=2 };
+}
+
+// --- Recorte por fecha de examen (Bloque E) ---
+function diasHastaExamen(hoyStr){
+  const fe = getFechaExamen();
+  if(!fe) return null;
+  return Math.round((new Date(fe+'T12:00:00') - new Date(hoyStr+'T12:00:00')) / 86400000);
+}
+function topeRecorte(dHastaExamen){ if(dHastaExamen==null) return Infinity; return Math.min(25, Math.max(0, dHastaExamen*0.30)); }
+function estabilidadEfectiva(S, dHastaExamen){ return Math.min(S, topeRecorte(dHastaExamen)); }
+
+// --- Arranque con histórico (Bloque G) ---
+function estabilidadInicialPorMinutos(minutosTotal){
+  const horas = minutosTotal/60;
+  if(horas<1) return 2; if(horas<3) return 5; if(horas<5) return 10; if(horas<8) return 18; return 25;
+}
+function diasEntreFechas(a,b){ return Math.round((new Date(b+'T12:00:00') - new Date(a+'T12:00:00')) / 86400000); }
+
+// Simula la evolución de un nodo (tema entero o epígrafe hoja) desde su
+// arranque (minutos pre-feature, sin valoración) y luego evento a evento.
+function simularNodo(minutosPreFeature, ultimoContactoPreFeature, eventos, modelo){
+  let S = minutosPreFeature>0 ? estabilidadInicialPorMinutos(minutosPreFeature) : 1;
+  let ultimoContacto = ultimoContactoPreFeature;
+  const porDia = {};
+  eventos.forEach(e=>{ if(!porDia[e.fecha]) porDia[e.fecha] = e; }); // solo el 1º del día mueve S
+  Object.values(porDia).sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(ev=>{
+    let frescuraPrevia;
+    if(ultimoContacto==null) frescuraPrevia = 0.9;
+    else frescuraPrevia = frescura(Math.max(0, diasEntreFechas(ultimoContacto, ev.fecha)), S);
+    S = nuevaEstabilidad(S, ev.valoracion, frescuraPrevia, modelo);
+    ultimoContacto = ev.fecha;
+  });
+  return { S, ultimoContacto, nEventos: Object.keys(porDia).length };
+}
+
+// --- Árbol de epígrafes ---
+function epigrafeFindById(epigrafes, id){
+  for(const e of (epigrafes||[])){
+    if(e.id===id) return e;
+    if(e.hijos){ const f = epigrafeFindById(e.hijos, id); if(f) return f; }
+  }
+  return null;
+}
+function epigrafeLeaves(epigrafes){
+  const out = [];
+  (epigrafes||[]).forEach(e=>{
+    if(e.hijos && e.hijos.length){
+      e.hijos.forEach(h=> out.push({ id:h.id, nombre:h.nombre, pesoSobreTema: e.peso*h.peso/100, fijado: h.fijado }));
+    } else {
+      out.push({ id:e.id, nombre:e.nombre, pesoSobreTema: e.peso, fijado: e.fijado });
+    }
+  });
+  return out;
+}
+function reajustarPesos(siblings, idCambiado, nuevoPeso){
+  const changed = siblings.find(s=>s.id===idCambiado);
+  if(!changed) return;
+  nuevoPeso = Math.max(0, Math.min(100, nuevoPeso));
+  const fijados = siblings.filter(s=>s.id!==idCambiado && s.fijado);
+  const libres = siblings.filter(s=>s.id!==idCambiado && !s.fijado);
+  const sumFijados = fijados.reduce((a,s)=>a+s.peso,0);
+  if(nuevoPeso + sumFijados > 100) nuevoPeso = Math.max(0, 100-sumFijados);
+  changed.peso = nuevoPeso;
+  const disponible = 100 - nuevoPeso - sumFijados;
+  const sumLibresActual = libres.reduce((a,s)=>a+s.peso,0);
+  if(!libres.length) return;
+  if(sumLibresActual>0.0001) libres.forEach(s=>{ s.peso = Math.max(0, disponible*(s.peso/sumLibresActual)); });
+  else { const each = disponible/libres.length; libres.forEach(s=>{ s.peso = each; }); }
+}
+function agregarEpigrafeASiblings(siblings, nombre){
+  const nuevo = { id:'e_'+uid(), nombre, peso:0, fijado:false };
+  siblings.push(nuevo);
+  const fijados = siblings.filter(s=>s.fijado);
+  const libres = siblings.filter(s=>!s.fijado);
+  const sumFijados = fijados.reduce((a,s)=>a+s.peso,0);
+  const disponible = Math.max(0, 100-sumFijados);
+  const each = libres.length ? disponible/libres.length : 0;
+  libres.forEach(s=>{ s.peso = each; });
+  return nuevo;
+}
+
+// --- Agregación por tema a partir de los registros crudos ---
+// entradasTema: [{fecha, minutos, subKey, epigrafes?, valoracion?, aciertos?, preguntas?, nota?}]
+// testsCartaTema: items de TEST A LA CARTA/SIMULACRO que incluyen este tema: [{fecha, aciertos, preguntas}]
+function construirDatosTema(entradasTema, testsCartaTema, temaConfig, modelo){
+  const leavesCfg = temaConfig && temaConfig.epigrafes && temaConfig.epigrafes.length
+    ? epigrafeLeaves(temaConfig.epigrafes)
+    : [{ id:null, nombre:null, pesoSobreTema:100, fijado:false }];
+
+  let preFeatureMinutos = 0, preFeatureUltimoContacto = null;
+  const porLeaf = {};
+  leavesCfg.forEach(l=> porLeaf[String(l.id)] = { eventos:[], tests:[] });
+
+  entradasTema.forEach(e=>{
+    if(e.valoracion==null){
+      preFeatureMinutos += (e.minutos||0);
+      if(preFeatureUltimoContacto==null || e.fecha>preFeatureUltimoContacto) preFeatureUltimoContacto = e.fecha;
+      return;
+    }
+    const targets = (e.epigrafes && e.epigrafes.length) ? e.epigrafes : null;
+    leavesCfg.forEach(l=>{
+      const aplica = targets==null || l.id==null || targets.includes(l.id);
+      if(!aplica) return;
+      porLeaf[String(l.id)].eventos.push({ fecha:e.fecha, valoracion:e.valoracion });
+      if(e.aciertos!=null || e.preguntas!=null || e.nota!=null){
+        porLeaf[String(l.id)].tests.push({ fecha:e.fecha, aciertos: e.aciertos!=null?e.aciertos:null, preguntas: e.preguntas!=null?e.preguntas:null, nota: e.nota!=null?e.nota:null });
+      }
+    });
+  });
+  (testsCartaTema||[]).forEach(t=>{
+    leavesCfg.forEach(l=>{
+      porLeaf[String(l.id)].tests.push({ fecha:t.fecha, aciertos:t.aciertos, preguntas:t.preguntas, nota:null });
+      if(t.preguntas>0) porLeaf[String(l.id)].eventos.push({ fecha:t.fecha, valoracion: valoracionDeNota((t.aciertos/t.preguntas)*10) });
+    });
+  });
+
+  return leavesCfg.map(l=>{
+    const bucket = porLeaf[String(l.id)];
+    const sim = simularNodo(preFeatureMinutos, preFeatureUltimoContacto, bucket.eventos, modelo);
+    return { id:l.id, nombre:l.nombre, pesoSobreTema:l.pesoSobreTema, fijado:l.fijado, S:sim.S, ultimoContacto:sim.ultimoContacto, nEventos:sim.nEventos, dominio: dominioDeTests(bucket.tests) };
+  });
+}
+function frescuraTemaDesdeLeaves(leaves, hoyStr, dHastaExamen){
+  if(!leaves.length) return null;
+  let suma = 0;
+  leaves.forEach(l=>{
+    let fr = 0;
+    if(l.ultimoContacto!=null){
+      const dias = diasEntreFechas(l.ultimoContacto, hoyStr);
+      fr = frescura(Math.max(0,dias), estabilidadEfectiva(l.S, dHastaExamen));
+    }
+    suma += fr*l.pesoSobreTema;
+  });
+  return suma/100;
+}
+function dominioTemaDesdeLeaves(leaves){
+  const conDatos = leaves.filter(l=>l.dominio!=null);
+  if(!conDatos.length) return null;
+  let suma=0, nTests=0;
+  conDatos.forEach(l=>{ suma += l.dominio.valor*l.pesoSobreTema; nTests += l.dominio.nTests; });
+  return { valor: suma/100, nTests, pocoFiable: nTests<=2 };
+}
+
+// Entrada principal: recoge los registros crudos de un tema y devuelve su
+// estado completo recién calculado. Se llama al vuelo en cada render — con
+// 45 temas y unos cientos de registros esto es instantáneo.
+function entradasCrudasTema(temaId){
+  const out = [];
+  getDias().forEach(d=>{
+    d.entradas.forEach(e=>{
+      if(e.tipo==='tema' && e.temaId===temaId) out.push(Object.assign({fecha:d.fecha}, e));
+    });
+  });
+  return out;
+}
+function testsCartaDeTema(temaId){
+  const out = [];
+  getTests().forEach(t=>{
+    (t.temas||[]).forEach(x=>{
+      if(x.temaId===temaId && x.aciertos!=null && x.preguntas>0) out.push({ fecha:t.fecha, aciertos:x.aciertos, preguntas:x.preguntas });
+    });
+  });
+  return out;
+}
+function getTemaComputado(temaId, hoyStr){
+  hoyStr = hoyStr || todayStr();
+  const temaConfig = getTemaConfig(temaId);
+  const modelo = getModeloParams();
+  const leaves = construirDatosTema(entradasCrudasTema(temaId), testsCartaDeTema(temaId), temaConfig, modelo);
+  const dHastaExamen = diasHastaExamen(hoyStr);
+  const frescuraTema = frescuraTemaDesdeLeaves(leaves, hoyStr, dHastaExamen);
+  const dominioTema = dominioTemaDesdeLeaves(leaves);
+  let ultimoContacto = null;
+  leaves.forEach(l=>{ if(l.ultimoContacto && (ultimoContacto==null || l.ultimoContacto>ultimoContacto)) ultimoContacto = l.ultimoContacto; });
+  return { temaId, leaves, frescuraTema, dominioTema, ultimoContacto, sinEpigrafes: leaves.length===1 && leaves[0].id==null };
+}
+function umbralVencido(){ return getModeloParams().umbralVencido; }
+function frescuraBand(fr){
+  if(fr==null) return 'gris';
+  const u = umbralVencido();
+  if(fr>=u) return 'verde';
+  if(fr>=0.75) return 'amarillo';
+  if(fr>=0.50) return 'naranja';
+  return 'rojo';
+}
+function frescuraColor(band){
+  return { verde:'#5ce39a', amarillo:'#e3c21e', naranja:'#ff8a3d', rojo:'#ff453a', gris:'#555' }[band] || '#666';
+}
+
+// ===== Checklist de epígrafes (compartida entre el modal de sesión y el de TEST) =====
+let epiChecklistTemaId = null;
+let epiChecklistContainerId = null;
+let epiCheckedLeaves = new Set();
+
+function setupEpiChecklist(temaId, containerId){
+  epiChecklistTemaId = temaId;
+  epiChecklistContainerId = containerId;
+  epiCheckedLeaves = new Set();
+  renderEpiChecklist();
+}
+function epiCheckboxHtml(state){ return `<span class="epi-checkbox ${state}">${ICON_CHECK_SMALL}</span>`; }
+function renderEpiChecklist(){
+  const container = document.getElementById(epiChecklistContainerId);
+  const wrap = document.getElementById(epiChecklistContainerId+'-wrap');
+  if(!container) return;
+  const tree = getTemaConfig(epiChecklistTemaId).epigrafes || [];
+  if(!tree.length){ if(wrap) wrap.style.display='none'; container.innerHTML=''; return; }
+  if(wrap) wrap.style.display='block';
+  container.innerHTML = tree.map(node=>{
+    if(node.hijos && node.hijos.length){
+      const leafIds = node.hijos.map(h=>h.id);
+      const nChecked = leafIds.filter(id=>epiCheckedLeaves.has(id)).length;
+      const state = nChecked===0 ? '' : (nChecked===leafIds.length ? 'checked' : 'indeterminate');
+      let html = `<div class="epi-check-row" onclick="toggleEpiParentNode('${node.id}')">
+        ${epiCheckboxHtml(state)}
+        <span class="epi-check-name">${escapeHtml(node.nombre)}</span>
+        <span class="epi-check-peso">${Math.round(node.peso)}%</span>
+      </div>`;
+      html += node.hijos.map(h=>`<div class="epi-check-row hijo" onclick="toggleEpiLeaf('${h.id}')">
+        ${epiCheckboxHtml(epiCheckedLeaves.has(h.id)?'checked':'')}
+        <span class="epi-check-name">${escapeHtml(h.nombre)}</span>
+        <span class="epi-check-peso">${Math.round(node.peso*h.peso/100)}%</span>
+      </div>`).join('');
+      return html;
+    }
+    return `<div class="epi-check-row" onclick="toggleEpiLeaf('${node.id}')">
+      ${epiCheckboxHtml(epiCheckedLeaves.has(node.id)?'checked':'')}
+      <span class="epi-check-name">${escapeHtml(node.nombre)}</span>
+      <span class="epi-check-peso">${Math.round(node.peso)}%</span>
+    </div>`;
+  }).join('');
+}
+function toggleEpiLeaf(id){
+  if(epiCheckedLeaves.has(id)) epiCheckedLeaves.delete(id); else epiCheckedLeaves.add(id);
+  renderEpiChecklist();
+}
+function toggleEpiParentNode(nodeId){
+  const node = epigrafeFindById(getTemaConfig(epiChecklistTemaId).epigrafes, nodeId);
+  if(!node) return;
+  const leafIds = (node.hijos && node.hijos.length) ? node.hijos.map(h=>h.id) : [node.id];
+  const allChecked = leafIds.every(id=>epiCheckedLeaves.has(id));
+  leafIds.forEach(id=> allChecked ? epiCheckedLeaves.delete(id) : epiCheckedLeaves.add(id));
+  renderEpiChecklist();
+}
+function marcarTodoEpi(){
+  epigrafeLeaves(getTemaConfig(epiChecklistTemaId).epigrafes||[]).forEach(l=>epiCheckedLeaves.add(l.id));
+  renderEpiChecklist();
+}
+
+// ===== Registrar: sesión de estudio de un tema (epígrafes + valoración) =====
+let pendingTemaSave = null; // {temaId, subKey, minutos, vuelta}
+let valoracionSeleccionada = null;
+
+function abrirTemaEpiModal(){
+  const {temaId, subKey} = pendingTemaSave;
+  document.getElementById('tema-epi-title').textContent = `${temaNombre(temaId)} · ${subcatTemaNombre(subKey)}`;
+  setupEpiChecklist(temaId, 'tema-epi-checklist');
+  valoracionSeleccionada = null;
+  document.querySelectorAll('#tema-epi-valoracion-row .valoracion-btn').forEach(b=>b.className='valoracion-btn');
+  document.getElementById('tema-epi-modal').classList.add('open');
+}
+function elegirValoracion(v){
+  valoracionSeleccionada = v;
+  document.querySelectorAll('#tema-epi-valoracion-row .valoracion-btn').forEach(b=>{
+    b.className = 'valoracion-btn' + (b.dataset.v===v ? ' sel-'+v.toLowerCase() : '');
+  });
+}
+function cancelarTemaEpiModal(){
+  closeModal('tema-epi-modal');
+  pendingTemaSave = null;
+}
+function confirmTemaSesion(){
+  if(!valoracionSeleccionada){ showToast('Elige cómo ha ido'); return; }
+  const { temaId, subKey, minutos, vuelta } = pendingTemaSave;
+  const tieneEpi = temaTieneEpigrafes(temaId);
+  if(tieneEpi && epiCheckedLeaves.size===0){ showToast('Marca al menos un epígrafe'); return; }
+
+  const dias = getDias();
+  let dia = dias.find(d=>d.fecha===currentHoyDate);
+  if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
+  const entry = { id:uid(), tipo:'tema', temaId, subKey, minutos, valoracion: valoracionSeleccionada };
+  if(tieneEpi) entry.epigrafes = Array.from(epiCheckedLeaves);
+  if(vuelta!=null) entry.vuelta = vuelta;
+  dia.entradas.push(entry);
+  saveDias(dias);
+
+  closeModal('tema-epi-modal');
+  pendingTemaSave = null;
+  document.getElementById('entry-time-input').value = '';
+  entrySelection = null;
+  entryVuelta = 1;
+  renderHoy(); renderHistorial(); renderCategoriasList();
+  showToast('Guardado ✓','green');
+}
+
+// ===== Registrar: TEST / REPASO TEST de un tema =====
+let pendingTemaTest = null; // {temaId, subKey}
+let temaTestEditing = null; // {fecha,id} | null
+
+function openTemaTestForm(temaId, subKey, editing){
+  pendingTemaTest = { temaId, subKey };
+  temaTestEditing = editing || null;
+  document.getElementById('tema-test-title').textContent = `${temaNombre(temaId)} · ${subcatTemaNombre(subKey)}`;
+  document.getElementById('tema-test-delete-btn').style.display = editing ? 'inline-block' : 'none';
+  setupEpiChecklist(temaId, 'tema-test-checklist');
+  document.getElementById('tema-test-preguntas-input').disabled = false;
+  document.getElementById('tema-test-aciertos-input').disabled = false;
+  if(editing){
+    const dia = getDia(editing.fecha);
+    const e = dia && dia.entradas.find(x=>x.id===editing.id);
+    if(!e) return;
+    document.getElementById('tema-test-tiempo-input').value = formatHM(e.minutos);
+    document.getElementById('tema-test-preguntas-input').value = e.preguntas!=null ? e.preguntas : '';
+    document.getElementById('tema-test-aciertos-input').value = e.aciertos!=null ? e.aciertos : '';
+    document.getElementById('tema-test-nota-input').value = (e.preguntas==null && e.nota!=null) ? formatNota(e.nota) : '';
+    document.getElementById('tema-test-fuente-input').value = e.fuente || '';
+    (e.epigrafes||[]).forEach(id=>epiCheckedLeaves.add(id));
+    renderEpiChecklist();
+  } else {
+    document.getElementById('tema-test-tiempo-input').value = '';
+    document.getElementById('tema-test-preguntas-input').value = '';
+    document.getElementById('tema-test-aciertos-input').value = '';
+    document.getElementById('tema-test-nota-input').value = '';
+    document.getElementById('tema-test-fuente-input').value = '';
+  }
+  updateTemaTestNota();
+  document.getElementById('tema-test-modal').classList.add('open');
+}
+function updateTemaTestNota(){
+  const preguntas = parseInt(document.getElementById('tema-test-preguntas-input').value,10);
+  const aciertos = parseInt(document.getElementById('tema-test-aciertos-input').value,10);
+  const notaEl = document.getElementById('tema-test-nota-auto');
+  const notaInput = document.getElementById('tema-test-nota-input');
+  if(Number.isFinite(preguntas) && preguntas>0 && Number.isFinite(aciertos)){
+    notaEl.textContent = 'Nota: ' + formatNota((aciertos/preguntas)*10);
+    notaInput.value = '';
+    notaInput.disabled = true;
+  } else {
+    notaEl.textContent = '';
+    notaInput.disabled = false;
+  }
+}
+function onTemaTestNotaDirectaInput(){
+  const tieneNota = document.getElementById('tema-test-nota-input').value.trim() !== '';
+  document.getElementById('tema-test-preguntas-input').disabled = tieneNota;
+  document.getElementById('tema-test-aciertos-input').disabled = tieneNota;
+}
+function saveTemaTestForm(){
+  const { temaId, subKey } = pendingTemaTest;
+  const minutos = parseTiempo(document.getElementById('tema-test-tiempo-input').value.trim());
+  if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
+  const preguntasRaw = document.getElementById('tema-test-preguntas-input').value.trim();
+  const aciertosRaw = document.getElementById('tema-test-aciertos-input').value.trim();
+  const notaRaw = document.getElementById('tema-test-nota-input').value.trim().replace(',','.');
+  let preguntas=null, aciertos=null, nota=null;
+  if(preguntasRaw!=='' && aciertosRaw!==''){
+    preguntas = parseInt(preguntasRaw,10); aciertos = parseInt(aciertosRaw,10);
+    if(!Number.isFinite(preguntas) || preguntas<=0 || !Number.isFinite(aciertos) || aciertos<0 || aciertos>preguntas){ showToast('Revisa preguntas y aciertos'); return; }
+    nota = (aciertos/preguntas)*10;
+  } else if(notaRaw!==''){
+    nota = parseFloat(notaRaw);
+    if(!Number.isFinite(nota) || nota<0 || nota>10){ showToast('Introduce una nota válida'); return; }
+  } else {
+    showToast('Introduce preguntas y aciertos, o una nota'); return;
+  }
+  const fuente = document.getElementById('tema-test-fuente-input').value || '';
+  const tieneEpi = temaTieneEpigrafes(temaId);
+  const epigrafes = (tieneEpi && epiCheckedLeaves.size) ? Array.from(epiCheckedLeaves) : null;
+  const valoracion = valoracionDeNota(nota);
+  const fecha = temaTestEditing ? temaTestEditing.fecha : currentHoyDate;
+
+  // Punto de medición crudo (Bloque H) — se toma ANTES de guardar, con el estado previo del nodo.
+  const preComputado = getTemaComputado(temaId, fecha);
+  const leafTocada = epigrafes && epigrafes.length===1 ? epigrafes[0] : null;
+  const leafPrevia = preComputado.leaves.find(l=>l.id===leafTocada) || preComputado.leaves.find(l=>l.id==null) || preComputado.leaves[0];
+  const diasSinTocar = leafPrevia && leafPrevia.ultimoContacto!=null ? diasEntreFechas(leafPrevia.ultimoContacto, fecha) : null;
+
+  const dias = getDias();
+  let entry;
+  if(temaTestEditing){
+    const dia = dias.find(d=>d.fecha===temaTestEditing.fecha);
+    entry = dia && dia.entradas.find(e=>e.id===temaTestEditing.id);
+    if(!entry) return;
+  } else {
+    let dia = dias.find(d=>d.fecha===currentHoyDate);
+    if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
+    entry = { id:uid(), tipo:'tema', temaId, subKey };
+    dia.entradas.push(entry);
+  }
+  entry.minutos = minutos;
+  entry.valoracion = valoracion;
+  if(preguntas!=null){ entry.preguntas = preguntas; entry.aciertos = aciertos; entry.nota = nota; }
+  else { delete entry.preguntas; delete entry.aciertos; entry.nota = nota; }
+  if(fuente) entry.fuente = fuente; else delete entry.fuente;
+  if(epigrafes) entry.epigrafes = epigrafes; else delete entry.epigrafes;
+
+  saveDias(dias);
+  addMeasurementPoint({ tema: temaId, epigrafe: leafTocada, fecha, diasSinTocar, aciertos, preguntas, nota });
+
+  closeModal('tema-test-modal');
+  pendingTemaTest = null; temaTestEditing = null;
+  renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
+  showToast('Guardado ✓','green');
+}
+function deleteTemaTestEntry(){
+  if(!temaTestEditing) return;
+  const {fecha, id} = temaTestEditing;
+  closeModal('tema-test-modal');
+  deleteEntry(fecha, id);
+}
+function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='REPASO_TEST'); }
+
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 1;
-const APP_BUILD_DATE = '20 oct 2026 14:01';
+const APP_VERSION = 2;
+const APP_BUILD_DATE = '20 oct 2026 14:52';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -1658,7 +2324,7 @@ function entryRowTap(fecha, id){
   if(entryPressFired){ entryPressFired = false; return; }
   const dia = getDia(fecha);
   const entrada = dia && dia.entradas.find(e=>e.id===id);
-  if(entrada && isTestTiempoEntry(entrada)){ openEditEntryModal(fecha, id); return; }
+  if(entrada && (isTestTiempoEntry(entrada) || isTemaTestEntry(entrada))){ openEditEntryModal(fecha, id); return; }
   quickAddEntry(fecha, id);
 }
 function quickAddEntry(fecha, id){
@@ -1684,32 +2350,27 @@ function addTime(){
   const delta = parseTiempo(timeRaw);
   if(delta==null || delta<=0){ showToast('Introduce un tiempo válido'); return; }
 
-  const dias = getDias();
-  let dia = dias.find(d=>d.fecha===currentHoyDate);
-  if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
-
-  if(entrySelection.kind==='tema'){
-    const {temaId, subKey} = entrySelection;
-    const isLibro = subKey==='LIBRO_RESUMEN';
-    const existing = dia.entradas.find(e=>e.tipo==='tema' && e.temaId===temaId && e.subKey===subKey && (!isLibro || e.vuelta===entryVuelta));
-    if(existing){ existing.minutos += delta; }
-    else {
-      const entry = {id:uid(), tipo:'tema', temaId, subKey, minutos:delta};
-      if(isLibro) entry.vuelta = entryVuelta;
-      dia.entradas.push(entry);
-    }
-  } else if(entrySelection.kind==='psico'){
+  if(entrySelection.kind==='psico'){
+    const dias = getDias();
+    let dia = dias.find(d=>d.fecha===currentHoyDate);
+    if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
     const {categoriaId, subcategoriaId} = entrySelection;
     const existing = dia.entradas.find(e=>e.tipo==='psico' && e.categoriaId===categoriaId && e.subcategoriaId===subcategoriaId);
     if(existing){ existing.minutos += delta; }
     else { dia.entradas.push({id:uid(), tipo:'psico', categoriaId, subcategoriaId, minutos:delta}); }
+    saveDias(dias);
+    document.getElementById('entry-time-input').value = '';
+    entrySelection = null;
+    renderHoy();
+    showToast('Tiempo añadido ✓','green');
+    return;
   }
-  saveDias(dias);
-  document.getElementById('entry-time-input').value = '';
-  entrySelection = null;
-  entryVuelta = 1;
-  renderHoy();
-  showToast('Tiempo añadido ✓','green');
+
+  // kind === 'tema' (el picker desvía TEST/REPASO_TEST a su propio formulario,
+  // así que aquí solo llegan subcategorías de estudio: piden epígrafes+valoración).
+  const {temaId, subKey} = entrySelection;
+  pendingTemaSave = { temaId, subKey, minutos: delta, vuelta: subKey==='LIBRO_RESUMEN' ? entryVuelta : null };
+  abrirTemaEpiModal();
 }
 function deleteEntry(fecha,id){
   if(!confirm('¿Borrar este registro?')) return;
@@ -1731,6 +2392,10 @@ function openEditEntryModal(fecha,id){
   if(!entrada) return;
   if(isTestTiempoEntry(entrada)){
     openTestTiempoForm({categoriaId:entrada.categoriaId, subcategoriaId:entrada.subcategoriaId}, {fecha, id});
+    return;
+  }
+  if(isTemaTestEntry(entrada)){
+    openTemaTestForm(entrada.temaId, entrada.subKey, {fecha, id});
     return;
   }
   editingEntryFecha = fecha;
@@ -1987,6 +2652,11 @@ function pickerGoBloque(id){ pickerBloqueId=id; pickerStep='temas-lista'; render
 function pickerGoTema(temaId){ pickerTemaId=temaId; pickerStep='temas-sub'; renderPicker(); }
 function pickerGoTests(){ pickerStep='tests-choice'; renderPicker(); }
 function pickerSelectTemaSub(subKey){
+  if(subKey==='TEST' || subKey==='REPASO_TEST'){
+    closeModal('picker-modal');
+    openTemaTestForm(pickerTemaId, subKey);
+    return;
+  }
   entrySelection = {kind:'tema', temaId:pickerTemaId, subKey};
   if(subKey==='LIBRO_RESUMEN') entryVuelta = Math.max(1, maxVueltaConTiempo(pickerTemaId));
   closeModal('picker-modal');
@@ -2765,7 +3435,7 @@ function openTestForm(tipo, editId){
     const t = getTests().find(x=>x.id===editId);
     document.getElementById('test-form-fecha').value = t.fecha;
     document.getElementById('test-form-tiempo').value = formatHM(t.minutosTotal);
-    testFormTemas = (t.temas||[]).map(x=>({temaId:x.temaId, preguntas:x.preguntas}));
+    testFormTemas = (t.temas||[]).map(x=>({temaId:x.temaId, preguntas:x.preguntas, aciertos: x.aciertos!=null?x.aciertos:null}));
     if(tipo==='simulacro') document.getElementById('test-form-nota').value = t.nota!=null ? t.nota : '';
   } else {
     document.getElementById('test-form-fecha').value = todayStr();
@@ -2783,12 +3453,22 @@ function renderTestFormTemas(){
   const totalPreguntas = testFormTemas.reduce((a,t)=>a+t.preguntas,0);
   el.innerHTML = testFormTemas.map((t,i)=>`<div class="test-tema-row">
       <span class="nm">${escapeHtml(temaNombre(t.temaId))}</span>
-      <input type="number" class="modal-input" min="0" value="${t.preguntas}" onchange="updateTestFormPreguntas(${i}, this.value)">
+      <input type="number" class="modal-input" min="0" value="${t.preguntas}" placeholder="preg." title="Preguntas" onchange="updateTestFormPreguntas(${i}, this.value)">
+      <input type="number" class="modal-input" min="0" max="${t.preguntas}" value="${t.aciertos!=null?t.aciertos:''}" placeholder="acier." title="Aciertos" onchange="updateTestFormAciertos(${i}, this.value)">
       <button class="rm" onclick="removeTestFormTema(${i})">${ICON_CLOSE}</button>
     </div>`).join('');
   document.getElementById('test-form-total-preguntas').textContent = totalPreguntas;
 }
-function updateTestFormPreguntas(i,v){ testFormTemas[i].preguntas = Math.max(0, parseInt(v,10)||0); renderTestFormTemas(); }
+function updateTestFormPreguntas(i,v){
+  testFormTemas[i].preguntas = Math.max(0, parseInt(v,10)||0);
+  if(testFormTemas[i].aciertos!=null) testFormTemas[i].aciertos = Math.min(testFormTemas[i].aciertos, testFormTemas[i].preguntas);
+  renderTestFormTemas();
+}
+function updateTestFormAciertos(i,v){
+  const raw = String(v).trim();
+  testFormTemas[i].aciertos = raw==='' ? null : Math.max(0, Math.min(testFormTemas[i].preguntas, parseInt(raw,10)||0));
+  renderTestFormTemas();
+}
 function removeTestFormTema(i){ testFormTemas.splice(i,1); renderTestFormTemas(); }
 
 function openTestTemaPicker(){
@@ -2819,7 +3499,7 @@ function renderTestTemaPicker(){
 }
 function testTemaPickerBack(){ testPickerBloque=null; renderTestTemaPicker(); }
 function pickTestFormTema(temaId){
-  testFormTemas.push({temaId, preguntas:1});
+  testFormTemas.push({temaId, preguntas:1, aciertos:null});
   closeModal('test-tema-picker-modal');
   renderTestFormTemas();
 }
@@ -2831,7 +3511,10 @@ function saveTestForm(){
   if(minutosTotal==null || minutosTotal<=0){ showToast('Introduce un tiempo válido'); return; }
   const validTemas = testFormTemas.filter(t=>t.preguntas>0);
   if(!validTemas.length){ showToast('Añade al menos un tema con preguntas'); return; }
-  const temas = testTemaRound(minutosTotal, validTemas);
+  const temas = testTemaRound(minutosTotal, validTemas).map(t=>{
+    const orig = validTemas.find(v=>v.temaId===t.temaId);
+    return Object.assign({}, t, { aciertos: orig && orig.aciertos!=null ? orig.aciertos : null });
+  });
   let nota = null;
   if(testFormTipo==='simulacro'){
     const notaRaw = document.getElementById('test-form-nota').value.trim().replace(',','.');
@@ -2845,7 +3528,17 @@ function saveTestForm(){
   } else {
     tests.push({id:uid(), tipo:testFormTipo, fecha, minutosTotal, temas, nota, totalPreguntas});
   }
+  const preComputados = {};
+  temas.forEach(t=>{ if(t.aciertos!=null) preComputados[t.temaId] = getTemaComputado(t.temaId, fecha); });
   saveTests(tests);
+  temas.forEach(t=>{
+    if(t.aciertos==null) return;
+    const pre = preComputados[t.temaId];
+    const leafEntera = pre && pre.leaves.find(l=>l.id==null);
+    const ultimoPrevio = leafEntera ? leafEntera.ultimoContacto : (pre && pre.ultimoContacto);
+    const diasSinTocar = ultimoPrevio!=null ? diasEntreFechas(ultimoPrevio, fecha) : null;
+    addMeasurementPoint({ tema:t.temaId, epigrafe:null, fecha, diasSinTocar, aciertos:t.aciertos, preguntas:t.preguntas, nota:null });
+  });
   closeModal('test-form-modal');
   showToast('Guardado ✓','green');
   renderHoy(); renderHistorial(); renderEstadisticas();
@@ -2886,6 +3579,380 @@ function renderTestsView(){
     </div>`).join('');
 }
 
+// ========== PLANIFICACIÓN: fecha de examen y modelo ==========
+function openFechaExamenModal(){
+  document.getElementById('fecha-examen-input').value = getFechaExamen() || '';
+  document.getElementById('fecha-examen-modal').classList.add('open');
+}
+function saveFechaExamenModal(){
+  setFechaExamen(document.getElementById('fecha-examen-input').value || null);
+  closeModal('fecha-examen-modal');
+  refreshFechaExamenLabel();
+  showToast('Guardado ✓','green');
+}
+function refreshFechaExamenLabel(){
+  const el = document.getElementById('ajustes-fecha-examen-val');
+  if(!el) return;
+  const fe = getFechaExamen();
+  el.textContent = fe ? formatDate(fe) : 'Sin fijar';
+}
+function openModeloModal(){
+  const m = getModeloParams();
+  document.getElementById('modelo-gananciaBien-input').value = m.gananciaBien;
+  document.getElementById('modelo-gananciaRegular-input').value = m.gananciaRegular;
+  document.getElementById('modelo-penalizacionMal-input').value = m.penalizacionMal;
+  document.getElementById('modelo-umbralVencido-input').value = Math.round(m.umbralVencido*100);
+  document.getElementById('modelo-modal').classList.add('open');
+}
+function saveModeloModal(){
+  const num = id=>parseFloat(document.getElementById(id).value.trim().replace(',','.'));
+  const gananciaBien = num('modelo-gananciaBien-input');
+  const gananciaRegular = num('modelo-gananciaRegular-input');
+  const penalizacionMal = num('modelo-penalizacionMal-input');
+  const umbralPct = num('modelo-umbralVencido-input');
+  if(![gananciaBien,gananciaRegular,penalizacionMal,umbralPct].every(Number.isFinite)){ showToast('Revisa los valores'); return; }
+  setModeloParams({ gananciaBien, gananciaRegular, penalizacionMal, umbralVencido: umbralPct/100 });
+  closeModal('modelo-modal');
+  showToast('Guardado ✓','green');
+}
+function restaurarModeloDefaultModal(){
+  restaurarModeloDefault();
+  openModeloModal();
+  showToast('Restaurado a los valores por defecto','green');
+}
+
+// ========== HERRAMIENTAS / CURVA DEL OLVIDO (Bloque F) ==========
+function openHerramientas(){ document.getElementById('herramientas-modal').classList.add('open'); }
+
+let curvaView = 'resumen'; // 'resumen' | 'tema' | 'editar'
+let curvaTemaId = null;
+
+function openCurva(){ curvaView='resumen'; curvaTemaId=null; renderCurva(); document.getElementById('curva-modal').classList.add('open'); }
+function curvaBack(){ curvaView='resumen'; curvaTemaId=null; renderCurva(); }
+function openCurvaTema(temaId){ curvaTemaId=temaId; curvaView='tema'; renderCurva(); }
+function abrirEditorEpigrafes(temaId){ curvaTemaId=temaId; curvaView='editar'; renderCurva(); }
+
+function computarTodosLosTemas(hoyStr){
+  const out = [];
+  for(let n=1;n<=TOTAL_TEMAS;n++){ const tid=temaIdFromNum(n); out.push({temaId:tid, comp:getTemaComputado(tid,hoyStr)}); }
+  return out;
+}
+function renderCurva(){
+  document.getElementById('curva-back-btn').style.display = curvaView==='resumen' ? 'none' : 'flex';
+  document.getElementById('curva-header-title').textContent =
+    curvaView==='resumen' ? 'Curva del olvido' :
+    curvaView==='editar' ? 'Editar epígrafes · ' + temaNombre(curvaTemaId) :
+    temaNombre(curvaTemaId);
+  const body = document.getElementById('curva-body');
+  if(curvaView==='resumen'){ body.innerHTML = renderCurvaResumenHtml(); return; }
+  if(curvaView==='editar'){ body.innerHTML = renderCurvaEditorHtml(curvaTemaId); return; }
+  body.innerHTML = renderCurvaTemaHtml(curvaTemaId);
+  setTimeout(()=>renderCurvaChart(curvaTemaId), 0);
+}
+function renderCurvaResumenHtml(){
+  const hoy = todayStr();
+  const todos = computarTodosLosTemas(hoy);
+  const dHE = diasHastaExamen(hoy);
+  let vencidos=0, hoyMismo=0, alDia=0;
+  const filas = [];
+  todos.forEach(({temaId,comp})=>{
+    comp.leaves.forEach(l=>{
+      if(l.ultimoContacto==null) return;
+      const dias = diasEntreFechas(l.ultimoContacto, hoy);
+      const Seff = estabilidadEfectiva(l.S, dHE);
+      const fr = frescura(Math.max(0,dias), Seff);
+      const diasVencido = dias - Seff;
+      if(diasVencido>=1) vencidos++;
+      else if(diasVencido>=0) hoyMismo++;
+      else alDia++;
+      if(diasVencido>=0){
+        const nombre = l.id==null ? `${temaNombre(temaId)} · Tema completo` : `${temaNombre(temaId)} · ${l.nombre}`;
+        filas.push({ temaId, fresc:fr, diasVencido, dominio:l.dominio, nombre });
+      }
+    });
+  });
+  filas.sort((a,b)=>a.fresc-b.fresc);
+
+  const examenHtml = dHE!=null ? `<div class="curva-examen-row">Examen en ${dHE} día${dHE===1?'':'s'}</div>` : '';
+  const listaHtml = filas.length ? filas.map(f=>{
+    const vencidoTxt = f.diasVencido<1 ? 'vencido hoy' : `vencido ${Math.floor(f.diasVencido)} d`;
+    const domTxt = f.dominio==null ? 'sin datos' : `dominio ${Math.round(f.dominio.valor*100)}%${f.dominio.pocoFiable?' *':''}`;
+    return `<div class="curva-list-row" onclick="openCurvaTema('${f.temaId}')">
+      <div style="flex:1;min-width:0;">
+        <div class="curva-list-name">${escapeHtml(f.nombre)}</div>
+        <div class="curva-list-meta">${vencidoTxt} · ${domTxt}</div>
+      </div>
+      <span class="curva-list-fresc" style="color:${frescuraColor(frescuraBand(f.fresc))}">${Math.round(f.fresc*100)}%</span>
+    </div>`;
+  }).join('') : '<div class="empty-sub">Nada vencido — vas al día</div>';
+
+  const mapaHtml = BLOQUES_TEMAS.map(b=>{
+    let cells = '';
+    for(let n=b.desde;n<=b.hasta;n++){
+      const tid = temaIdFromNum(n);
+      const comp = todos.find(t=>t.temaId===tid).comp;
+      const band = comp.ultimoContacto==null ? 'gris' : frescuraBand(comp.frescuraTema);
+      const col = frescuraColor(band);
+      cells += `<div class="tema-map-cell" style="background:${col}22;color:${col};border:1px solid ${col}66;" onclick="openCurvaTema('${tid}')" title="${temaNombre(tid)}">${n}</div>`;
+    }
+    return `<div class="tema-map-bloque-lbl">${escapeHtml(b.corto)}</div><div class="tema-map-grid">${cells}</div>`;
+  }).join('');
+
+  return `
+    <div class="curva-stats-row">
+      <div class="curva-stat"><div class="v" style="color:var(--red);">${vencidos}</div><div class="l">Vencidos</div></div>
+      <div class="curva-stat"><div class="v" style="color:#e3c21e;">${hoyMismo}</div><div class="l">Hoy mismo</div></div>
+      <div class="curva-stat"><div class="v" style="color:var(--green);">${alDia}</div><div class="l">Al día</div></div>
+    </div>
+    ${examenHtml}
+    <div class="chart-card-label" style="margin-top:18px;">Lo más olvidado</div>
+    <div class="card" style="padding:4px 16px;">${listaHtml}</div>
+    <div class="chart-card-label" style="margin-top:18px;">Mapa de los 45</div>
+    <div class="card" style="padding:14px 16px;">${mapaHtml}</div>
+  `;
+}
+function renderCurvaTemaHtml(temaId){
+  const hoy = todayStr();
+  const comp = getTemaComputado(temaId, hoy);
+  const dHE = diasHastaExamen(hoy);
+  const totalMin = sumMinutosTema(temaId);
+  const ultimoTxt = comp.ultimoContacto ? `hace ${diasEntreFechas(comp.ultimoContacto,hoy)} días` : 'nunca';
+  const domTxt = comp.dominioTema==null ? 'sin datos' : `${Math.round(comp.dominioTema.valor*100)}%${comp.dominioTema.pocoFiable?' *':''}`;
+  const frescTxt = comp.ultimoContacto==null ? '—' : `${Math.round(Math.max(0,comp.frescuraTema)*100)}%`;
+
+  const filasEpi = comp.sinEpigrafes ? '' : comp.leaves.map(l=>{
+    let frTxt = '—';
+    if(l.ultimoContacto!=null) frTxt = Math.round(frescura(Math.max(0,diasEntreFechas(l.ultimoContacto,hoy)), estabilidadEfectiva(l.S, dHE))*100)+'%';
+    const dTxt = l.dominio==null ? 'sin d.' : Math.round(l.dominio.valor*100)+'%';
+    return `<div class="epi-table-row"><span class="epi-table-name">${escapeHtml(l.nombre)}</span><span class="epi-table-val">${Math.round(l.pesoSobreTema)}%</span><span class="epi-table-val">${frTxt}</span><span class="epi-table-val">${dTxt}</span></div>`;
+  }).join('');
+
+  const epigrafesSection = comp.sinEpigrafes
+    ? `<div class="empty-sub">Este tema no tiene epígrafes definidos — funciona como una unidad.<br><button class="add-btn" style="margin-top:10px;" onclick="abrirEditorEpigrafes('${temaId}')">+ Definir epígrafes</button></div>`
+    : `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div class="chart-card-label" style="margin:0;">Epígrafes</div>
+        <button class="epi-marcar-todo" onclick="abrirEditorEpigrafes('${temaId}')">EDITAR</button>
+      </div>
+      <div class="card" style="padding:4px 16px;margin-bottom:16px;">${filasEpi}</div>`;
+
+  return `
+    <div class="curva-stats-row" style="grid-template-columns:1fr 1fr;">
+      <div class="curva-stat"><div class="v" style="color:${comp.ultimoContacto?frescuraColor(frescuraBand(comp.frescuraTema)):'var(--text3)'}">${frescTxt}</div><div class="l">Frescura</div></div>
+      <div class="curva-stat"><div class="v">${domTxt}</div><div class="l">Dominio</div></div>
+    </div>
+    <div class="curva-examen-row" style="text-align:left;padding:0 0 14px;">Tiempo total ${formatHM(totalMin)} · Último contacto ${ultimoTxt}</div>
+    ${epigrafesSection}
+    <div class="chart-card-label">Curva</div>
+    <div class="card" style="padding:14px 16px;">
+      <canvas id="curva-chart-canvas" height="180"></canvas>
+      <div id="curva-chart-meta" style="font-size:11px;color:var(--text3);margin-top:8px;"></div>
+    </div>
+  `;
+}
+function renderCurvaChart(temaId){
+  const canvas = document.getElementById('curva-chart-canvas');
+  if(!canvas) return;
+  const hoy = todayStr();
+  const comp = getTemaComputado(temaId, hoy);
+  const dHE = diasHastaExamen(hoy);
+  let fechaMin = null;
+  comp.leaves.forEach(l=>{ if(l.ultimoContacto && (fechaMin==null||l.ultimoContacto<fechaMin)) fechaMin = l.ultimoContacto; });
+  const metaEl = document.getElementById('curva-chart-meta');
+  if(!fechaMin){ metaEl.textContent = 'Sin registros todavía para dibujar la curva.'; return; }
+
+  const diasPasados = diasEntreFechas(fechaMin, hoy);
+  const diasTotales = diasPasados + 30;
+  const serie = [];
+  for(let d=0; d<=diasTotales; d++){
+    const fechaD = addDays(fechaMin, d);
+    let suma = 0;
+    comp.leaves.forEach(l=>{
+      if(l.ultimoContacto==null || fechaD<l.ultimoContacto) return;
+      const dias = diasEntreFechas(l.ultimoContacto, fechaD);
+      suma += frescura(Math.max(0,dias), estabilidadEfectiva(l.S,dHE)) * l.pesoSobreTema;
+    });
+    serie.push(suma); // ya está en base 0-100 (pesoSobreTema suma 100)
+  }
+  const puntos = getMeasurementPoints().filter(p=>p.tema===temaId);
+  const scatterData = puntos.map(p=>{
+    const idx = diasEntreFechas(fechaMin, p.fecha);
+    const ratio = p.aciertos!=null && p.preguntas>0 ? p.aciertos/p.preguntas : (p.nota!=null ? p.nota/10 : null);
+    if(ratio==null) return null;
+    return { x: idx, y: Math.round(ratio*100) };
+  }).filter(p=>p && p.x>=0 && p.x<=diasTotales);
+
+  if(typeof charts!=='object') window.charts = {};
+  if(charts['curva']) charts['curva'].destroy();
+  const ctx = canvas.getContext('2d');
+  charts['curva'] = new Chart(ctx, {
+    type:'line',
+    data:{ datasets:[
+      { label:'Estimada', data: serie.map((v,i)=>({x:i,y:Math.round(v)})).filter((p,i)=>i<=diasPasados), borderColor:'#38bdf8', backgroundColor:'rgba(56,189,248,0.12)', tension:0.25, fill:true, pointRadius:0, borderWidth:2 },
+      { label:'Proyección', data: serie.map((v,i)=>({x:i,y:Math.round(v)})).filter((p,i)=>i>=diasPasados), borderColor:'rgba(56,189,248,0.4)', borderDash:[4,4], tension:0.25, fill:false, pointRadius:0, borderWidth:2 },
+      { label:'Tests', data: scatterData, showLine:false, backgroundColor:'#e3a71e', pointRadius:4, pointHoverRadius:5 },
+    ]},
+    options:{ responsive:true, plugins:{legend:{display:false}},
+      scales:{
+        x:{ type:'linear', min:0, max:diasTotales, ticks:{ color:'rgba(255,255,255,0.32)', font:{size:8}, maxTicksLimit:6, callback:v=>formatDate(addDays(fechaMin,Math.round(v))).slice(0,5) }, grid:{display:false} },
+        y:{ min:0, max:110, ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'} }
+      }
+    }
+  });
+  metaEl.textContent = puntos.length ? `Puntos medidos: ${puntos.length}` : '';
+}
+
+// ========== EDITOR DE EPÍGRAFES (desde la ficha del tema) ==========
+function siblingsDe(tree, id){
+  function buscar(nodes){
+    for(const node of nodes){
+      if(node.id===id) return nodes;
+      if(node.hijos && node.hijos.length){
+        const f = buscar(node.hijos);
+        if(f) return f;
+      }
+    }
+    return null;
+  }
+  return buscar(tree||[]) || tree;
+}
+function renderCurvaEditorHtml(temaId){
+  const cfg = getTemaConfig(temaId);
+  const tree = cfg.epigrafes || [];
+  const filas = tree.map(node=>renderEditorNodeHtml(tree, node, false)).join('');
+  return `
+    <div class="modal-note">Los pesos se reparten a partes iguales al crear un epígrafe nuevo, y se reajustan proporcionalmente cuando cambias uno a mano — salvo los que fijes con el candado.</div>
+    <div id="editor-epi-list">${filas || '<div class="empty-sub">Sin epígrafes todavía</div>'}</div>
+    <label class="modal-label" style="margin-top:14px;">Nuevo epígrafe</label>
+    <div style="display:flex;gap:8px;">
+      <input type="text" class="modal-input" id="editor-nuevo-epi-nombre" placeholder="p.ej. 27.4 Carta de Derechos" style="flex:1;font-family:var(--font-sans);margin-bottom:0;">
+      <button class="save-btn" style="width:auto;padding:0 18px;margin:0;" onclick="editorAnadirEpigrafe(null)">+</button>
+    </div>
+  `;
+}
+function renderEditorNodeHtml(siblings, node, esHijo){
+  const fusionSelect = siblings.length>1 ? `
+    <select class="modal-select" style="font-size:11px;padding:6px 8px;margin:4px 0 0;" onchange="if(this.value){editorFusionar('${node.id}', this.value);} this.value='';">
+      <option value="">Fusionar con…</option>
+      ${siblings.filter(s=>s.id!==node.id).map(s=>`<option value="${s.id}">${escapeHtml(s.nombre)}</option>`).join('')}
+    </select>` : '';
+  const hijosHtml = (node.hijos||[]).map(h=>renderEditorNodeHtml(node.hijos, h, true)).join('');
+  const subAdder = !esHijo ? `
+    <div style="display:flex;gap:8px;padding:6px 0 10px;">
+      <input type="text" class="modal-input" id="editor-nuevo-sub-${node.id}" placeholder="+ subepígrafe" style="flex:1;font-family:var(--font-sans);margin-bottom:0;font-size:12px;">
+      <button class="epi-marcar-todo" onclick="editorAnadirEpigrafe('${node.id}')">AÑADIR</button>
+    </div>` : '';
+  return `
+    <div class="epi-weight-row ${esHijo?'hijo':''}">
+      <input type="text" class="modal-input" style="flex:1;margin-bottom:0;font-family:var(--font-sans);" value="${escapeHtml(node.nombre)}" onchange="editorRenombrar('${node.id}', this.value)">
+      <input type="number" class="epi-weight-input modal-input" value="${Math.round(node.peso*10)/10}" ${node.fijado?'disabled':''} onchange="editorCambiarPeso('${node.id}', this.value)">
+      <button class="epi-lock-btn ${node.fijado?'on':''}" onclick="editorToggleFijado('${node.id}')" title="Fijar peso">${ICON_LOCK}</button>
+      <button class="epi-lock-btn" style="color:var(--red);" onclick="editorBorrarEpigrafe('${node.id}')">${ICON_CLOSE}</button>
+    </div>
+    ${fusionSelect}
+    <div style="padding-left:${esHijo?'0':'20px'};">${hijosHtml}${subAdder}</div>
+  `;
+}
+function editorAnadirEpigrafe(parentId){
+  const inputId = parentId ? `editor-nuevo-sub-${parentId}` : 'editor-nuevo-epi-nombre';
+  const input = document.getElementById(inputId);
+  const nombre = input.value.trim();
+  if(!nombre){ showToast('Ponle un nombre'); return; }
+  const cfg = getTemaConfig(curvaTemaId);
+  if(!cfg.epigrafes) cfg.epigrafes = [];
+  let siblings;
+  if(parentId){
+    const parent = epigrafeFindById(cfg.epigrafes, parentId);
+    if(!parent) return;
+    if(!parent.hijos) parent.hijos = [];
+    siblings = parent.hijos;
+  } else siblings = cfg.epigrafes;
+  agregarEpigrafeASiblings(siblings, nombre);
+  setTemaConfig(curvaTemaId, cfg);
+  renderCurva();
+}
+function editorRenombrar(id, nombre){
+  const cfg = getTemaConfig(curvaTemaId);
+  const node = epigrafeFindById(cfg.epigrafes, id);
+  if(!node) return;
+  const limpio = nombre.trim();
+  if(limpio) node.nombre = limpio;
+  setTemaConfig(curvaTemaId, cfg);
+}
+function editorCambiarPeso(id, valor){
+  const cfg = getTemaConfig(curvaTemaId);
+  const siblings = siblingsDe(cfg.epigrafes, id);
+  reajustarPesos(siblings, id, parseFloat(String(valor).replace(',','.'))||0);
+  setTemaConfig(curvaTemaId, cfg);
+  renderCurva();
+}
+function editorToggleFijado(id){
+  const cfg = getTemaConfig(curvaTemaId);
+  const node = epigrafeFindById(cfg.epigrafes, id);
+  if(!node) return;
+  node.fijado = !node.fijado;
+  setTemaConfig(curvaTemaId, cfg);
+  renderCurva();
+}
+function limpiarReferenciasEpigrafe(temaId, idsQuitarArr){
+  const idsQuitar = new Set(idsQuitarArr);
+  const dias = getDias();
+  let changed = false;
+  dias.forEach(d=>d.entradas.forEach(e=>{
+    if(e.tipo==='tema' && e.temaId===temaId && e.epigrafes){
+      const filtrado = e.epigrafes.filter(id=>!idsQuitar.has(id));
+      if(filtrado.length!==e.epigrafes.length){ e.epigrafes = filtrado.length?filtrado:undefined; changed=true; }
+    }
+  }));
+  if(changed) saveDias(dias);
+}
+function editorBorrarEpigrafe(id){
+  if(!confirm('¿Borrar este epígrafe? Los registros que lo marcaban pasarán a contar como del tema entero.')) return;
+  const cfg = getTemaConfig(curvaTemaId);
+  const siblings = siblingsDe(cfg.epigrafes, id);
+  const idx = siblings.findIndex(s=>s.id===id);
+  if(idx<0) return;
+  const borrado = siblings[idx];
+  siblings.splice(idx,1);
+  const fijados = siblings.filter(s=>s.fijado);
+  const libres = siblings.filter(s=>!s.fijado);
+  const sumFijados = fijados.reduce((a,s)=>a+s.peso,0);
+  const disponible = Math.max(0,100-sumFijados);
+  const sumLibresActual = libres.reduce((a,s)=>a+s.peso,0);
+  if(libres.length){
+    if(sumLibresActual>0.0001) libres.forEach(s=>{ s.peso = disponible*(s.peso/sumLibresActual); });
+    else { const each = disponible/libres.length; libres.forEach(s=>s.peso=each); }
+  }
+  setTemaConfig(curvaTemaId, cfg);
+  limpiarReferenciasEpigrafe(curvaTemaId, [borrado.id, ...((borrado.hijos||[]).map(h=>h.id))]);
+  renderCurva();
+}
+function editorFusionar(idA, idB){
+  if(!confirm('¿Fusionar estos dos epígrafes? Sus pesos se suman y los registros de ambos pasan a contar para el resultante.')) return;
+  const cfg = getTemaConfig(curvaTemaId);
+  const siblings = siblingsDe(cfg.epigrafes, idA);
+  const nodeA = siblings.find(s=>s.id===idA);
+  const idxB = siblings.findIndex(s=>s.id===idB);
+  if(!nodeA || idxB<0) return;
+  const nodeB = siblings[idxB];
+  nodeA.peso += nodeB.peso;
+  siblings.splice(idxB,1);
+  setTemaConfig(curvaTemaId, cfg);
+  reescribirReferenciasEpigrafe(curvaTemaId, [idB, ...((nodeB.hijos||[]).map(h=>h.id))], idA);
+  renderCurva();
+}
+function reescribirReferenciasEpigrafe(temaId, idsOrigen, idDestino){
+  const set = new Set(idsOrigen);
+  const dias = getDias();
+  let changed = false;
+  dias.forEach(d=>d.entradas.forEach(e=>{
+    if(e.tipo==='tema' && e.temaId===temaId && e.epigrafes){
+      const nuevo = Array.from(new Set(e.epigrafes.map(id=> set.has(id) ? idDestino : id)));
+      if(JSON.stringify(nuevo)!==JSON.stringify(e.epigrafes)){ e.epigrafes = nuevo; changed=true; }
+    }
+  }));
+  if(changed) saveDias(dias);
+}
+
 // ========== UI ==========
 function updateNavIndicator(btn){
   const ind = document.getElementById('nav-indicator');
@@ -2906,6 +3973,7 @@ function showScreen(name,btn){
   if(name==='historial') renderHistorial();
   if(name==='estadisticas') renderEstadisticas();
   if(name==='categorias') renderCategoriasList();
+  if(name==='ajustes') refreshFechaExamenLabel();
 }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function showToast(msg,cls){
