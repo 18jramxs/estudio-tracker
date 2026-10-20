@@ -296,6 +296,25 @@ body::before {
 .toggle-btn.open { transform: rotate(180deg); color: var(--gold2); }
 .empty-state { text-align: center; color: var(--text3); padding: 48px 16px; font-size: 14px; font-family: var(--font-mono); }
 
+/* —— STATS: acordeón —— */
+.stat-accordion { margin-bottom: 10px; overflow: hidden; border-radius: var(--r); background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-card); }
+.stat-accordion-header { display: flex; align-items: center; justify-content: space-between; padding: 16px; }
+.stat-accordion-header .t { font-family: var(--font-disp); font-size: 15px; letter-spacing: 0.4px; text-transform: uppercase; color: var(--text); }
+.stat-accordion-chevron { transition: transform 0.25s cubic-bezier(.4,0,.2,1); color: var(--text3); flex-shrink: 0; display: flex; }
+.stat-accordion.open .stat-accordion-chevron { transform: rotate(180deg); color: var(--gold2); }
+.stat-accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.25s cubic-bezier(.4,0,.2,1); }
+.stat-accordion.open .stat-accordion-body { max-height: 2600px; }
+.stat-accordion-inner { padding: 0 16px 16px; }
+
+/* —— STATS: carrusel de gráficas —— */
+.chart-carousel-card { overflow: hidden; border-radius: var(--r); background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow-card); margin-bottom: 14px; }
+.chart-carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.chart-carousel-track::-webkit-scrollbar { display: none; }
+.chart-carousel-slide { min-width: 100%; box-sizing: border-box; scroll-snap-align: start; padding: 16px; height: 262px; }
+.chart-carousel-dots { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 2px 0 14px; }
+.chart-carousel-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--text4); transition: all 0.25s var(--ease-out-soft); }
+.chart-carousel-dot.active { width: 18px; background: var(--gold2); }
+
 .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
 .stat-pill { padding: 14px 6px; text-align: center; }
 .stat-val { font-family: var(--font-mono); font-weight: 600; font-size: 20px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
@@ -508,6 +527,64 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .epi-weight-input { width: 56px; flex-shrink: 0; margin-bottom: 0; text-align: center; padding: 8px 4px; }
 .epi-lock-btn { background: none; border: none; cursor: pointer; padding: 4px; flex-shrink: 0; color: var(--text3); }
 .epi-lock-btn.on { color: var(--gold2); }
+/* —— HERRAMIENTAS: Mnemotécnicas —— */
+.mnemo-search { margin-bottom: 12px; font-family: var(--font-sans); }
+.mnemo-tema-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--border); }
+.mnemo-tema-row:first-of-type { border-top: none; }
+.mnemo-tema-row.sin-notas { opacity: 0.45; }
+.mnemo-nota-wrap { position: relative; overflow: hidden; border-radius: var(--r-sm); margin-bottom: 10px; }
+.mnemo-nota-delete { position: absolute; inset: 0; background: var(--red); display: flex; align-items: center; justify-content: flex-end; padding-right: 22px; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; }
+.mnemo-nota-card { position: relative; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; touch-action: pan-y; }
+.mnemo-nota-texto { font-size: 14px; color: var(--text); white-space: pre-wrap; line-height: 1.4; overflow-wrap: anywhere; }
+.mnemo-nota-fecha { font-size: 10.5px; color: var(--text3); margin-top: 8px; text-align: right; }
+.mnemo-fonetico-numero { font-family: var(--font-disp); font-size: 22px; letter-spacing: 1px; color: var(--text); }
+.mnemo-fonetico-palabra { font-size: 15px; margin-top: 4px; color: var(--text2); }
+.mnemo-fonetico-palabra b { color: var(--gold2); font-weight: 800; }
+
+/* —— HERRAMIENTAS: Código fonético —— */
+.cf-tabla-row { display: flex; align-items: center; gap: 14px; padding: 6px 4px; font-size: 13px; }
+.cf-tabla-num { font-family: var(--font-disp); font-size: 18px; width: 24px; text-align: center; color: var(--gold2); flex-shrink: 0; }
+.cf-tabla-letras { color: var(--text2); font-family: var(--font-mono); }
+.cf-fichas-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 14px 0 4px; }
+.cf-ficha { width: 54px; height: 54px; border-radius: var(--r-xs); background: var(--bg-input); border: 1px solid var(--border-2); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.cf-ficha-letra { font-family: var(--font-disp); font-size: 18px; color: var(--text); letter-spacing: 0.3px; }
+.cf-ficha-digito { font-size: 9px; color: var(--text3); margin-top: 1px; }
+.cf-resaltado { text-align: center; font-size: 19px; font-family: var(--font-sans); margin: 10px 0 4px; color: var(--text2); min-height: 26px; }
+.cf-resaltado b { color: var(--gold2); font-weight: 800; }
+.cf-aviso { text-align: center; font-size: 11.5px; color: var(--orange); min-height: 15px; margin-bottom: 10px; }
+
+/* —— FEEDBACK AL PULSAR (Bloque D): un único mecanismo reutilizado en toda la app —— */
+.tap,
+.lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn,
+.modal-btn, .f-btn, .epi-check-row, .curva-list-row, .tema-map-cell, .curva-tool-btn,
+.nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable,
+.entry-row.clickable, .nav-arrow-btn, .toggle-btn, button {
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.12s cubic-bezier(.4,0,.2,1);
+}
+.tap:active,
+.lvl-row:active, .lvl-block-btn:active, .cat-row:active, .settings-row:active, .cat-picker-btn:active,
+.add-btn:active, .save-btn:active, .modal-btn:active, .f-btn:active, .epi-check-row:active,
+.curva-list-row:active, .tema-map-cell:active, .curva-tool-btn:active, .nav-btn:active,
+.edit-date-btn:active, .opo-edit-btn:active, .history-session-header:active, .act-day.clickable:active,
+.entry-row.clickable:active, .nav-arrow-btn:active, .toggle-btn:active, button:active {
+  transform: scale(0.97);
+}
+.tap::after,
+.lvl-row::after, .lvl-block-btn::after, .cat-row::after, .settings-row::after, .cat-picker-btn::after,
+.add-btn::after, .save-btn::after, .modal-btn::after, .f-btn::after, .epi-check-row::after,
+.curva-list-row::after, .tema-map-cell::after, .curva-tool-btn::after, .nav-btn::after,
+.edit-date-btn::after, .opo-edit-btn::after, .history-session-header::after, .act-day.clickable::after,
+.entry-row.clickable::after, .nav-arrow-btn::after, .toggle-btn::after, button::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.16) 50%, transparent 70%);
+  transform: translateX(-120%); opacity: 0;
+}
+.tap-shine::after { animation: tapShine 0.4s cubic-bezier(.4,0,.2,1); }
+@keyframes tapShine { 0% { transform: translateX(-120%); opacity: 1; } 100% { transform: translateX(120%); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -520,7 +597,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- HOY -->
 <div id="screen-hoy" class="screen active">
 
-  <button class="curva-tool-btn" onclick="openCurva()">
+  <button class="curva-tool-btn tap" onclick="openCurva()">
     <span class="t">CURVA DEL OLVIDO</span>
     <span style="color:var(--text3);">›</span>
   </button>
@@ -570,11 +647,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   <div id="hoy-list"></div>
 </div>
 
-<!-- HISTORIAL -->
-<div id="screen-historial" class="screen">
-  <div id="historial-list"></div>
-</div>
-
 <!-- ESTADÍSTICAS -->
 <div id="screen-estadisticas" class="screen">
 
@@ -584,7 +656,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
         <div class="opo-days-num" id="opo-dias">—</div>
         <div class="opo-days-lbl">Días opositando</div>
       </div>
-      <button class="opo-edit-btn" onclick="openOpoModal()">Editar</button>
+      <button class="opo-edit-btn tap" onclick="openOpoModal()">Editar</button>
     </div>
     <div class="opo-meta-row">
       <div class="opo-meta-item"><div class="opo-meta-lbl">Inicio</div><div class="opo-meta-val" id="opo-inicio-txt">Sin configurar</div></div>
@@ -593,36 +665,71 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     </div>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-pill"><div class="stat-val" id="est-total">0:00</div><div class="stat-lbl">Total</div></div>
-    <div class="stat-pill"><div class="stat-val" id="est-mes">0:00</div><div class="stat-lbl" id="est-mes-lbl">Mes</div></div>
-    <div class="stat-pill"><div class="stat-val" id="est-semana">0:00</div><div class="stat-lbl">Esta semana</div></div>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-pill"><div class="stat-val" id="est-media7">0:00</div><div class="stat-lbl">Media 7 días</div></div>
-    <div class="stat-pill"><div class="stat-val" id="est-media30">0:00</div><div class="stat-lbl">Media 30 días</div></div>
-    <div class="stat-pill"><div class="stat-val" id="est-mejor-semana">0:00</div><div class="stat-lbl">Mejor semana</div></div>
-  </div>
-  <div class="stats-grid" style="grid-template-columns:1fr;">
-    <div class="stat-pill"><div class="stat-val" id="est-media-dia">0:00</div><div class="stat-lbl">Media diaria</div></div>
-  </div>
-
-  <div class="card" style="padding:16px;">
-    <div class="chart-card-label">Por categoría</div>
-    <div id="est-cat-breakdown"><div class="empty-state">Sin categorías aún</div></div>
-  </div>
-
-  <div class="card" style="padding:16px;">
-    <div class="chart-card-label">Por subcategoría</div>
-    <div id="est-subcat-breakdown"><div class="empty-state">Sin subcategorías aún</div></div>
+  <div class="stat-accordion" id="acc-tiempos">
+    <div class="stat-accordion-header tap" onclick="toggleStatAccordion('acc-tiempos')">
+      <span class="t">Tiempos</span>
+      <span class="stat-accordion-chevron"><svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg></span>
+    </div>
+    <div class="stat-accordion-body"><div class="stat-accordion-inner">
+      <div class="stats-grid">
+        <div class="stat-pill"><div class="stat-val" id="est-total">0:00</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-pill"><div class="stat-val" id="est-mes">0:00</div><div class="stat-lbl" id="est-mes-lbl">Mes</div></div>
+        <div class="stat-pill"><div class="stat-val" id="est-semana">0:00</div><div class="stat-lbl">Esta semana</div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-pill"><div class="stat-val" id="est-media7">0:00</div><div class="stat-lbl">Media 7 días</div></div>
+        <div class="stat-pill"><div class="stat-val" id="est-media30">0:00</div><div class="stat-lbl">Media 30 días</div></div>
+        <div class="stat-pill"><div class="stat-val" id="est-mejor-semana">0:00</div><div class="stat-lbl">Mejor semana</div></div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:1fr;margin-bottom:0;">
+        <div class="stat-pill"><div class="stat-val" id="est-media-dia">0:00</div><div class="stat-lbl">Media diaria</div></div>
+      </div>
+    </div></div>
   </div>
 
-  <div class="card" style="padding:16px;">
-    <div class="chart-card-label" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>Horas por semana · últimas 8 semanas</span>
+  <div class="stat-accordion" id="acc-categoria">
+    <div class="stat-accordion-header tap" onclick="toggleStatAccordion('acc-categoria')">
+      <span class="t">Por categoría</span>
+      <span class="stat-accordion-chevron"><svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg></span>
+    </div>
+    <div class="stat-accordion-body"><div class="stat-accordion-inner">
+      <div id="est-cat-breakdown"><div class="empty-state">Sin categorías aún</div></div>
+    </div></div>
+  </div>
+
+  <div class="stat-accordion" id="acc-subcategoria">
+    <div class="stat-accordion-header tap" onclick="toggleStatAccordion('acc-subcategoria')">
+      <span class="t">Por subcategoría</span>
+      <span class="stat-accordion-chevron"><svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg></span>
+    </div>
+    <div class="stat-accordion-body"><div class="stat-accordion-inner">
+      <div id="est-subcat-breakdown"><div class="empty-state">Sin subcategorías aún</div></div>
+    </div></div>
+  </div>
+
+  <div class="stat-accordion" id="acc-historial">
+    <div class="stat-accordion-header tap" onclick="toggleStatAccordion('acc-historial')">
+      <span class="t">Historial</span>
+      <span class="stat-accordion-chevron"><svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg></span>
+    </div>
+    <div class="stat-accordion-body"><div class="stat-accordion-inner">
+      <div id="historial-list"></div>
+    </div></div>
+  </div>
+
+  <div class="chart-carousel-card">
+    <div class="chart-card-label" style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 0;">
+      <span id="chart-carousel-title">Horas por semana · últimas 8 semanas</span>
       <span id="chart-semanal-year" style="color:var(--text3);font-weight:600;"></span>
     </div>
-    <canvas id="chart-semanal" height="200"></canvas>
+    <div class="chart-carousel-track" id="chart-carousel-track" onscroll="onChartCarouselScroll()">
+      <div class="chart-carousel-slide"><canvas id="chart-semanal" height="200"></canvas></div>
+      <div class="chart-carousel-slide"><canvas id="chart-diario" height="200"></canvas></div>
+    </div>
+    <div class="chart-carousel-dots">
+      <span class="chart-carousel-dot tap active" onclick="goChartSlide(0)"></span>
+      <span class="chart-carousel-dot tap" onclick="goChartSlide(1)"></span>
+    </div>
   </div>
 
   <div class="card" style="padding:14px;">
@@ -684,14 +791,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 
   <div class="settings-group">
-    <div class="settings-group-title">Herramientas</div>
-    <div class="settings-row" onclick="openHerramientas()">
-      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
-      <span>Herramientas</span>
-    </div>
-  </div>
-
-  <div class="settings-group">
     <div class="settings-group-title">Peligro</div>
     <div class="settings-row danger" onclick="clearAllData()">
       <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></div>
@@ -711,8 +810,8 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   <button class="nav-btn active" onclick="showScreen('hoy',this)">
     <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg></span>Hoy
   </button>
-  <button class="nav-btn" onclick="showScreen('historial',this)">
-    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="14" y2="17"/></svg></span>Historial
+  <button class="nav-btn" onclick="showScreen('herramientas',this)">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></span>Herramientas
   </button>
   <button class="nav-btn" onclick="showScreen('estadisticas',this)">
     <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg></span>Stats
@@ -1016,17 +1115,20 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 </div>
 
 <!-- MODAL: Herramientas -->
-<div class="modal-bg" id="herramientas-modal">
-  <div class="modal">
-    <div class="lvl-header">
-      <div class="lvl-header-title">Herramientas</div>
-      <button class="toggle-btn" onclick="closeModal('herramientas-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
-    </div>
-    <button class="curva-tool-btn" style="margin-bottom:0;" onclick="closeModal('herramientas-modal');openCurva()">
-      <span class="t">CURVA DEL OLVIDO</span>
-      <span style="color:var(--text3);">›</span>
-    </button>
-  </div>
+<!-- HERRAMIENTAS -->
+<div id="screen-herramientas" class="screen">
+  <button class="curva-tool-btn tap" onclick="openCurva()">
+    <span class="t">CURVA DEL OLVIDO</span>
+    <span style="color:var(--text3);">›</span>
+  </button>
+  <button class="curva-tool-btn tap" onclick="openMnemotecnicas()">
+    <span class="t">MNEMOTÉCNICAS</span>
+    <span style="color:var(--text3);">›</span>
+  </button>
+  <button class="curva-tool-btn tap" onclick="openCodigoFonetico()">
+    <span class="t">CÓDIGO FONÉTICO</span>
+    <span style="color:var(--text3);">›</span>
+  </button>
 </div>
 
 <!-- MODAL: Curva del olvido -->
@@ -1038,6 +1140,57 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <button class="toggle-btn" onclick="closeModal('curva-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
     <div id="curva-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Mnemotécnicas -->
+<div class="modal-bg" id="mnemo-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <button class="lvl-back tap" id="mnemo-back-btn" style="display:none;" onclick="mnemoBack()">‹</button>
+      <div class="lvl-header-title" id="mnemo-header-title">Mnemotécnicas</div>
+      <button class="toggle-btn" onclick="closeModal('mnemo-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div id="mnemo-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: nota mnemotécnica manual (crear/editar) -->
+<div class="modal-bg" id="nota-manual-modal">
+  <div class="modal">
+    <div class="modal-title" id="nota-manual-title">Nueva nota</div>
+    <textarea class="modal-input" id="nota-manual-texto" style="font-family:var(--font-sans);min-height:120px;resize:vertical;" placeholder="Escribe tu regla mnemotécnica…"></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('nota-manual-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="guardarNotaManual()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Código fonético -->
+<div class="modal-bg" id="fonetico-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <div class="lvl-header-title">Código fonético</div>
+      <button class="toggle-btn" onclick="closeModal('fonetico-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div class="card" style="padding:10px 12px;margin-bottom:16px;">
+      <div id="cf-tabla"></div>
+    </div>
+    <label class="modal-label">Número</label>
+    <input type="text" class="modal-input" id="cf-numero-input" inputmode="numeric" placeholder="p.ej. 84" oninput="onCfNumeroInput()">
+    <div class="cf-fichas-wrap" id="cf-fichas"></div>
+    <div style="text-align:center;font-size:10.5px;color:var(--text3);margin:-6px 0 14px;">pulsa para cambiar de letra</div>
+    <label class="modal-label">Palabra</label>
+    <input type="text" class="modal-input" id="cf-palabra-input" style="font-family:var(--font-sans);" placeholder="p.ej. charco" oninput="onCfPalabraInput()">
+    <div class="cf-resaltado" id="cf-resaltado"></div>
+    <div class="cf-aviso" id="cf-aviso"></div>
+    <label class="modal-label">Guardar en</label>
+    <select class="modal-select" id="cf-tema-select"></select>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="limpiarCodigoFonetico()">Limpiar</button>
+      <button class="modal-btn primary" onclick="guardarCodigoFonetico()">Guardar</button>
+    </div>
   </div>
 </div>
 
@@ -1587,8 +1740,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='REPASO_TEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 2;
-const APP_BUILD_DATE = '20 oct 2026 14:52';
+const APP_VERSION = 3;
+const APP_BUILD_DATE = '20 oct 2026 18:45';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -1661,6 +1814,23 @@ function formatBackupStamp(ts){
 // completa en IndexedDB, un almacén aparte que sobrevive aunque localStorage
 // se borre (p.ej. al reinstalar la PWA en iOS, que fue la causa de la pérdida
 // de datos que motivó todo este sistema).
+// Feedback al pulsar (Bloque D): un único listener delegado cubre todo lo
+// pulsable (clase .tap más las clases ya existentes listadas en el CSS de
+// arriba) — brillo al soltar y vibración corta solo en un click real, nunca
+// durante un scroll (un touchmove cancela el click del navegador).
+(function setupTapFeedback(){
+  const SELECTOR = '.tap, .lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn, .modal-btn, .f-btn, .epi-check-row, .curva-list-row, .tema-map-cell, .curva-tool-btn, .nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable, .entry-row.clickable, .nav-arrow-btn, .toggle-btn, button';
+  document.addEventListener('click', e=>{
+    const el = e.target.closest(SELECTOR);
+    if(!el) return;
+    el.classList.remove('tap-shine');
+    void el.offsetWidth;
+    el.classList.add('tap-shine');
+    setTimeout(()=>el.classList.remove('tap-shine'), 420);
+    if(navigator.vibrate) navigator.vibrate(10);
+  });
+})();
+
 (function setupAutoBackup(){
   const proto = Object.getPrototypeOf(localStorage);
   const nativeSetItem = proto.setItem;
@@ -2816,8 +2986,24 @@ function renderEstadisticas(){
 
   renderStatsCatBreakdown();
   renderStatsSubBreakdown();
+  renderHistorial();
   renderChartSemanal();
+  renderChartDiario();
   renderHeatmap();
+}
+function toggleStatAccordion(id){
+  document.getElementById(id).classList.toggle('open');
+}
+function onChartCarouselScroll(){
+  const track = document.getElementById('chart-carousel-track');
+  const idx = Math.round(track.scrollLeft / track.clientWidth);
+  document.querySelectorAll('.chart-carousel-dot').forEach((d,i)=>d.classList.toggle('active', i===idx));
+  document.getElementById('chart-carousel-title').textContent = idx===0 ? 'Horas por semana · últimas 8 semanas' : 'Horas por día · últimos 14 días';
+  document.getElementById('chart-semanal-year').style.display = idx===0 ? 'inline' : 'none';
+}
+function goChartSlide(idx){
+  const track = document.getElementById('chart-carousel-track');
+  track.scrollTo({ left: idx*track.clientWidth, behavior:'smooth' });
 }
 function statsBackRow(onclick){ return `<button class="lvl-back" style="margin-bottom:10px;" onclick="${onclick}">‹</button>`; }
 function statBarRow(nombre,color,total,max,onclick){
@@ -2982,6 +3168,18 @@ function renderChartSemanal(){
   const monthGroups = groups.map(g=>({label:g.label, startIndex:g.startIndex, endIndex:g.endIndex}));
   document.getElementById('chart-semanal-year').textContent = yearsLabel(mesKeys);
   renderBarChart('chart-semanal', labels, data, {colors, monthGroups, autoSkip:false});
+}
+function renderChartDiario(){
+  const DIAS_N = 14;
+  const today = todayStr();
+  const labels = [], data = [];
+  for(let i=DIAS_N-1; i>=0; i--){
+    const f = addDays(today, -i);
+    labels.push(formatDate(f).slice(0,5));
+    data.push(totalFecha(f)/60);
+  }
+  const colors = labels.map(()=>'#38bdf8');
+  renderBarChart('chart-diario', labels, data, {colors, autoSkip:true});
 }
 
 function changeHeatmapMonth(delta){
@@ -3622,7 +3820,7 @@ function restaurarModeloDefaultModal(){
 }
 
 // ========== HERRAMIENTAS / CURVA DEL OLVIDO (Bloque F) ==========
-function openHerramientas(){ document.getElementById('herramientas-modal').classList.add('open'); }
+function renderHerramientasScreen(){ /* pantalla estática: curva / mnemotécnicas / código fonético */ }
 
 let curvaView = 'resumen'; // 'resumen' | 'tema' | 'editar'
 let curvaTemaId = null;
@@ -3953,6 +4151,290 @@ function reescribirReferenciasEpigrafe(temaId, idsOrigen, idDestino){
   if(changed) saveDias(dias);
 }
 
+// ========== MNEMOTÉCNICAS ==========
+function getMnemotecnicas(){ try{ return JSON.parse(localStorage.getItem('estudio_mnemotecnicas')||'{}'); }catch{ return {}; } }
+function saveMnemotecnicas(m){ localStorage.setItem('estudio_mnemotecnicas', JSON.stringify(m)); }
+function getNotasTema(temaId){ return (getMnemotecnicas()[temaId]||[]).slice(); }
+function notaTextoBuscable(n){ return n.tipo==='fonetico' ? (n.numero+' '+n.palabra) : (n.texto||''); }
+
+let mnemoView = 'lista'; // 'lista' | 'tema'
+let mnemoTemaId = null;
+let mnemoSearch = '';
+let notaManualEditing = null; // {temaId, id|null}
+
+function openMnemotecnicas(){
+  mnemoView = 'lista';
+  mnemoSearch = '';
+  renderMnemo();
+  document.getElementById('mnemo-modal').classList.add('open');
+}
+function mnemoBack(){ mnemoView='lista'; renderMnemo(); }
+function openMnemoTema(temaId){ mnemoTemaId=temaId; mnemoView='tema'; renderMnemo(); }
+
+function renderMnemo(){
+  document.getElementById('mnemo-back-btn').style.display = mnemoView==='tema' ? 'flex' : 'none';
+  document.getElementById('mnemo-header-title').textContent = mnemoView==='tema' ? temaNombre(mnemoTemaId)+' · MNEMOTÉCNICAS' : 'Mnemotécnicas';
+  const body = document.getElementById('mnemo-body');
+  if(mnemoView==='tema'){
+    body.innerHTML = renderMnemoTemaHtml(mnemoTemaId);
+    setupMnemoSwipes();
+    return;
+  }
+  body.innerHTML = `<input type="text" class="modal-input mnemo-search" id="mnemo-search-input" placeholder="Buscar en todas las notas…" oninput="mnemoSearch=this.value;renderMnemoListaResults();">
+    <div id="mnemo-list-results"></div>`;
+  document.getElementById('mnemo-search-input').value = mnemoSearch;
+  renderMnemoListaResults();
+}
+function renderMnemoListaResults(){
+  const el = document.getElementById('mnemo-list-results');
+  const q = mnemoSearch.trim().toLowerCase();
+  if(q){
+    const resultados = [];
+    for(let n=1;n<=TOTAL_TEMAS;n++){
+      const tid = temaIdFromNum(n);
+      getNotasTema(tid).forEach(nota=>{
+        if(notaTextoBuscable(nota).toLowerCase().includes(q)) resultados.push({tid, n, nota});
+      });
+    }
+    el.innerHTML = resultados.length ? resultados.map(r=>`<div class="mnemo-tema-row tap" onclick="openMnemoTema('${r.tid}')">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;color:var(--text3);font-weight:700;">TEMA ${r.n}</div>
+          <div style="font-size:13px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(notaTextoBuscable(r.nota))}</div>
+        </div>
+      </div>`).join('') : '<div class="empty-sub">Sin resultados</div>';
+    return;
+  }
+  let html = '';
+  for(let n=1;n<=TOTAL_TEMAS;n++){
+    const tid = temaIdFromNum(n);
+    const count = getNotasTema(tid).length;
+    html += `<div class="mnemo-tema-row tap ${count?'':'sin-notas'}" onclick="openMnemoTema('${tid}')">
+      <span style="font-size:14px;font-weight:600;">TEMA ${n}</span>
+      <span style="font-family:var(--font-mono);color:var(--text3);">${count || '—'}</span>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+function renderMnemoTemaHtml(temaId){
+  const notas = getNotasTema(temaId).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const cardsHtml = notas.length ? notas.map(n=>renderMnemoNotaCardHtml(n)).join('') : '<div class="empty-sub">Sin notas todavía</div>';
+  return `<button class="add-btn tap" style="margin-bottom:14px;" onclick="abrirNuevaNotaManual('${temaId}')">+ Nueva nota</button>
+    <div id="mnemo-notas-list">${cardsHtml}</div>`;
+}
+function renderMnemoNotaCardHtml(n){
+  const fechaTxt = formatDate(n.fecha);
+  const inner = n.tipo==='fonetico'
+    ? `<div class="mnemo-fonetico-numero">${escapeHtml(n.numero)}</div><div class="mnemo-fonetico-palabra">${highlightPalabraHtml(n.palabra, n.letras)}</div>`
+    : `<div class="mnemo-nota-texto">${escapeHtml(n.texto)}</div>`;
+  return `<div class="mnemo-nota-wrap" data-nota-id="${n.id}">
+    <div class="mnemo-nota-delete tap" onclick="borrarNota('${n.id}')">Borrar</div>
+    <div class="mnemo-nota-card tap" onclick="abrirNotaParaEditar('${n.id}')">
+      ${inner}
+      <div class="mnemo-nota-fecha">${fechaTxt}</div>
+    </div>
+  </div>`;
+}
+function setupMnemoSwipes(){
+  document.querySelectorAll('#mnemo-notas-list .mnemo-nota-wrap').forEach(wrap=>{
+    const card = wrap.querySelector('.mnemo-nota-card');
+    let startX=null, dx=0, active=false;
+    card.addEventListener('pointerdown', e=>{ startX=e.clientX; active=true; card.style.transition='none'; });
+    card.addEventListener('pointermove', e=>{
+      if(!active) return;
+      dx = Math.min(0, e.clientX-startX);
+      card.style.transform = `translateX(${Math.max(dx,-90)}px)`;
+    });
+    const end = ()=>{
+      if(!active) return;
+      active=false;
+      card.style.transition = 'transform 0.2s var(--ease-out-soft)';
+      card.style.transform = dx<-60 ? 'translateX(-90px)' : 'translateX(0)';
+    };
+    card.addEventListener('pointerup', end);
+    card.addEventListener('pointerleave', end);
+  });
+}
+function abrirNuevaNotaManual(temaId){
+  notaManualEditing = { temaId, id:null };
+  document.getElementById('nota-manual-title').textContent = 'Nueva nota';
+  document.getElementById('nota-manual-texto').value = '';
+  document.getElementById('nota-manual-modal').classList.add('open');
+}
+function abrirNotaParaEditar(id){
+  const n = getNotasTema(mnemoTemaId).find(x=>x.id===id);
+  if(!n) return;
+  if(n.tipo==='fonetico'){ closeModal('mnemo-modal'); abrirCodigoFoneticoParaEditar(mnemoTemaId, n); return; }
+  notaManualEditing = { temaId: mnemoTemaId, id: n.id };
+  document.getElementById('nota-manual-title').textContent = 'Editar nota';
+  document.getElementById('nota-manual-texto').value = n.texto;
+  document.getElementById('nota-manual-modal').classList.add('open');
+}
+function guardarNotaManual(){
+  const texto = document.getElementById('nota-manual-texto').value.trim();
+  if(!texto){ showToast('Escribe algo'); return; }
+  const { temaId, id } = notaManualEditing;
+  const all = getMnemotecnicas();
+  if(!all[temaId]) all[temaId] = [];
+  if(id){
+    const n = all[temaId].find(x=>x.id===id);
+    if(n) n.texto = texto;
+  } else {
+    all[temaId].push({ id:uid(), tipo:'manual', texto, fecha: todayStr() });
+  }
+  saveMnemotecnicas(all);
+  closeModal('nota-manual-modal');
+  if(mnemoView==='tema' && mnemoTemaId===temaId) renderMnemo();
+  showToast('Guardado ✓','green');
+}
+function borrarNota(id){
+  if(!confirm('¿Borrar esta nota?')) return;
+  const all = getMnemotecnicas();
+  if(all[mnemoTemaId]) all[mnemoTemaId] = all[mnemoTemaId].filter(n=>n.id!==id);
+  saveMnemotecnicas(all);
+  renderMnemo();
+}
+
+// ========== CÓDIGO FONÉTICO ==========
+const CODIGO_FONETICO = {
+  1: ['T','D'], 2: ['N','Ñ'], 3: ['M'], 4: ['C','K','Q'], 5: ['L'],
+  6: ['S','Z'], 7: ['F'], 8: ['CH','J','G'], 9: ['V','B','P'], 0: ['R']
+};
+let cfNumero = '';
+let cfLetraIdx = [];
+let cfEditing = null; // {temaId, id} | null
+
+function normalizaTexto(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); }
+function cfLetrasElegidas(){
+  return cfNumero.split('').map((d,i)=>{ const letras = CODIGO_FONETICO[d]||['']; return letras[cfLetraIdx[i]%letras.length]; });
+}
+function highlightPalabraInfo(palabra, letras){
+  if(!palabra) return { html:'', letraFaltante:null };
+  const palabraNorm = normalizaTexto(palabra);
+  const marks = new Array(palabra.length).fill(false);
+  let pos = 0, letraFaltante = null;
+  letras.forEach(letraCodigo=>{
+    const lc = normalizaTexto(letraCodigo);
+    if(!lc) return;
+    const idx = palabraNorm.indexOf(lc, pos);
+    if(idx<0){ if(letraFaltante==null) letraFaltante = letraCodigo; return; }
+    for(let k=0;k<lc.length;k++) marks[idx+k]=true;
+    pos = idx+lc.length;
+  });
+  let html='', i=0;
+  while(i<palabra.length){
+    let j=i;
+    if(marks[i]){ while(j<palabra.length && marks[j]) j++; html += '<b>'+escapeHtml(palabra.slice(i,j))+'</b>'; }
+    else { while(j<palabra.length && !marks[j]) j++; html += escapeHtml(palabra.slice(i,j)); }
+    i=j;
+  }
+  return { html, letraFaltante };
+}
+function highlightPalabraHtml(palabra, letras){ return highlightPalabraInfo(palabra, letras).html; }
+
+function renderCfTabla(){
+  const el = document.getElementById('cf-tabla');
+  if(!el) return;
+  el.innerHTML = Object.keys(CODIGO_FONETICO).map(d=>`<div class="cf-tabla-row"><span class="cf-tabla-num">${d}</span><span class="cf-tabla-letras">${CODIGO_FONETICO[d].join(' · ')}</span></div>`).join('');
+}
+function poblarCfTemaSelect(){
+  const sel = document.getElementById('cf-tema-select');
+  let html = '<option value="">Elige un tema…</option>';
+  for(let n=1;n<=TOTAL_TEMAS;n++) html += `<option value="${temaIdFromNum(n)}">TEMA ${n}</option>`;
+  sel.innerHTML = html;
+}
+function renderCfFichas(){
+  const el = document.getElementById('cf-fichas');
+  el.innerHTML = cfNumero.split('').map((d,i)=>{
+    const letras = CODIGO_FONETICO[d] || [''];
+    const letra = letras[cfLetraIdx[i]%letras.length];
+    return `<div class="cf-ficha tap" onclick="ciclarFicha(${i})"><div class="cf-ficha-letra">${escapeHtml(letra)}</div><div class="cf-ficha-digito">${d}</div></div>`;
+  }).join('');
+}
+function ciclarFicha(i){
+  const d = cfNumero[i];
+  const letras = CODIGO_FONETICO[d] || [''];
+  if(letras.length>1) cfLetraIdx[i] = (cfLetraIdx[i]+1) % letras.length;
+  renderCfFichas();
+  actualizarCfResaltado();
+}
+function onCfNumeroInput(){
+  const input = document.getElementById('cf-numero-input');
+  const raw = input.value.replace(/[^0-9]/g,'');
+  input.value = raw;
+  const nuevo = raw.split('');
+  const anterior = cfNumero.split('');
+  const nuevoIdx = nuevo.map((d,i)=> (anterior[i]===d && cfLetraIdx[i]!=null) ? cfLetraIdx[i] : 0);
+  cfNumero = raw;
+  cfLetraIdx = nuevoIdx;
+  renderCfFichas();
+  actualizarCfResaltado();
+}
+function onCfPalabraInput(){ actualizarCfResaltado(); }
+function actualizarCfResaltado(){
+  const palabra = document.getElementById('cf-palabra-input').value;
+  const info = highlightPalabraInfo(palabra, cfLetrasElegidas());
+  document.getElementById('cf-resaltado').innerHTML = info.html;
+  document.getElementById('cf-aviso').textContent = info.letraFaltante ? `No encuentro la ${info.letraFaltante} en la palabra` : '';
+}
+function limpiarCodigoFonetico(){
+  cfNumero=''; cfLetraIdx=[]; cfEditing=null;
+  document.getElementById('cf-numero-input').value='';
+  document.getElementById('cf-palabra-input').value='';
+  document.getElementById('cf-tema-select').value='';
+  document.getElementById('cf-fichas').innerHTML='';
+  document.getElementById('cf-resaltado').innerHTML='';
+  document.getElementById('cf-aviso').textContent='';
+}
+function openCodigoFonetico(){
+  limpiarCodigoFonetico();
+  renderCfTabla();
+  poblarCfTemaSelect();
+  document.getElementById('fonetico-modal').classList.add('open');
+}
+function abrirCodigoFoneticoParaEditar(temaId, nota){
+  openCodigoFonetico();
+  cfEditing = { temaId, id: nota.id };
+  cfNumero = nota.numero;
+  cfLetraIdx = nota.numero.split('').map((d,i)=>{
+    const letras = CODIGO_FONETICO[d] || [''];
+    const idx = letras.indexOf(nota.letras[i]);
+    return idx>=0 ? idx : 0;
+  });
+  document.getElementById('cf-numero-input').value = cfNumero;
+  document.getElementById('cf-palabra-input').value = nota.palabra;
+  document.getElementById('cf-tema-select').value = temaId;
+  renderCfFichas();
+  actualizarCfResaltado();
+}
+function guardarCodigoFonetico(){
+  if(!cfNumero){ showToast('Escribe un número'); return; }
+  const palabra = document.getElementById('cf-palabra-input').value.trim();
+  if(!palabra){ showToast('Escribe una palabra'); return; }
+  const temaId = document.getElementById('cf-tema-select').value;
+  if(!temaId){ showToast('Elige un tema'); return; }
+  const letras = cfLetrasElegidas();
+  const all = getMnemotecnicas();
+  if(cfEditing){
+    const origen = all[cfEditing.temaId] || [];
+    const idx = origen.findIndex(n=>n.id===cfEditing.id);
+    if(idx>=0){
+      const nota = origen[idx];
+      nota.numero = cfNumero; nota.letras = letras; nota.palabra = palabra;
+      if(cfEditing.temaId !== temaId){
+        origen.splice(idx,1);
+        if(!all[temaId]) all[temaId] = [];
+        all[temaId].push(nota);
+      }
+    }
+  } else {
+    if(!all[temaId]) all[temaId] = [];
+    all[temaId].push({ id:uid(), tipo:'fonetico', numero:cfNumero, letras, palabra, fecha: todayStr() });
+  }
+  saveMnemotecnicas(all);
+  showToast('Guardado ✓','green');
+  limpiarCodigoFonetico();
+}
+
 // ========== UI ==========
 function updateNavIndicator(btn){
   const ind = document.getElementById('nav-indicator');
@@ -3970,8 +4452,11 @@ function showScreen(name,btn){
   document.getElementById('screen-'+name).classList.add('active');
   if(btn){ btn.classList.add('active'); updateNavIndicator(btn); }
   if(name==='hoy') renderHoy();
-  if(name==='historial') renderHistorial();
-  if(name==='estadisticas') renderEstadisticas();
+  if(name==='estadisticas'){
+    document.querySelectorAll('.stat-accordion').forEach(a=>a.classList.remove('open'));
+    renderEstadisticas();
+  }
+  if(name==='herramientas') renderHerramientasScreen();
   if(name==='categorias') renderCategoriasList();
   if(name==='ajustes') refreshFechaExamenLabel();
 }
