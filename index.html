@@ -60,12 +60,15 @@
   --c-ingles: #2E8BFF;
   --c-ok:     #22D37A;
   --c-warn:   #FFB020;
+  /* Azul profundo de STATS (calendario, gráficas): sustituye al azul claro
+     y lavado (#38bdf8/#8fdcff) — más cuerpo, aguanta sobre el negro. */
+  --c-blue-deep: #2E6BFF;
   --col-temas:      var(--c-temas);
   --col-juridicas:  #ff4433; /* rojo claramente más vivo/brillante que --col-temas */
   --col-psico:      var(--c-psico);
   --col-ingles:     var(--c-ingles);
   --col-sociales:   #a3e635; /* verde lima, más claro y amarillento */
-  --col-tecnicas:   #38bdf8; /* azul (bloque técnico-científico dentro de TEMAS) */
+  --col-tecnicas:   var(--c-blue-deep); /* azul (bloque técnico-científico dentro de TEMAS) */
   --col-tests:      #e3a71e; /* ámbar dorado, saturado */
 
   /* Halo de fondo (body::before): cambia por sección vía showScreen(). */
@@ -92,12 +95,13 @@
   --ease:          var(--ease-drawer);
 }
 
-html, body { background: var(--bg); }
+html, body { background: var(--bg); overflow-x: hidden; }
 body {
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 15px;
   min-height: 100vh;
+  max-width: 100vw;
   padding-bottom: 100px;
   -webkit-font-smoothing: antialiased;
   position: relative;
@@ -162,7 +166,7 @@ body::before {
   transition: all .2s var(--ease);
 }
 .nav-btn.active {
-  --c: var(--halo);
+  --c: var(--c-temas);
   color: #fff;
   background: rgba(255,255,255,.075);
   border: 1px solid color-mix(in srgb, var(--c) 48%, transparent);
@@ -251,12 +255,16 @@ body::before {
 /* —— Total del día (Parte 3.1): deja de ser tarjeta. El número vive suelto
    sobre el fondo con su propio resplandor detrás; la base se desvanece con
    una máscara. Registros/categoría a la derecha, alineados por el centro. —— */
-.today { position: relative; padding: 10px 2px 0; margin-bottom: 14px; }
+.today { position: relative; padding: 10px 2px 0; margin-bottom: 14px; isolation: isolate; }
 .today::before {
-  content: ""; position: absolute; left: -10%; right: -10%; top: -30px; height: 230px;
-  pointer-events: none;
-  background: radial-gradient(60% 55% at 22% 48%, color-mix(in srgb, var(--halo) 30%, transparent), transparent 70%);
-  filter: blur(18px);
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: 50%; top: 46%; width: 112%; height: 300%;
+  transform: translate(-50%,-50%);
+  background: radial-gradient(closest-side circle at 30% 50%,
+    color-mix(in srgb, var(--halo) 62%, transparent) 0%,
+    color-mix(in srgb, var(--halo) 30%, transparent) 32%,
+    color-mix(in srgb, var(--halo)  9%, transparent) 54%,
+    transparent 72%);
 }
 .today > * { position: relative; }
 .today-hero-tab {
@@ -270,11 +278,11 @@ body::before {
   font-size: clamp(82px, 26vw, 116px); font-weight: 400;
   letter-spacing: -.02em; line-height: .9; margin: 0; flex: none;
   font-variant-numeric: tabular-nums;
-  background: linear-gradient(176deg, #fff 18%, rgba(255,255,255,.76) 62%, rgba(255,255,255,.3));
+  background: linear-gradient(176deg, #fff 14%, rgba(255,255,255,.82) 54%, rgba(255,255,255,.22));
   -webkit-background-clip: text; background-clip: text; color: transparent;
   -webkit-mask-image: linear-gradient(180deg, #000 46%, rgba(0,0,0,.78) 68%, rgba(0,0,0,.28) 86%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 46%, rgba(0,0,0,.78) 68%, rgba(0,0,0,.28) 86%, transparent 100%);
-  filter: drop-shadow(0 8px 34px color-mix(in srgb, var(--halo) 48%, transparent));
+  filter: drop-shadow(0 8px 40px color-mix(in srgb, var(--halo) 70%, transparent));
 }
 .today-stats { display: flex; flex-direction: column; gap: 12px; padding-bottom: 6px; }
 .today-stats .ts { background: none; border: none; border-radius: 0; padding: 0; text-align: left; }
@@ -342,8 +350,9 @@ body::before {
   display: grid; place-items: center;
   min-height: 62px; padding: 12px 8px;
   border-radius: var(--r-sm);
-  font-family: var(--font-sans); font-weight: 600; font-size: 17px;
-  letter-spacing: .055em; text-transform: uppercase; text-align: center; line-height: 1.08;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-weight: 700; font-size: 19px;
+  letter-spacing: .012em; text-transform: uppercase; text-align: center; line-height: 1.08;
   cursor: pointer;
 }
 .cat-picker-btn > * { position: relative; z-index: 1; }
@@ -475,7 +484,7 @@ body::before {
 .act-map-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; justify-content: center; }
 .dow-lbl { font-size: 9px; font-weight: 700; color: var(--text3); text-align: center; }
 .act-day {
-  aspect-ratio: 1; border-radius: 3px; background: var(--bg-input); border: 1px solid var(--border); cursor: default;
+  aspect-ratio: 1; border-radius: 10px; background: var(--bg-input); border: 1px solid var(--border); cursor: default;
   display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600;
   color: var(--text3); font-family: var(--font-mono);
   transition: transform 0.15s var(--ease-pop);
@@ -931,7 +940,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   <div id="categorias-list"></div>
   <button class="add-btn" id="categorias-add-btn" onclick="openNewCategoryModal()" style="display:none;">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Nueva entidad
+    Nueva categoría
   </button>
 </div>
 
@@ -1088,7 +1097,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: categoría psicotécnica (crear/editar) -->
 <div class="modal-bg" id="category-modal">
   <div class="modal">
-    <div class="modal-title" id="category-modal-title">Nueva entidad</div>
+    <div class="modal-title" id="category-modal-title">Nueva categoría</div>
     <label class="modal-label">Nombre</label>
     <input type="text" class="modal-input" id="category-name-input" placeholder="p.ej. PSI ÓMNIBUS" style="font-family:var(--font-sans);">
     <label class="modal-label">Color</label>
@@ -1152,7 +1161,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: borrar categoría psicotécnica -->
 <div class="modal-bg" id="delete-cat-modal">
   <div class="modal">
-    <div class="modal-title">Borrar entidad</div>
+    <div class="modal-title">Borrar categoría</div>
     <div class="modal-note" id="delete-cat-text"></div>
     <div id="delete-cat-select-row">
       <label class="modal-label">Reasignar registros a</label>
@@ -1287,27 +1296,66 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <button class="range-tab tap" data-t="INNOTEST" onclick="itSetTipo('INNOTEST')">INNOTEST</button>
     </div>
 
-    <label class="modal-label">Tema</label>
-    <select class="modal-select" id="it-tema-select" onchange="itOnTemaChange()"></select>
+    <label class="modal-label">Bloque</label>
+    <div class="range-tabs" id="it-bloque-tabs">
+      <button class="range-tab tap active" data-b="temas" onclick="itSetBloque('temas')">TEMAS</button>
+      <button class="range-tab tap" data-b="psico" onclick="itSetBloque('psico')">PSICOS</button>
+      <button class="range-tab tap" data-b="ingles" onclick="itSetBloque('ingles')">INGLÉS</button>
+    </div>
 
-    <label class="modal-label">Fecha</label>
-    <select class="modal-select" id="it-fecha-select" onchange="itOnFechaChange()"></select>
-    <div id="it-disponible" style="font-size:12px;color:var(--text2);margin:-6px 0 14px;"></div>
+    <label class="modal-label" id="it-grupo-label">Tema</label>
+    <select class="modal-select" id="it-grupo-select" onchange="itOnGrupoChange()"></select>
+    <div id="it-grupo-empty" class="empty-sub" style="display:none;margin:-4px 0 10px;"></div>
 
-    <div style="display:flex;gap:8px;">
-      <div style="flex:1;">
-        <label class="modal-label">Tiempo (min)</label>
-        <input type="number" class="modal-input" id="it-tiempo-input" min="1" inputmode="numeric" placeholder="p.ej. 25">
+    <div id="it-fecha-wrap">
+      <label class="modal-label">Fecha</label>
+      <select class="modal-select" id="it-fecha-select" onchange="itOnFechaChange()"></select>
+      <div id="it-disponible" style="font-size:12px;color:var(--text2);margin:-6px 0 14px;"></div>
+
+      <label class="modal-label">Tiempo (min)</label>
+      <input type="number" class="modal-input" id="it-tiempo-input" min="1" inputmode="numeric" placeholder="p.ej. 25">
+
+      <label class="modal-label">Resultado</label>
+      <div class="range-tabs" id="it-resultado-tabs">
+        <button class="range-tab tap active" data-r="NOTA" onclick="itSetResultadoModo('NOTA')">NOTA</button>
+        <button class="range-tab tap" data-r="DESGLOSE" onclick="itSetResultadoModo('DESGLOSE')">DESGLOSE</button>
       </div>
-      <div style="flex:1;">
+
+      <div id="it-modo-nota">
         <label class="modal-label">Nota</label>
         <input type="text" class="modal-input" id="it-nota-input" placeholder="p.ej. 7,5" inputmode="decimal">
+        <label class="modal-label">Preguntas <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+        <input type="number" class="modal-input" id="it-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 20">
       </div>
+
+      <div id="it-modo-desglose" style="display:none;">
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;">
+            <label class="modal-label">Preguntas</label>
+            <input type="number" class="modal-input" id="it-d-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 100" oninput="updateItNotaDesglose()">
+          </div>
+          <div style="flex:1;">
+            <label class="modal-label">Aciertos</label>
+            <input type="number" class="modal-input" id="it-d-aciertos-input" min="0" inputmode="numeric" placeholder="p.ej. 95" oninput="updateItNotaDesglose()">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;">
+            <label class="modal-label">Fallos <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+            <input type="number" class="modal-input" id="it-d-fallos-input" min="0" inputmode="numeric" placeholder="p.ej. 4" oninput="updateItNotaDesglose()">
+          </div>
+          <div style="flex:1;">
+            <label class="modal-label">Blancos <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+            <input type="number" class="modal-input" id="it-d-blancos-input" min="0" inputmode="numeric" placeholder="p.ej. 1" oninput="updateItNotaDesglose()">
+          </div>
+        </div>
+        <div id="it-d-nota-auto" style="font-size:12px;color:var(--gold2);font-weight:700;margin:-4px 0 4px;min-height:14px;"></div>
+        <div id="it-d-aviso-suma" style="font-size:11.5px;color:var(--orange);margin:0 0 10px;min-height:14px;"></div>
+      </div>
+
+      <div id="it-aviso" style="font-size:11.5px;color:var(--orange);margin:-4px 0 10px;min-height:14px;"></div>
+      <button class="save-btn" onclick="guardarIntroducirTest()">Guardar</button>
     </div>
-    <label class="modal-label">Preguntas <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
-    <input type="number" class="modal-input" id="it-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 20">
-    <div id="it-aviso" style="font-size:11.5px;color:var(--orange);margin:-4px 0 10px;min-height:14px;"></div>
-    <button class="save-btn" onclick="guardarIntroducirTest()">Guardar</button>
 
     <div class="chart-card-label" style="margin-top:20px;">Sin desglosar</div>
     <div class="card" style="padding:4px 16px;" id="it-pendientes-card"></div>
@@ -1598,8 +1646,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 8;
-const APP_BUILD_DATE = '21 oct 2026 12:45';
+const APP_VERSION = 9;
+const APP_BUILD_DATE = '21 oct 2026 15:47';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -1777,6 +1825,7 @@ let editingEntryFecha = null;
 let editingEntryId = null;
 let editingEntryVuelta = null;
 let editingCategoryId = null;
+let categoryModalBloque = 'psico'; // 'psico' | 'ingles'
 let categoryModalColor = PALETTE[0];
 let pendingDeleteCategoryId = null;
 let subcategoryModalCatId = null;
@@ -1792,6 +1841,7 @@ let entryVuelta = 1;
 let pickerStep = 'root';
 let pickerBloqueId = null;
 let pickerTemaId = null;
+let pickerCatBlock = 'psico'; // 'psico' | 'ingles' — bloque del picker de categorías
 let pickerPsicoCatId = null;
 let pickerNewCatColor = PALETTE[0];
 
@@ -1952,17 +2002,22 @@ function saveOpoInicio(){
   showToast('Guardado ✓','green');
 }
 
-// ---- Psicotécnicos (estudio_categorias, modelo antiguo intacto) ----
+// ---- Categorías (estudio_categorias): comparten estructura entre los
+// bloques PSICOTÉCNICOS e INGLÉS, distinguidos por el campo `bloque`.
+// Los datos antiguos no lo tienen -> se tratan como 'psico' (catBloqueOf). ----
 function getCategoria(id){ return getCategorias().find(c=>c.id===id); }
 function getCategoriaNombre(id){ const c = getCategoria(id); return c?c.nombre:'(borrada)'; }
 function getCategoriaColor(id){ const c = getCategoria(id); return c?c.color:'#666'; }
-function nextSuggestedColor(){ const cats = getCategorias(); return PALETTE[cats.length % PALETTE.length]; }
+function catBloqueOf(c){ return (c && c.bloque==='ingles') ? 'ingles' : 'psico'; }
+function getCategoriasBloque(bloque){ return getCategorias().filter(c=>catBloqueOf(c)===bloque); }
+function nextSuggestedColor(bloque){ const cats = bloque ? getCategoriasBloque(bloque) : getCategorias(); return PALETTE[cats.length % PALETTE.length]; }
 
-function getOrCreateCategoria(nombre,color){
+function getOrCreateCategoria(nombre,color,bloque){
+  bloque = bloque==='ingles' ? 'ingles' : 'psico';
   const cats = getCategorias();
-  const existing = cats.find(c=>c.nombre.trim().toLowerCase()===nombre.trim().toLowerCase());
+  const existing = cats.find(c=>catBloqueOf(c)===bloque && c.nombre.trim().toLowerCase()===nombre.trim().toLowerCase());
   if(existing) return existing.id;
-  const cat = {id:uid(), nombre:nombre.trim(), color, subcategorias:[]};
+  const cat = {id:uid(), nombre:nombre.trim(), color, bloque, subcategorias:[]};
   cats.push(cat);
   saveCategorias(cats);
   return cat.id;
@@ -1997,16 +2052,20 @@ function countEntradasCategoria(id){
   getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===id) n++; }));
   return n;
 }
-function sumMinutosPsicoTotal(){
+function sumMinutosCategoriasBloque(bloque){
+  const ids = new Set(getCategoriasBloque(bloque).map(c=>c.id));
   let total = 0;
-  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico') total += e.minutos; }));
+  getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='psico' && ids.has(e.categoriaId)) total += e.minutos; }));
   return total;
 }
+function sumMinutosPsicoTotal(){ return sumMinutosCategoriasBloque('psico'); }
+function sumMinutosInglesTotal(){ return sumMinutosCategoriasBloque('ingles'); }
 
-// ---- Subcategorías fijas de psico (TEST / REPASO TEST / TEST TIEMPO) ----
-// INNOTEST es un apartado excepcional: no lleva estas tres subcategorías,
-// sus registros van directos con subcategoriaId='' (ver openTestTiempoForm).
-const PSICO_DEFAULT_SUBCATS = ['TEST','REPASO TEST','TEST TIEMPO'];
+// ---- Subcategorías fijas de psico/inglés (TEST / REPASO TEST / TEST TIEMPO /
+// INNOTEST). INNOTEST aquí es el origen del test (ver "Introducir test"), no
+// una categoría especial: la categoría histórica llamada "INNOTEST"
+// (isInnotestCat) sigue intacta para no perder datos antiguos. ----
+const PSICO_DEFAULT_SUBCATS = ['TEST','REPASO TEST','TEST TIEMPO','INNOTEST'];
 function isInnotestCat(cat){ return !!cat && normNombre(cat.nombre)==='INNOTEST'; }
 function ensurePsicoDefaultSubcats(catId){
   const cat = getCategoria(catId);
@@ -2610,20 +2669,19 @@ function deleteTestTiempoEntry(){
 // ========== SELECTOR DE CATEGORÍA POR NIVELES (Añadir tiempo) ==========
 function openPicker(kind){
   pickerBloqueId=null; pickerTemaId=null; pickerPsicoCatId=null;
-  if(kind==='psico') pickerStep='psico-lista';
-  else if(kind==='ingles') pickerStep='ingles';
+  if(kind==='psico' || kind==='ingles'){ pickerCatBlock=kind; pickerStep='cat-lista'; }
   else pickerStep='temas-bloques';
   renderPicker();
   openModal('picker-modal');
 }
-const PICKER_TOP_STEPS = ['temas-bloques','psico-lista','ingles'];
+const PICKER_TOP_STEPS = ['temas-bloques','cat-lista'];
 function pickerBack(){
   if(pickerStep==='temas-lista'){ pickerStep='temas-bloques'; pickerTemaId=null; }
   else if(pickerStep==='temas-sub'){ pickerStep='temas-lista'; }
   else if(pickerStep==='tests-choice'){ pickerStep='temas-bloques'; }
-  else if(pickerStep==='psico-sub'){ pickerStep='psico-lista'; }
-  else if(pickerStep==='psico-new'){ pickerStep='psico-lista'; }
-  else if(pickerStep==='psico-newsub'){ pickerStep='psico-sub'; }
+  else if(pickerStep==='cat-sub'){ pickerStep='cat-lista'; }
+  else if(pickerStep==='cat-new'){ pickerStep='cat-lista'; }
+  else if(pickerStep==='cat-newsub'){ pickerStep='cat-sub'; }
   renderPicker();
 }
 function renderPicker(){
@@ -2684,33 +2742,33 @@ function renderPicker(){
       <div class="lvl-row" onclick="closeModal('picker-modal');openTestsView()"><span class="lvl-name">Ver tests y simulacros</span></div>`;
     return;
   }
-  if(pickerStep==='psico-lista'){
-    title.textContent = 'Psicotécnicos';
-    const cats = getCategorias();
-    let rows = cats.map(c=>`<div class="lvl-row" onclick="pickerGoPsicoCat('${c.id}')">
+  if(pickerStep==='cat-lista'){
+    title.textContent = pickerCatBlock==='ingles' ? 'Inglés' : 'Psicotécnicos';
+    const cats = getCategoriasBloque(pickerCatBlock);
+    let rows = cats.map(c=>`<div class="lvl-row" onclick="pickerGoCat('${c.id}')">
       <span class="lvl-dot" style="background:${c.color};color:${c.color};"></span>
       <span class="lvl-name">${escapeHtml(c.nombre)}</span>
       <span class="lvl-val">${formatHM(sumMinutosCategoria(c.id))}</span>
     </div>`).join('');
-    rows += `<div class="lvl-row" onclick="pickerStep='psico-new';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva entidad</span></div>`;
-    body.innerHTML = (cats.length?'':'<div class="empty-sub">Sin entidades aún</div>') + rows;
+    rows += `<div class="lvl-row" onclick="pickerStep='cat-new';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva categoría</span></div>`;
+    body.innerHTML = (cats.length?'':'<div class="empty-sub">Sin categorías aún</div>') + rows;
     return;
   }
-  if(pickerStep==='psico-new'){
-    title.textContent = 'Nueva entidad';
-    pickerNewCatColor = nextSuggestedColor();
+  if(pickerStep==='cat-new'){
+    title.textContent = 'Nueva categoría';
+    pickerNewCatColor = nextSuggestedColor(pickerCatBlock);
     body.innerHTML = `
       <label class="modal-label">Nombre</label>
-      <input type="text" class="modal-input" id="picker-newcat-name" placeholder="p.ej. PSI ÓMNIBUS" style="font-family:var(--font-sans);">
+      <input type="text" class="modal-input" id="picker-newcat-name" placeholder="${pickerCatBlock==='ingles'?'p.ej. VERBOS IRREGULARES':'p.ej. PSI ÓMNIBUS'}" style="font-family:var(--font-sans);">
       <label class="modal-label">Color</label>
       <div class="color-swatch-row" id="picker-newcat-colors"></div>
-      <button class="save-btn" onclick="pickerSavePsicoCat()">Guardar</button>`;
+      <button class="save-btn" onclick="pickerSaveCat()">Guardar</button>`;
     renderSwatches('picker-newcat-colors', pickerNewCatColor, 'pickerSelectNewCatColor');
     return;
   }
-  if(pickerStep==='psico-sub'){
+  if(pickerStep==='cat-sub'){
     const cat = getCategoria(pickerPsicoCatId);
-    title.textContent = cat ? cat.nombre : 'Psicotécnicos';
+    title.textContent = cat ? cat.nombre : (pickerCatBlock==='ingles' ? 'Inglés' : 'Psicotécnicos');
     const subs = (cat && cat.subcategorias) || [];
     let rows = `<div class="lvl-row" onclick="pickerSelectPsicoSub('')"><span class="lvl-name" style="font-style:italic;color:var(--text2);">Sin subcategoría</span></div>`;
     rows += subs.map(s=>{
@@ -2723,21 +2781,16 @@ function renderPicker(){
       <span class="lvl-val">${formatHM(sumMinutosSubcategoria(pickerPsicoCatId,s.id))}</span>
     </div>`;
     }).join('');
-    rows += `<div class="lvl-row" onclick="pickerStep='psico-newsub';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva subcategoría</span></div>`;
+    rows += `<div class="lvl-row" onclick="pickerStep='cat-newsub';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva subcategoría</span></div>`;
     body.innerHTML = rows;
     return;
   }
-  if(pickerStep==='psico-newsub'){
+  if(pickerStep==='cat-newsub'){
     title.textContent = 'Nueva subcategoría';
     body.innerHTML = `
       <label class="modal-label">Nombre</label>
       <input type="text" class="modal-input" id="picker-newsub-name" placeholder="p.ej. AGILIDAD MENTAL" style="font-family:var(--font-sans);">
       <button class="save-btn" onclick="pickerSavePsicoSub()">Guardar</button>`;
-    return;
-  }
-  if(pickerStep==='ingles'){
-    title.textContent = 'Inglés';
-    body.innerHTML = `<div class="empty-sub">Todavía no hay nada que registrar en Inglés.</div>`;
     return;
   }
 }
@@ -2755,7 +2808,7 @@ function pickerSelectTemaSub(subKey){
   closeModal('picker-modal');
   renderEntrySelector();
 }
-function pickerGoPsicoCat(id){
+function pickerGoCat(id){
   const cat = getCategoria(id);
   if(isInnotestCat(cat)){
     closeModal('picker-modal');
@@ -2763,14 +2816,14 @@ function pickerGoPsicoCat(id){
     return;
   }
   ensurePsicoDefaultSubcats(id);
-  pickerPsicoCatId=id; pickerStep='psico-sub'; renderPicker();
+  pickerPsicoCatId=id; pickerStep='cat-sub'; renderPicker();
 }
 function pickerSelectNewCatColor(c){ pickerNewCatColor=c; renderSwatches('picker-newcat-colors', c, 'pickerSelectNewCatColor'); }
-function pickerSavePsicoCat(){
+function pickerSaveCat(){
   const nombre = document.getElementById('picker-newcat-name').value.trim();
   if(!nombre){ showToast('Ponle un nombre'); return; }
-  const id = getOrCreateCategoria(nombre, pickerNewCatColor);
-  pickerGoPsicoCat(id);
+  const id = getOrCreateCategoria(nombre, pickerNewCatColor, pickerCatBlock);
+  pickerGoCat(id);
 }
 function pickerSelectPsicoSub(subId){
   entrySelection = {kind:'psico', categoriaId:pickerPsicoCatId, subcategoriaId:subId};
@@ -2943,13 +2996,14 @@ function renderStatsCatBreakdown(){
   if(statsCatLevel==='root'){
     const temasTotal = sumMinutosTemasTotal();
     const psicoTotal = sumMinutosPsicoTotal();
+    const inglesTotal = sumMinutosInglesTotal();
     const rows = [
       {nombre:'TEMAS', color:COLOR_TEMAS, total:temasTotal, onclick:"statsCatLevel='temas-bloques';renderStatsCatBreakdown();"},
       {nombre:'PSICOTÉCNICOS', color:COLOR_PSICO, total:psicoTotal, onclick:"statsCatLevel='psico';renderStatsCatBreakdown();"},
-      {nombre:'INGLÉS', color:COLOR_INGLES, total:0, onclick:null},
+      {nombre:'INGLÉS', color:COLOR_INGLES, total:inglesTotal, onclick:"statsCatLevel='ingles';renderStatsCatBreakdown();"},
     ];
     const max = Math.max(1, ...rows.map(r=>r.total));
-    if(temasTotal+psicoTotal<=0){ el.innerHTML = '<div class="empty-state">Sin registros aún</div>'; return; }
+    if(temasTotal+psicoTotal+inglesTotal<=0){ el.innerHTML = '<div class="empty-state">Sin registros aún</div>'; return; }
     el.innerHTML = rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,x.onclick)).join('');
     return;
   }
@@ -2969,8 +3023,8 @@ function renderStatsCatBreakdown(){
       (rows.length ? rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,x.onclick)).join('') : '<div class="empty-sub">Sin temas con tiempo en este bloque</div>');
     return;
   }
-  if(statsCatLevel==='psico'){
-    const cats = getCategorias().map(c=>({nombre:c.nombre, color:c.color, total:sumMinutosCategoria(c.id)})).filter(c=>c.total>0);
+  if(statsCatLevel==='psico' || statsCatLevel==='ingles'){
+    const cats = getCategoriasBloque(statsCatLevel).map(c=>({nombre:c.nombre, color:c.color, total:sumMinutosCategoria(c.id)})).filter(c=>c.total>0);
     const max = Math.max(1, ...cats.map(c=>c.total));
     el.innerHTML = statsBackRow("statsCatLevel='root';renderStatsCatBreakdown();") +
       (cats.length ? cats.map(x=>statBarRow(x.nombre,x.color,x.total,max,null)).join('') : '<div class="empty-sub">Sin registros aún</div>');
@@ -2984,7 +3038,7 @@ function renderStatsSubBreakdown(){
     const rows = keys.map(k=>({key:k, nombre:subcatTemaNombre(k), total:sumMinutosSubcatGlobal(k)})).filter(r=>r.total>0);
     if(!rows.length){ el.innerHTML = '<div class="empty-state">Sin subcategorías aún</div>'; return; }
     const max = Math.max(1, ...rows.map(r=>r.total));
-    el.innerHTML = rows.map(r=>statBarRow(r.nombre,'#8fdcff',r.total,max,`statsSubLevel='tema';statsSubKey='${r.key}';renderStatsSubBreakdown();`)).join('');
+    el.innerHTML = rows.map(r=>statBarRow(r.nombre,'#2E6BFF',r.total,max,`statsSubLevel='tema';statsSubKey='${r.key}';renderStatsSubBreakdown();`)).join('');
     return;
   }
   const rows = [];
@@ -2995,7 +3049,7 @@ function renderStatsSubBreakdown(){
     (rows.length ? rows.map(x=>statBarRow(x.nombre,x.color,x.total,max,null)).join('') : '<div class="empty-sub">Sin temas con tiempo</div>');
 }
 
-const MONTH_BAR_PALETTE = ['#f5cc0099','#1db9ffcc'];
+const MONTH_BAR_PALETTE = ['#FF3B4E99','#2E6BFFcc'];
 function buildMonthGroups(mesKeys){
   const groups = [];
   mesKeys.forEach((mk,i)=>{
@@ -3025,7 +3079,7 @@ function getRecentCutWeeks(count){
 
 function renderBarChart(id, labels, data, opts){
   opts = opts || {};
-  const colors = opts.colors || data.map(()=> opts.color || '#38bdf8');
+  const colors = opts.colors || data.map(()=> opts.color || '#2E6BFF');
   const monthGroups = opts.monthGroups || null;
   if(charts[id]) charts[id].destroy();
   const ctx = document.getElementById(id).getContext('2d');
@@ -3174,20 +3228,20 @@ function heatColor(mins, maxMin){
   else if(ratio < 0.5) alpha = 0.5;
   else if(ratio < 0.75) alpha = 0.75;
   else alpha = 1;
-  return { bg: `rgba(56,189,248,${alpha})`, fg: alpha>0.6 ? 'rgba(3,15,23,0.75)' : 'rgba(255,255,255,0.9)' };
+  return { bg: `rgba(46,107,255,${alpha})`, fg: alpha>0.6 ? 'rgba(10,14,28,0.82)' : 'rgba(255,255,255,0.9)' };
 }
 
 // ========== CATEGORÍAS (niveles: TEMAS / PSICOTÉCNICOS / INGLÉS) ==========
 function renderCategoriasList(){
   const list = document.getElementById('categorias-list');
   const addBtn = document.getElementById('categorias-add-btn');
-  addBtn.style.display = catLevel==='psico' ? 'flex' : 'none';
+  addBtn.style.display = (catLevel==='psico' || catLevel==='ingles') ? 'flex' : 'none';
 
   if(catLevel==='root'){
     list.innerHTML = `
       <button class="lvl-block-btn" onclick="catLevel='temas-bloques';renderCategoriasList();"><div class="t">TEMAS</div><div class="s">${TOTAL_TEMAS} temas · ${formatHM(sumMinutosTemasTotal())}</div></button>
       <button class="lvl-block-btn" onclick="catLevel='psico';renderCategoriasList();"><div class="t">PSICOTÉCNICOS</div><div class="s">${formatHM(sumMinutosPsicoTotal())}</div></button>
-      <button class="lvl-block-btn" onclick="catLevel='ingles';renderCategoriasList();"><div class="t">INGLÉS</div><div class="s">Próximamente</div></button>`;
+      <button class="lvl-block-btn" onclick="catLevel='ingles';renderCategoriasList();"><div class="t">INGLÉS</div><div class="s">${formatHM(sumMinutosInglesTotal())}</div></button>`;
     return;
   }
   if(catLevel==='temas-bloques'){
@@ -3215,16 +3269,11 @@ function renderCategoriasList(){
     list.innerHTML = rows;
     return;
   }
-  if(catLevel==='ingles'){
-    list.innerHTML = statsBackRow("catLevel='root';renderCategoriasList();") + '<div class="empty-sub">Próximamente.</div>';
-    return;
-  }
-
-  // catLevel === 'psico' — CRUD íntegro, igual que la v1, un nivel más adentro
-  getCategorias().forEach(c=>{ if(!isInnotestCat(c)) ensurePsicoDefaultSubcats(c.id); });
-  const cats = getCategorias(); // re-leído: ya incluye las subcategorías recién sembradas
+  // catLevel === 'psico' | 'ingles' — mismo CRUD, filtrado por bloque
+  getCategoriasBloque(catLevel).forEach(c=>{ if(!isInnotestCat(c)) ensurePsicoDefaultSubcats(c.id); });
+  const cats = getCategoriasBloque(catLevel); // re-leído: ya incluye las subcategorías recién sembradas
   let html = statsBackRow("catLevel='root';renderCategoriasList();");
-  if(!cats.length){ html += '<div class="empty-state" style="padding:24px 16px;">Aún no tienes entidades</div>'; list.innerHTML = html; return; }
+  if(!cats.length){ html += '<div class="empty-state" style="padding:24px 16px;">Aún no tienes categorías</div>'; list.innerHTML = html; return; }
   html += cats.map((c,i)=>{
     const innotest = isInnotestCat(c);
     const subs = innotest ? [] : (c.subcategorias || []);
@@ -3407,18 +3456,23 @@ function deleteSubcategoryFromDetail(){
 }
 function moveCategory(id,dir){
   const cats = getCategorias();
-  const i = cats.findIndex(c=>c.id===id);
-  const j = i+dir;
-  if(i<0||j<0||j>=cats.length) return;
-  [cats[i],cats[j]] = [cats[j],cats[i]];
+  const bloque = catBloqueOf(cats.find(c=>c.id===id));
+  const group = cats.filter(c=>catBloqueOf(c)===bloque);
+  const gi = group.findIndex(c=>c.id===id);
+  const gj = gi+dir;
+  if(gi<0||gj<0||gj>=group.length) return;
+  const a = group[gi], b = group[gj];
+  const ia = cats.indexOf(a), ib = cats.indexOf(b);
+  [cats[ia],cats[ib]] = [cats[ib],cats[ia]];
   saveCategorias(cats);
   renderCategoriasList();
 }
 function openNewCategoryModal(){
   editingCategoryId = null;
-  document.getElementById('category-modal-title').textContent = 'Nueva entidad';
+  categoryModalBloque = catLevel; // 'psico' | 'ingles'
+  document.getElementById('category-modal-title').textContent = 'Nueva categoría';
   document.getElementById('category-name-input').value = '';
-  categoryModalColor = nextSuggestedColor();
+  categoryModalColor = nextSuggestedColor(categoryModalBloque);
   renderSwatches('category-colors', categoryModalColor, 'selectCategoryColor');
   openModal('category-modal');
 }
@@ -3426,7 +3480,8 @@ function openEditCategoryModal(id){
   const c = getCategoria(id);
   if(!c) return;
   editingCategoryId = id;
-  document.getElementById('category-modal-title').textContent = 'Editar entidad';
+  categoryModalBloque = catBloqueOf(c);
+  document.getElementById('category-modal-title').textContent = 'Editar categoría';
   document.getElementById('category-name-input').value = c.nombre;
   categoryModalColor = c.color;
   renderSwatches('category-colors', categoryModalColor, 'selectCategoryColor');
@@ -3435,17 +3490,17 @@ function openEditCategoryModal(id){
 function selectCategoryColor(c){ categoryModalColor = c; renderSwatches('category-colors', c, 'selectCategoryColor'); }
 function saveCategoryModal(){
   const nombre = document.getElementById('category-name-input').value.trim();
-  if(!nombre){ showToast('Ponle un nombre a la entidad'); return; }
+  if(!nombre){ showToast('Ponle un nombre a la categoría'); return; }
   const cats = getCategorias();
-  const dup = cats.find(c=>c.nombre.trim().toLowerCase()===nombre.toLowerCase() && c.id!==editingCategoryId);
-  if(dup){ showToast('Ya existe una entidad con ese nombre'); return; }
+  const dup = cats.find(c=>catBloqueOf(c)===categoryModalBloque && c.nombre.trim().toLowerCase()===nombre.toLowerCase() && c.id!==editingCategoryId);
+  if(dup){ showToast('Ya existe una categoría con ese nombre'); return; }
   let newId = null;
   if(editingCategoryId){
     const c = cats.find(c=>c.id===editingCategoryId);
     if(c){ c.nombre = nombre; c.color = categoryModalColor; }
   } else {
     newId = uid();
-    cats.push({id:newId, nombre, color:categoryModalColor, subcategorias:[]});
+    cats.push({id:newId, nombre, color:categoryModalColor, bloque:categoryModalBloque, subcategorias:[]});
   }
   saveCategorias(cats);
   if(newId) ensurePsicoDefaultSubcats(newId);
@@ -3460,9 +3515,9 @@ function openDeleteCategoryModal(id){
   const n = countEntradasCategoria(id);
   const mins = sumMinutosCategoria(id);
   document.getElementById('delete-cat-text').textContent = n>0
-    ? `"${c.nombre}" tiene ${n} registro(s) (${formatHM(mins)}). Puedes reasignarlos a otra entidad o borrarlos junto con ella.`
-    : `¿Borrar la entidad "${c.nombre}"? No tiene registros asociados.`;
-  const otherCats = getCategorias().filter(c2=>c2.id!==id);
+    ? `"${c.nombre}" tiene ${n} registro(s) (${formatHM(mins)}). Puedes reasignarlos a otra categoría o borrarlos junto con ella.`
+    : `¿Borrar la categoría "${c.nombre}"? No tiene registros asociados.`;
+  const otherCats = getCategorias().filter(c2=>c2.id!==id && catBloqueOf(c2)===catBloqueOf(c));
   const selRow = document.getElementById('delete-cat-select-row');
   if(n>0 && otherCats.length){
     selRow.style.display = 'block';
@@ -3489,7 +3544,7 @@ function confirmDeleteCategory(){
   closeModal('delete-cat-modal');
   pendingDeleteCategoryId = null;
   renderCategoriasList();
-  showToast('Entidad borrada');
+  showToast('Categoría borrada');
 }
 
 // ========== DETALLE DE TEMA (subcategorías + libro resumen/vueltas) ==========
@@ -4053,97 +4108,146 @@ function rendChartOptionsDias(onPointClick){
 }
 
 // ========== INTRODUCIR TEST: desglosar tiempo TEST/INNOTEST ya registrado ==========
-// No añade tiempo nuevo: resta minutos de un bloque sin nota (subKey TEST de
-// un tema, o subcategoría "TEST" de una categoría psico — no la categoría
-// especial "INNOTEST", que ya tiene su propio formulario con nota) y los
-// mueve a un registro nuevo con nota. El total del día/tema/mes no cambia:
-// es un movimiento interno, igual que vaciar un cajón a otro.
-function itSubcatTestId(categoriaId){
+// No añade tiempo nuevo: resta minutos de un bloque sin nota (subKey TEST/
+// INNOTEST de un tema, o subcategoría TEST/INNOTEST de una categoría psico o
+// inglés) y los mueve a un registro nuevo con nota. El total del día/tema/mes
+// no cambia: es un movimiento interno, igual que vaciar un cajón a otro.
+// Tipo (TEST/INNOTEST, el origen del test) y Bloque (temas/psico/ingles, de
+// qué trata) son ejes independientes: cualquier combinación es válida.
+function itSubcatIdFor(categoriaId, tipo){
   const cat = getCategoria(categoriaId);
   if(!cat) return null;
-  const sub = (cat.subcategorias||[]).find(s=>normNombre(s.nombre)==='TEST');
+  const sub = (cat.subcategorias||[]).find(s=>normNombre(s.nombre)===tipo);
   return sub ? sub.id : null;
 }
-function itBloquesSinNota(tipo){
+function itBloquesSinNota(tipo, bloque){
   const out = [];
   getDias().forEach(d=>{
     d.entradas.forEach(e=>{
       if(e.nota!=null || !(e.minutos>0)) return;
-      if(tipo==='TEST'){
-        if(e.tipo==='tema' && e.subKey==='TEST') out.push({ fecha:d.fecha, grupoId:e.temaId, minutos:e.minutos });
+      if(bloque==='temas'){
+        if(e.tipo==='tema' && e.subKey===tipo) out.push({ fecha:d.fecha, grupoId:e.temaId, minutos:e.minutos });
       } else {
-        if(e.tipo==='psico'){
-          const subTestId = itSubcatTestId(e.categoriaId);
-          if(subTestId && e.subcategoriaId===subTestId) out.push({ fecha:d.fecha, grupoId:e.categoriaId, minutos:e.minutos });
-        }
+        if(e.tipo!=='psico') return;
+        const cat = getCategoria(e.categoriaId);
+        if(!cat || catBloqueOf(cat)!==bloque) return;
+        const subId = itSubcatIdFor(cat.id, tipo);
+        if(subId && e.subcategoriaId===subId) out.push({ fecha:d.fecha, grupoId:e.categoriaId, minutos:e.minutos });
       }
     });
   });
   return out;
 }
-function itGruposDisponibles(tipo){
-  const ids = Array.from(new Set(itBloquesSinNota(tipo).map(b=>b.grupoId)));
-  if(tipo==='TEST') return ids.sort((a,b)=>temaNumero(a)-temaNumero(b)).map(id=>({id, nombre:temaNombre(id)}));
+function itGruposDisponibles(tipo, bloque){
+  const ids = Array.from(new Set(itBloquesSinNota(tipo, bloque).map(b=>b.grupoId)));
+  if(bloque==='temas') return ids.sort((a,b)=>temaNumero(a)-temaNumero(b)).map(id=>({id, nombre:temaNombre(id)}));
   return ids.map(id=>({id, nombre:getCategoriaNombre(id)})).sort((a,b)=>a.nombre.localeCompare(b.nombre));
 }
-function itFechasDisponibles(tipo, grupoId){
+function itFechasDisponibles(tipo, bloque, grupoId){
   const map = {};
-  itBloquesSinNota(tipo).filter(b=>b.grupoId===grupoId).forEach(b=>{ map[b.fecha] = (map[b.fecha]||0)+b.minutos; });
+  itBloquesSinNota(tipo, bloque).filter(b=>b.grupoId===grupoId).forEach(b=>{ map[b.fecha] = (map[b.fecha]||0)+b.minutos; });
   return Object.keys(map).sort().map(fecha=>({fecha, minutos:map[fecha]})); // ascendente: la más antigua primero
 }
-function itDisponible(tipo, grupoId, fecha){
-  return itBloquesSinNota(tipo).filter(b=>b.grupoId===grupoId && b.fecha===fecha).reduce((a,b)=>a+b.minutos,0);
+function itDisponible(tipo, bloque, grupoId, fecha){
+  return itBloquesSinNota(tipo, bloque).filter(b=>b.grupoId===grupoId && b.fecha===fecha).reduce((a,b)=>a+b.minutos,0);
 }
 function itPendientes(){
   const grupos = {};
   ['TEST','INNOTEST'].forEach(tipo=>{
-    itBloquesSinNota(tipo).forEach(b=>{
-      const key = tipo+'|'+b.grupoId;
-      if(!grupos[key]) grupos[key] = { tipo, grupoId:b.grupoId, total:0 };
-      grupos[key].total += b.minutos;
+    ['temas','psico','ingles'].forEach(bloque=>{
+      itBloquesSinNota(tipo, bloque).forEach(b=>{
+        const key = tipo+'|'+bloque+'|'+b.grupoId;
+        if(!grupos[key]) grupos[key] = { tipo, bloque, grupoId:b.grupoId, total:0 };
+        grupos[key].total += b.minutos;
+      });
     });
   });
   return Object.values(grupos).sort((a,b)=>b.total-a.total);
 }
 
-let itTipo = 'TEST', itGrupoId = null, itFecha = null;
+let itTipo = 'TEST', itBloque = 'temas', itGrupoId = null, itFecha = null, itResultadoModo = 'NOTA';
 
+function itClearInputs(){
+  ['it-tiempo-input','it-nota-input','it-preguntas-input','it-d-preguntas-input','it-d-aciertos-input','it-d-fallos-input','it-d-blancos-input'].forEach(id=>{
+    document.getElementById(id).value = '';
+  });
+}
 function openIntroducirTest(){
-  itTipo = 'TEST'; itGrupoId = null; itFecha = null;
-  document.getElementById('it-tiempo-input').value = '';
-  document.getElementById('it-nota-input').value = '';
-  document.getElementById('it-preguntas-input').value = '';
+  itTipo = 'TEST'; itBloque = 'temas'; itGrupoId = null; itFecha = null; itResultadoModo = 'NOTA';
+  itClearInputs();
   renderIntroducirTest();
   openModal('introducir-test-modal');
 }
 function itSetTipo(t){ itTipo = t; itGrupoId = null; itFecha = null; renderIntroducirTest(); }
-function itOnTemaChange(){ itGrupoId = document.getElementById('it-tema-select').value || null; itFecha = null; renderIntroducirTest(); }
+function itSetBloque(b){ itBloque = b; itGrupoId = null; itFecha = null; renderIntroducirTest(); }
+function itSetResultadoModo(m){ itResultadoModo = m; renderIntroducirTest(); }
+function itOnGrupoChange(){ itGrupoId = document.getElementById('it-grupo-select').value || null; itFecha = null; renderIntroducirTest(); }
 function itOnFechaChange(){ itFecha = document.getElementById('it-fecha-select').value || null; renderIntroducirTest(); }
-function itAbrirDesdeGrupo(tipo, grupoId){
-  itTipo = tipo; itGrupoId = grupoId;
-  const fechas = itFechasDisponibles(tipo, grupoId);
+function itAbrirDesdeGrupo(tipo, bloque, grupoId){
+  itTipo = tipo; itBloque = bloque; itGrupoId = grupoId; itResultadoModo = 'NOTA';
+  const fechas = itFechasDisponibles(tipo, bloque, grupoId);
   itFecha = fechas.length ? fechas[0].fecha : null; // la más antigua pendiente
-  document.getElementById('it-tiempo-input').value = '';
-  document.getElementById('it-nota-input').value = '';
-  document.getElementById('it-preguntas-input').value = '';
+  itClearInputs();
   renderIntroducirTest();
   document.getElementById('it-tiempo-input').scrollIntoView({behavior:'smooth', block:'center'});
 }
+function updateItNotaDesglose(){
+  const preguntas = parseInt(document.getElementById('it-d-preguntas-input').value,10);
+  const aciertos = parseInt(document.getElementById('it-d-aciertos-input').value,10);
+  const fallosRaw = document.getElementById('it-d-fallos-input').value.trim();
+  const blancosRaw = document.getElementById('it-d-blancos-input').value.trim();
+  const fallos = fallosRaw==='' ? 0 : (parseInt(fallosRaw,10)||0);
+  const blancos = blancosRaw==='' ? 0 : (parseInt(blancosRaw,10)||0);
+  const notaEl = document.getElementById('it-d-nota-auto');
+  const avisoEl = document.getElementById('it-d-aviso-suma');
+  if(Number.isFinite(preguntas) && preguntas>0 && Number.isFinite(aciertos)){
+    notaEl.textContent = 'Nota calculada: ' + formatNota(notaOficial(aciertos, fallos, preguntas));
+    const suma = aciertos + fallos + blancos;
+    avisoEl.textContent = (fallosRaw!=='' || blancosRaw!=='') && suma!==preguntas
+      ? `Aciertos + fallos + blancos (${suma}) no suman las ${preguntas} preguntas`
+      : '';
+  } else {
+    notaEl.textContent = '';
+    avisoEl.textContent = '';
+  }
+}
 function renderIntroducirTest(){
   document.querySelectorAll('#it-tipo-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.t===itTipo));
+  document.querySelectorAll('#it-bloque-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.b===itBloque));
+  document.querySelectorAll('#it-resultado-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.r===itResultadoModo));
+  document.getElementById('it-modo-nota').style.display = itResultadoModo==='NOTA' ? 'block' : 'none';
+  document.getElementById('it-modo-desglose').style.display = itResultadoModo==='DESGLOSE' ? 'block' : 'none';
+  document.getElementById('it-grupo-label').textContent = itBloque==='temas' ? 'Tema' : 'Categoría';
 
-  const grupos = itGruposDisponibles(itTipo);
-  const temaSel = document.getElementById('it-tema-select');
+  const grupoSelect = document.getElementById('it-grupo-select');
+  const grupoEmpty = document.getElementById('it-grupo-empty');
+  const fechaWrap = document.getElementById('it-fecha-wrap');
+
+  const sinCategorias = itBloque!=='temas' && getCategoriasBloque(itBloque).length===0;
+  if(sinCategorias){
+    grupoSelect.style.display = 'none';
+    grupoEmpty.style.display = 'block';
+    grupoEmpty.textContent = `Todavía no hay categorías en ${itBloque==='ingles'?'Inglés':'Psicotécnicos'} — créalas desde CATEGORÍAS.`;
+    fechaWrap.style.display = 'none';
+    itGrupoId = null; itFecha = null;
+    renderItPendientes();
+    return;
+  }
+  grupoSelect.style.display = '';
+  grupoEmpty.style.display = 'none';
+  fechaWrap.style.display = '';
+
+  const grupos = itGruposDisponibles(itTipo, itBloque);
   if(!grupos.length){
-    temaSel.innerHTML = '<option value="">Sin bloques pendientes</option>';
+    grupoSelect.innerHTML = '<option value="">Sin bloques pendientes</option>';
     itGrupoId = null;
   } else {
     if(!itGrupoId || !grupos.some(g=>g.id===itGrupoId)) itGrupoId = grupos[0].id;
-    temaSel.innerHTML = grupos.map(g=>`<option value="${g.id}"${g.id===itGrupoId?' selected':''}>${escapeHtml(g.nombre)}</option>`).join('');
+    grupoSelect.innerHTML = grupos.map(g=>`<option value="${g.id}"${g.id===itGrupoId?' selected':''}>${escapeHtml(g.nombre)}</option>`).join('');
   }
 
   const fechaSel = document.getElementById('it-fecha-select');
-  const fechas = itGrupoId ? itFechasDisponibles(itTipo, itGrupoId) : [];
+  const fechas = itGrupoId ? itFechasDisponibles(itTipo, itBloque, itGrupoId) : [];
   if(!fechas.length){
     fechaSel.innerHTML = '<option value="">—</option>';
     itFecha = null;
@@ -4152,9 +4256,10 @@ function renderIntroducirTest(){
     fechaSel.innerHTML = fechas.map(f=>`<option value="${f.fecha}"${f.fecha===itFecha?' selected':''}>${formatDate(f.fecha)} · ${formatHM(f.minutos)}</option>`).join('');
   }
 
-  const disponible = (itGrupoId && itFecha) ? itDisponible(itTipo, itGrupoId, itFecha) : 0;
+  const disponible = (itGrupoId && itFecha) ? itDisponible(itTipo, itBloque, itGrupoId, itFecha) : 0;
   document.getElementById('it-disponible').textContent = 'Disponible ese día: ' + formatHM(disponible);
 
+  updateItNotaDesglose();
   renderItPendientes();
 }
 function renderItPendientes(){
@@ -4166,8 +4271,8 @@ function renderItPendientes(){
   }
   const total = pendientes.reduce((a,p)=>a+p.total,0);
   card.innerHTML = pendientes.map(p=>{
-    const nombre = p.tipo==='TEST' ? temaNombre(p.grupoId) : getCategoriaNombre(p.grupoId);
-    return `<div class="lvl-row" onclick="itAbrirDesdeGrupo('${p.tipo}','${p.grupoId}')">
+    const nombre = p.bloque==='temas' ? temaNombre(p.grupoId) : getCategoriaNombre(p.grupoId);
+    return `<div class="lvl-row" onclick="itAbrirDesdeGrupo('${p.tipo}','${p.bloque}','${p.grupoId}')">
       <span class="lvl-name">${escapeHtml(nombre)} · ${p.tipo}</span>
       <span class="lvl-val">${formatHM(p.total)}</span>
       <span class="lvl-chevron">${ICON_CHEVRON}</span>
@@ -4177,18 +4282,30 @@ function renderItPendientes(){
 function guardarIntroducirTest(){
   const avisoEl = document.getElementById('it-aviso');
   avisoEl.textContent = '';
-  if(!itGrupoId || !itFecha){ avisoEl.textContent = 'Elige tema y fecha'; return; }
+  if(!itGrupoId || !itFecha){ avisoEl.textContent = 'Elige categoría y fecha'; return; }
   const minutos = parseInt(document.getElementById('it-tiempo-input').value, 10);
-  const notaRaw = document.getElementById('it-nota-input').value.trim().replace(',','.');
-  const nota = notaRaw==='' ? NaN : parseFloat(notaRaw);
-  const preguntasRaw = document.getElementById('it-preguntas-input').value.trim();
-  const preguntas = preguntasRaw==='' ? null : parseInt(preguntasRaw,10);
-
   if(!Number.isFinite(minutos) || minutos<=0){ avisoEl.textContent = 'Introduce un tiempo válido'; return; }
-  if(!Number.isFinite(nota) || nota<0 || nota>10){ avisoEl.textContent = 'Introduce una nota válida'; return; }
 
-  const nombreGrupo = itTipo==='TEST' ? temaNombre(itGrupoId) : getCategoriaNombre(itGrupoId);
-  const disponible = itDisponible(itTipo, itGrupoId, itFecha);
+  let nota, preguntas=null, aciertos=null, fallos=null, blancos=null;
+  if(itResultadoModo==='DESGLOSE'){
+    preguntas = parseInt(document.getElementById('it-d-preguntas-input').value,10);
+    aciertos = parseInt(document.getElementById('it-d-aciertos-input').value,10);
+    if(!Number.isFinite(preguntas) || preguntas<=0 || !Number.isFinite(aciertos) || aciertos<0 || aciertos>preguntas){ avisoEl.textContent = 'Revisa preguntas y aciertos'; return; }
+    const fallosRaw = document.getElementById('it-d-fallos-input').value.trim();
+    const blancosRaw = document.getElementById('it-d-blancos-input').value.trim();
+    fallos = fallosRaw==='' ? null : Math.max(0, parseInt(fallosRaw,10)||0);
+    blancos = blancosRaw==='' ? null : Math.max(0, parseInt(blancosRaw,10)||0);
+    nota = notaOficial(aciertos, fallos||0, preguntas);
+  } else {
+    const notaRaw = document.getElementById('it-nota-input').value.trim().replace(',','.');
+    nota = notaRaw==='' ? NaN : parseFloat(notaRaw);
+    if(!Number.isFinite(nota) || nota<0 || nota>10){ avisoEl.textContent = 'Introduce una nota válida'; return; }
+    const preguntasRaw = document.getElementById('it-preguntas-input').value.trim();
+    preguntas = preguntasRaw==='' ? null : parseInt(preguntasRaw,10);
+  }
+
+  const nombreGrupo = itBloque==='temas' ? temaNombre(itGrupoId) : getCategoriaNombre(itGrupoId);
+  const disponible = itDisponible(itTipo, itBloque, itGrupoId, itFecha);
   if(disponible<=0){
     avisoEl.textContent = `No hay tiempo de ${itTipo} registrado en ${nombreGrupo} el ${formatDate(itFecha)}`;
     return;
@@ -4201,10 +4318,10 @@ function guardarIntroducirTest(){
   const dias = getDias();
   const dia = dias.find(d=>d.fecha===itFecha);
   let bloqueEntry;
-  if(itTipo==='TEST'){
-    bloqueEntry = dia.entradas.find(e=>e.tipo==='tema' && e.temaId===itGrupoId && e.subKey==='TEST' && e.nota==null);
+  if(itBloque==='temas'){
+    bloqueEntry = dia.entradas.find(e=>e.tipo==='tema' && e.temaId===itGrupoId && e.subKey===itTipo && e.nota==null);
   } else {
-    const subId = itSubcatTestId(itGrupoId);
+    const subId = itSubcatIdFor(itGrupoId, itTipo);
     bloqueEntry = dia.entradas.find(e=>e.tipo==='psico' && e.categoriaId===itGrupoId && e.subcategoriaId===subId && e.nota==null);
   }
   if(!bloqueEntry){ avisoEl.textContent = 'Ese bloque ya no existe — revisa la lista de abajo'; renderIntroducirTest(); return; }
@@ -4212,16 +4329,17 @@ function guardarIntroducirTest(){
   bloqueEntry.minutos -= minutos;
   if(bloqueEntry.minutos<=0) dia.entradas = dia.entradas.filter(e=>e!==bloqueEntry);
 
-  const nuevo = itTipo==='TEST'
-    ? { id:uid(), tipo:'tema', temaId:itGrupoId, subKey:'TEST', minutos, nota, desglosado:true }
-    : { id:uid(), tipo:'psico', categoriaId:itGrupoId, subcategoriaId:itSubcatTestId(itGrupoId), minutos, nota, desglosado:true };
+  const nuevo = itBloque==='temas'
+    ? { id:uid(), tipo:'tema', temaId:itGrupoId, subKey:itTipo, minutos, nota, desglosado:true }
+    : { id:uid(), tipo:'psico', categoriaId:itGrupoId, subcategoriaId:itSubcatIdFor(itGrupoId, itTipo), minutos, nota, desglosado:true };
   if(preguntas!=null) nuevo.preguntas = preguntas;
+  if(aciertos!=null) nuevo.aciertos = aciertos;
+  if(fallos!=null) nuevo.fallos = fallos;
+  if(blancos!=null) nuevo.blancos = blancos;
   dia.entradas.push(nuevo);
 
   saveDias(dias.filter(d=>d.entradas.length>0));
-  document.getElementById('it-tiempo-input').value = '';
-  document.getElementById('it-nota-input').value = '';
-  document.getElementById('it-preguntas-input').value = '';
+  itClearInputs();
   itFecha = null;
   renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
   renderIntroducirTest();
