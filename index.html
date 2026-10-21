@@ -1342,6 +1342,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <span class="t">INTRODUCIR TEST</span>
       <span style="color:var(--text3);">›</span>
     </button>
+    <button class="curva-tool-btn tap" onclick="openReclasificar()">
+      <span class="t">RECLASIFICAR</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
   </div>
   <div class="tools-zone">
     <div class="tools-zone-label">Estudio</div>
@@ -1496,6 +1500,55 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
+<!-- MODAL: Reclasificar (mueve minutos entre subcategorías, mismo total) -->
+<div class="modal-bg" id="reclasificar-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('reclasificar-modal')">‹</button>
+      <div class="lvl-header-title">Reclasificar</div>
+      <button class="toggle-btn" onclick="closeModal('reclasificar-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div class="modal-note">Mueve tiempo de una subcategoría a otra, dentro del mismo día y tema/categoría. El total de horas no cambia nunca.</div>
+
+    <label class="modal-label">Bloque</label>
+    <div class="range-tabs" id="rc-bloque-tabs">
+      <button class="range-tab tap active" data-b="temas" onclick="rcSetBloque('temas')">TEMAS</button>
+      <button class="range-tab tap" data-b="psico" onclick="rcSetBloque('psico')">PSICOS</button>
+      <button class="range-tab tap" data-b="ingles" onclick="rcSetBloque('ingles')">INGLÉS</button>
+    </div>
+
+    <label class="modal-label" id="rc-grupo-label">Tema</label>
+    <select class="modal-select" id="rc-grupo-select" onchange="rcOnGrupoChange()"></select>
+    <div id="rc-grupo-empty" class="empty-sub" style="display:none;margin:-4px 0 10px;"></div>
+
+    <div id="rc-body-wrap">
+      <label class="modal-label">Fecha</label>
+      <input type="date" class="modal-input" id="rc-fecha-input" onchange="rcOnFechaChange()">
+
+      <label class="modal-label">De</label>
+      <select class="modal-select" id="rc-origen-select" onchange="rcOnOrigenChange()"></select>
+      <div id="rc-sin-origen" class="empty-sub" style="display:none;margin:-4px 0 10px;"></div>
+
+      <div id="rc-destino-wrap">
+        <label class="modal-label">A</label>
+        <select class="modal-select" id="rc-destino-select" onchange="rcOnDestinoChange()"></select>
+
+        <label class="modal-label">Minutos</label>
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+          <input type="number" class="modal-input" id="rc-minutos-input" min="1" inputmode="numeric" placeholder="p.ej. 45" style="flex:1;">
+          <button class="modal-btn secondary" style="flex:none;padding:0 16px;" onclick="rcMoverTodo()">Todo</button>
+        </div>
+        <div id="rc-disponible" style="font-size:12px;color:var(--text2);margin:-6px 0 10px;"></div>
+        <div id="rc-aviso" style="font-size:11.5px;color:var(--orange);margin:0 0 10px;min-height:14px;"></div>
+        <button class="save-btn" onclick="guardarReclasificar()">Guardar</button>
+      </div>
+    </div>
+
+    <div class="chart-card-label" style="margin-top:20px;">Últimos movimientos</div>
+    <div id="rc-movimientos-list"></div>
+  </div>
+</div>
+
 <!-- MODAL: Mnemotécnicas -->
 <div class="modal-bg" id="mnemo-modal">
   <div class="modal" style="max-height:88vh;">
@@ -1612,6 +1665,7 @@ const SUBCATS_TEMA = [
   {key:'INNOTEST', nombre:'INNOTEST'},
   {key:'REPASO_INNOTEST', nombre:'REPASO INNOTEST'},
   {key:'ESQUEMA', nombre:'ESQUEMA'},
+  {key:'VIDEO', nombre:'VÍDEO'},
 ];
 const SUBCAT_LIBRO = {key:'LIBRO_RESUMEN', nombre:'LIBRO RESUMEN'};
 const SUBCATS_TEMA_ALL = SUBCATS_TEMA.concat([SUBCAT_LIBRO]);
@@ -4613,6 +4667,243 @@ function borrarLey(){
   closeModal('leyes-form-modal');
   renderLeyesList();
   showToast('Borrado');
+}
+
+// ========== RECLASIFICAR ==========
+// Mueve minutos de una subcategoría a otra, dentro del mismo día+grupo (tema
+// en TEMAS, categoría en PSICOS/INGLÉS) — el total de día/grupo/mes nunca
+// cambia, es un movimiento interno igual que Introducir Test. Solo cuentan
+// como "disponibles" en el ORIGEN las entradas con nota==null: un TEST/
+// INNOTEST ya puntuado es un bloque cerrado, no se reclasifica a trozos. El
+// DESTINO sí puede ser cualquier subcategoría (incluida TEST/INNOTEST) porque
+// una entrada nueva con nota==null ahí es justo lo que Introducir Test ya
+// sabe recoger después. LIBRO_RESUMEN queda fuera de origen y destino: lleva
+// un número de vuelta que no tiene sentido sin pedirlo aparte.
+function rcTemaOptgroupsHtml(){
+  return BLOQUES_TEMAS.map(b=>'<optgroup label="'+escapeHtml(b.nombre)+'">'+
+    Array.from({length:b.hasta-b.desde+1},(_,i)=>b.desde+i).map(n=>`<option value="${temaIdFromNum(n)}">TEMA ${n}</option>`).join('')
+  +'</optgroup>').join('');
+}
+function rcSubcatsOrigenCandidatas(bloque, grupoId, fecha){
+  const out = [];
+  if(!grupoId || !fecha) return out;
+  const dia = getDias().find(d=>d.fecha===fecha);
+  if(!dia) return out;
+  if(bloque==='temas'){
+    SUBCATS_TEMA.forEach(s=>{
+      const mins = dia.entradas.filter(e=>e.tipo==='tema' && e.temaId===grupoId && e.subKey===s.key && e.nota==null).reduce((a,e)=>a+e.minutos,0);
+      if(mins>0) out.push({key:s.key, nombre:s.nombre, minutos:mins});
+    });
+  } else {
+    const cat = getCategoria(grupoId);
+    if(!cat) return out;
+    const subs = [{id:'', nombre:'Sin subcategoría'}].concat(cat.subcategorias||[]);
+    subs.forEach(s=>{
+      const mins = dia.entradas.filter(e=>e.tipo==='psico' && e.categoriaId===grupoId && e.subcategoriaId===s.id && e.nota==null).reduce((a,e)=>a+e.minutos,0);
+      if(mins>0) out.push({key:s.id, nombre:s.nombre||'Sin subcategoría', minutos:mins});
+    });
+  }
+  return out;
+}
+function rcSubcatsDestinoCandidatas(bloque, grupoId){
+  if(!grupoId) return [];
+  if(bloque==='temas') return SUBCATS_TEMA.map(s=>({key:s.key, nombre:s.nombre}));
+  const cat = getCategoria(grupoId);
+  if(!cat) return [];
+  return [{key:'', nombre:'Sin subcategoría'}].concat((cat.subcategorias||[]).map(s=>({key:s.id, nombre:s.nombre})));
+}
+function rcDisponible(bloque, grupoId, fecha, subcatKey){
+  const c = rcSubcatsOrigenCandidatas(bloque, grupoId, fecha).find(s=>s.key===subcatKey);
+  return c ? c.minutos : 0;
+}
+// Mueve `minutos` de subcatOrigen a subcatDestino, dentro de fecha+grupoId.
+// Atómico: resta del origen (lo borra si llega a 0 en vez de dejarlo en 0),
+// suma al destino (crea una entrada nueva con nota:null si no había ya una
+// abierta). Si el origen no existe o no llega a cubrir `minutos`, no toca
+// nada y devuelve false — usado tanto por guardarReclasificar() como, a la
+// inversa (destino→origen), por rcDeshacer().
+function rcAplicarMovimiento(bloque, grupoId, fecha, subcatOrigen, subcatDestino, minutos){
+  const dias = getDias();
+  const dia = dias.find(d=>d.fecha===fecha);
+  if(!dia) return false;
+  const matchOrigen = bloque==='temas'
+    ? e=>e.tipo==='tema' && e.temaId===grupoId && e.subKey===subcatOrigen && e.nota==null
+    : e=>e.tipo==='psico' && e.categoriaId===grupoId && e.subcategoriaId===subcatOrigen && e.nota==null;
+  const entradaOrigen = dia.entradas.find(matchOrigen);
+  if(!entradaOrigen || entradaOrigen.minutos<minutos) return false;
+
+  entradaOrigen.minutos -= minutos;
+  if(entradaOrigen.minutos<=0) dia.entradas = dia.entradas.filter(e=>e!==entradaOrigen);
+
+  const matchDestino = bloque==='temas'
+    ? e=>e.tipo==='tema' && e.temaId===grupoId && e.subKey===subcatDestino && e.nota==null
+    : e=>e.tipo==='psico' && e.categoriaId===grupoId && e.subcategoriaId===subcatDestino && e.nota==null;
+  const entradaDestino = dia.entradas.find(matchDestino);
+  if(entradaDestino){
+    entradaDestino.minutos += minutos;
+  } else {
+    const nueva = bloque==='temas'
+      ? { id:uid(), tipo:'tema', temaId:grupoId, subKey:subcatDestino, minutos, nota:null }
+      : { id:uid(), tipo:'psico', categoriaId:grupoId, subcategoriaId:subcatDestino, minutos, nota:null };
+    dia.entradas.push(nueva);
+  }
+  saveDias(dias.filter(d=>d.entradas.length>0));
+  return true;
+}
+function getReclasificaciones(){ try{ return JSON.parse(localStorage.getItem('estudio_reclasificaciones')||'[]'); }catch{ return []; } }
+function saveReclasificaciones(l){ localStorage.setItem('estudio_reclasificaciones', JSON.stringify(l)); }
+// Los nombres se guardan ya resueltos en el momento del movimiento: si luego
+// se renombra una categoría/subcategoría, el historial no cambia de texto
+// retroactivamente.
+function rcRegistrarMovimiento(m){
+  const list = getReclasificaciones();
+  list.unshift(Object.assign({id:uid(), ts:Date.now()}, m));
+  saveReclasificaciones(list.slice(0,20));
+}
+
+let rcBloque = 'temas', rcGrupoId = null, rcFecha = null, rcOrigen = null, rcDestino = null;
+
+function openReclasificar(){
+  rcBloque = 'temas'; rcGrupoId = null; rcOrigen = null; rcDestino = null;
+  rcFecha = todayStr();
+  document.getElementById('rc-fecha-input').value = rcFecha;
+  document.getElementById('rc-minutos-input').value = '';
+  renderReclasificar();
+  openModal('reclasificar-modal');
+}
+function rcSetBloque(b){ rcBloque=b; rcGrupoId=null; rcOrigen=null; rcDestino=null; renderReclasificar(); }
+function rcOnGrupoChange(){ rcGrupoId = document.getElementById('rc-grupo-select').value || null; rcOrigen=null; rcDestino=null; renderReclasificar(); }
+function rcOnFechaChange(){ rcFecha = document.getElementById('rc-fecha-input').value || todayStr(); rcOrigen=null; rcDestino=null; renderReclasificar(); }
+function rcOnOrigenChange(){ rcOrigen = document.getElementById('rc-origen-select').value; rcDestino=null; renderReclasificarBody(); }
+function rcOnDestinoChange(){ rcDestino = document.getElementById('rc-destino-select').value; }
+function rcMoverTodo(){ document.getElementById('rc-minutos-input').value = rcDisponible(rcBloque, rcGrupoId, rcFecha, rcOrigen); }
+function renderReclasificar(){
+  document.querySelectorAll('#rc-bloque-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.b===rcBloque));
+  document.getElementById('rc-grupo-label').textContent = rcBloque==='temas' ? 'Tema' : 'Categoría';
+
+  const grupoSelect = document.getElementById('rc-grupo-select');
+  const grupoEmpty = document.getElementById('rc-grupo-empty');
+  const bodyWrap = document.getElementById('rc-body-wrap');
+
+  if(rcBloque!=='temas' && getCategoriasBloque(rcBloque).length===0){
+    grupoSelect.style.display = 'none';
+    grupoEmpty.style.display = 'block';
+    grupoEmpty.textContent = `Todavía no hay categorías en ${rcBloque==='ingles'?'Inglés':'Psicotécnicos'} — créalas desde CATEGORÍAS.`;
+    bodyWrap.style.display = 'none';
+    rcGrupoId = null;
+    renderReclasificarMovimientos();
+    return;
+  }
+  grupoSelect.style.display = '';
+  grupoEmpty.style.display = 'none';
+  bodyWrap.style.display = '';
+
+  if(rcBloque==='temas'){
+    if(!rcGrupoId) rcGrupoId = temaIdFromNum(1);
+    grupoSelect.innerHTML = rcTemaOptgroupsHtml();
+    grupoSelect.value = rcGrupoId;
+  } else {
+    const cats = getCategoriasBloque(rcBloque);
+    if(!rcGrupoId || !cats.some(c=>c.id===rcGrupoId)) rcGrupoId = cats[0].id;
+    grupoSelect.innerHTML = cats.map(c=>`<option value="${c.id}"${c.id===rcGrupoId?' selected':''}>${escapeHtml(c.nombre)}</option>`).join('');
+  }
+
+  rcFecha = document.getElementById('rc-fecha-input').value || rcFecha || todayStr();
+
+  renderReclasificarBody();
+  renderReclasificarMovimientos();
+}
+function renderReclasificarBody(){
+  const origenSel = document.getElementById('rc-origen-select');
+  const sinOrigenEl = document.getElementById('rc-sin-origen');
+  const destinoWrap = document.getElementById('rc-destino-wrap');
+  document.getElementById('rc-aviso').textContent = '';
+
+  const origenes = rcSubcatsOrigenCandidatas(rcBloque, rcGrupoId, rcFecha);
+  if(!origenes.length){
+    origenSel.style.display = 'none';
+    sinOrigenEl.style.display = 'block';
+    const nombreGrupo = rcBloque==='temas' ? temaNombre(rcGrupoId) : getCategoriaNombre(rcGrupoId);
+    sinOrigenEl.textContent = `No hay tiempo registrado el ${formatDate(rcFecha)} en ${nombreGrupo}.`;
+    destinoWrap.style.display = 'none';
+    rcOrigen = null; rcDestino = null;
+    return;
+  }
+  origenSel.style.display = '';
+  sinOrigenEl.style.display = 'none';
+  destinoWrap.style.display = '';
+
+  if(!rcOrigen || !origenes.some(o=>o.key===rcOrigen)) rcOrigen = origenes[0].key;
+  origenSel.innerHTML = origenes.map(o=>`<option value="${escapeHtml(o.key)}"${o.key===rcOrigen?' selected':''}>${escapeHtml(o.nombre)} · ${formatHM(o.minutos)}</option>`).join('');
+
+  const destinos = rcSubcatsDestinoCandidatas(rcBloque, rcGrupoId).filter(d=>d.key!==rcOrigen);
+  const destinoSel = document.getElementById('rc-destino-select');
+  if(!rcDestino || !destinos.some(d=>d.key===rcDestino)) rcDestino = destinos.length ? destinos[0].key : null;
+  destinoSel.innerHTML = destinos.map(d=>`<option value="${escapeHtml(d.key)}"${d.key===rcDestino?' selected':''}>${escapeHtml(d.nombre)}</option>`).join('');
+
+  const disponible = rcDisponible(rcBloque, rcGrupoId, rcFecha, rcOrigen);
+  const origenNombre = (origenes.find(o=>o.key===rcOrigen)||{}).nombre || '';
+  document.getElementById('rc-disponible').textContent = `Disponible en ${origenNombre} ese día: ${formatHM(disponible)}`;
+}
+function renderReclasificarMovimientos(){
+  const el = document.getElementById('rc-movimientos-list');
+  const list = getReclasificaciones();
+  if(!list.length){ el.innerHTML = '<div class="empty-sub">Sin movimientos aún</div>'; return; }
+  el.innerHTML = list.map(m=>`<div class="lvl-row" style="cursor:default;">
+      <div class="t" style="flex:1;">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">${formatDate(m.fecha)} · ${escapeHtml(m.grupoNombre)}</div>
+        <div style="font-size:13px;">${escapeHtml(m.subcatOrigenNombre)} → ${escapeHtml(m.subcatDestinoNombre)} · ${formatHM(m.minutos)}</div>
+      </div>
+      <button class="edit-date-btn tap" style="font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--gold2);opacity:1;" onclick="rcDeshacer('${m.id}')">DESHACER</button>
+    </div>`).join('');
+}
+function guardarReclasificar(){
+  const avisoEl = document.getElementById('rc-aviso');
+  avisoEl.textContent = '';
+  if(!rcGrupoId || !rcFecha || !rcOrigen){ avisoEl.textContent = 'Elige tema/categoría, fecha y origen'; return; }
+  const destino = document.getElementById('rc-destino-select').value;
+  if(destino===rcOrigen){ avisoEl.textContent = 'Elige una subcategoría de destino distinta'; return; }
+  const minutos = parseInt(document.getElementById('rc-minutos-input').value,10);
+  if(!Number.isFinite(minutos) || minutos<=0){ avisoEl.textContent = 'Introduce un número de minutos válido'; return; }
+
+  const nombreGrupo = rcBloque==='temas' ? temaNombre(rcGrupoId) : getCategoriaNombre(rcGrupoId);
+  const nombreOrigen = rcBloque==='temas' ? subcatTemaNombre(rcOrigen) : (rcOrigen===''?'Sin subcategoría':getSubcategoriaNombre(rcGrupoId,rcOrigen));
+  const nombreDestino = rcBloque==='temas' ? subcatTemaNombre(destino) : (destino===''?'Sin subcategoría':getSubcategoriaNombre(rcGrupoId,destino));
+
+  const disponible = rcDisponible(rcBloque, rcGrupoId, rcFecha, rcOrigen);
+  if(disponible<=0){
+    avisoEl.textContent = `No hay tiempo de ${nombreOrigen} en el ${nombreGrupo} el ${formatDate(rcFecha)}`;
+    return;
+  }
+  if(minutos>disponible){
+    avisoEl.textContent = `Solo hay ${disponible} minutos de ${nombreOrigen} ese día`;
+    return;
+  }
+
+  const ok = rcAplicarMovimiento(rcBloque, rcGrupoId, rcFecha, rcOrigen, destino, minutos);
+  if(!ok){ avisoEl.textContent = 'Ese bloque ya no existe — revisa el formulario'; renderReclasificar(); return; }
+
+  rcRegistrarMovimiento({ fecha:rcFecha, bloque:rcBloque, grupoId:rcGrupoId, grupoNombre:nombreGrupo,
+    subcatOrigen:rcOrigen, subcatDestino:destino, subcatOrigenNombre:nombreOrigen, subcatDestinoNombre:nombreDestino, minutos });
+
+  document.getElementById('rc-minutos-input').value = '';
+  renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
+  renderReclasificar();
+  showToast('Guardado ✓','green');
+}
+function rcDeshacer(id){
+  const list = getReclasificaciones();
+  const m = list.find(x=>x.id===id);
+  if(!m) return;
+  const ok = rcAplicarMovimiento(m.bloque, m.grupoId, m.fecha, m.subcatDestino, m.subcatOrigen, m.minutos);
+  if(!ok){
+    showToast(`Ya no hay suficiente tiempo en ${m.subcatDestinoNombre} para deshacer este movimiento`);
+    return;
+  }
+  saveReclasificaciones(list.filter(x=>x.id!==id));
+  renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
+  renderReclasificar();
+  showToast('Deshecho');
 }
 
 // ========== MNEMOTÉCNICAS ==========
