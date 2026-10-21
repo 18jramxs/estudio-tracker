@@ -722,10 +722,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   padding: 10px 4px; border-radius: var(--r-sm);
   background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
 }
-.cod-cell b { font-family: var(--font-disp); font-size: 23px; font-weight: 400; line-height: 1; color: var(--halo); }
+.cod-cell b { font-family: var(--font-disp); font-size: 23px; font-weight: 400; line-height: 1; color: var(--red); }
 .cod-cell span { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; color: rgba(255,255,255,.88); font-family: var(--font-mono); }
 .cf-fichas-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 14px 0 4px; }
 .cf-ficha { width: 54px; height: 54px; border-radius: var(--r-xs); background: var(--bg-input); border: 1px solid var(--border-2); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.cf-ficha.swappable { border-color: color-mix(in srgb, var(--red) 55%, transparent); box-shadow: 0 0 14px -2px color-mix(in srgb, var(--red) 65%, transparent), 0 0 4px -1px color-mix(in srgb, var(--red) 80%, transparent); }
 .cf-ficha-letra { font-family: var(--font-disp); font-size: 18px; color: var(--text); letter-spacing: 0.3px; }
 .cf-ficha-digito { font-size: 9px; color: var(--text3); margin-top: 1px; }
 .cf-resaltado { text-align: center; font-size: 19px; font-family: var(--font-sans); margin: 10px 0 4px; color: var(--text2); min-height: 26px; }
@@ -1350,7 +1351,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <label class="modal-label">Número</label>
     <input type="text" class="modal-input" id="cf-numero-input" inputmode="numeric" placeholder="p.ej. 84" oninput="onCfNumeroInput()">
     <div class="cf-fichas-wrap" id="cf-fichas"></div>
-    <div style="text-align:center;font-size:10.5px;color:var(--text3);margin:-6px 0 14px;">pulsa para cambiar de letra</div>
     <label class="modal-label">Palabra</label>
     <input type="text" class="modal-input" id="cf-palabra-input" style="font-family:var(--font-sans);" placeholder="p.ej. charco" oninput="onCfPalabraInput()">
     <div class="cf-resaltado" id="cf-resaltado"></div>
@@ -4408,10 +4408,11 @@ function highlightPalabraInfo(palabra, letras){
 }
 function highlightPalabraHtml(palabra, letras){ return highlightPalabraInfo(palabra, letras).html; }
 
+const CF_ORDEN_TABLA = ['1','2','3','4','5','6','7','8','9','0'];
 function renderCfTabla(){
   const el = document.getElementById('cf-tabla');
   if(!el) return;
-  el.innerHTML = Object.keys(CODIGO_FONETICO).map(d=>`<div class="cod-cell"><b>${d}</b><span>${CODIGO_FONETICO[d].join('·')}</span></div>`).join('');
+  el.innerHTML = CF_ORDEN_TABLA.map(d=>`<div class="cod-cell"><b>${d}</b><span>${CODIGO_FONETICO[d].join('·')}</span></div>`).join('');
 }
 function poblarCfTemaSelect(){
   const sel = document.getElementById('cf-tema-select');
@@ -4424,7 +4425,8 @@ function renderCfFichas(){
   el.innerHTML = cfNumero.split('').map((d,i)=>{
     const letras = CODIGO_FONETICO[d] || [''];
     const letra = letras[cfLetraIdx[i]%letras.length];
-    return `<div class="cf-ficha tap" onclick="ciclarFicha(${i})"><div class="cf-ficha-letra">${escapeHtml(letra)}</div><div class="cf-ficha-digito">${d}</div></div>`;
+    const swappable = letras.length>1 ? ' swappable' : '';
+    return `<div class="cf-ficha tap${swappable}" onclick="ciclarFicha(${i})"><div class="cf-ficha-letra">${escapeHtml(letra)}</div><div class="cf-ficha-digito">${d}</div></div>`;
   }).join('');
 }
 function ciclarFicha(i){
