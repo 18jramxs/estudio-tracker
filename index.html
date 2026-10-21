@@ -718,6 +718,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .rend-tema-meta { font-size: 10.5px; color: var(--text3); margin-top: 2px; font-weight: 500; }
 .rend-tema-val { font-family: var(--font-mono); font-weight: 700; font-size: 15px; flex-shrink: 0; width: 44px; text-align: right; }
 .rend-tema-dias { font-family: var(--font-mono); font-size: 12px; flex-shrink: 0; width: 60px; text-align: right; }
+/* —— HERRAMIENTAS: zonas (DATOS / ESTUDIO) —— */
+.tools-zone-label { font-size: 11px; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--text3); margin: 0 0 10px; }
+.tools-zone + .tools-zone { margin-top: 28px; }
+/* —— HERRAMIENTAS: Leyes —— */
+.leyes-bloque-header { display: flex; align-items: center; gap: 8px; margin: 18px 0 8px; font-family: var(--font-disp); font-size: 14px; letter-spacing: 0.3px; color: var(--text2); }
+.leyes-bloque-header:first-child { margin-top: 0; }
+.leyes-tema-label { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; color: var(--text3); margin: 10px 0 6px; }
+.leyes-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 8px; font-size: 13.5px; color: var(--text); line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
+.leyes-card:active { border-color: var(--border-3); }
 /* —— HERRAMIENTAS: Mnemotécnicas —— */
 .mnemo-search { margin-bottom: 12px; font-family: var(--font-sans); }
 .mnemo-tema-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--border); }
@@ -1323,22 +1332,32 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: Herramientas -->
 <!-- HERRAMIENTAS -->
 <div id="screen-herramientas" class="screen">
-  <button class="curva-tool-btn tap" onclick="openRendimiento()">
-    <span class="t">RENDIMIENTO</span>
-    <span style="color:var(--text3);">›</span>
-  </button>
-  <button class="curva-tool-btn tap" onclick="openIntroducirTest()">
-    <span class="t">INTRODUCIR TEST</span>
-    <span style="color:var(--text3);">›</span>
-  </button>
-  <button class="curva-tool-btn tap" onclick="openMnemotecnicas()">
-    <span class="t">MNEMOTÉCNICAS</span>
-    <span style="color:var(--text3);">›</span>
-  </button>
-  <button class="curva-tool-btn tap" onclick="openCodigoFonetico()">
-    <span class="t">CÓDIGO FONÉTICO</span>
-    <span style="color:var(--text3);">›</span>
-  </button>
+  <div class="tools-zone">
+    <div class="tools-zone-label">Datos</div>
+    <button class="curva-tool-btn tap" onclick="openRendimiento()">
+      <span class="t">RENDIMIENTO</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+    <button class="curva-tool-btn tap" onclick="openIntroducirTest()">
+      <span class="t">INTRODUCIR TEST</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+  </div>
+  <div class="tools-zone">
+    <div class="tools-zone-label">Estudio</div>
+    <button class="curva-tool-btn tap" onclick="openLeyes()">
+      <span class="t">LEYES</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+    <button class="curva-tool-btn tap" onclick="openMnemotecnicas()">
+      <span class="t">MNEMOTÉCNICAS</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+    <button class="curva-tool-btn tap" onclick="openCodigoFonetico()">
+      <span class="t">CÓDIGO FONÉTICO</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+  </div>
 </div>
 
 <!-- MODAL: Rendimiento (gráficas de tests — Parte 2) -->
@@ -1432,6 +1451,48 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 
     <div class="chart-card-label" style="margin-top:20px;">Sin desglosar</div>
     <div class="card" style="padding:4px 16px;" id="it-pendientes-card"></div>
+  </div>
+</div>
+
+<!-- MODAL: Leyes (lista / TODO-BLOQUE-TEMA / buscador) -->
+<div class="modal-bg" id="leyes-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('leyes-modal')">‹</button>
+      <div class="lvl-header-title">Leyes</div>
+      <button class="toggle-btn" onclick="closeModal('leyes-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <input type="text" class="modal-input mnemo-search" id="leyes-search-input" placeholder="Buscar en todas las leyes…" oninput="leyesSearch=this.value;renderLeyesList();">
+    <div class="range-tabs" id="leyes-view-tabs">
+      <button class="range-tab tap active" data-v="todo" onclick="leyesSetView('todo')">TODO</button>
+      <button class="range-tab tap" data-v="bloque" onclick="leyesSetView('bloque')">BLOQUE</button>
+      <button class="range-tab tap" data-v="tema" onclick="leyesSetView('tema')">TEMA</button>
+    </div>
+    <div id="leyes-bloque-row" style="display:none;margin-bottom:12px;">
+      <select class="modal-select" id="leyes-bloque-select" onchange="leyesBloqueSel=this.value;renderLeyesList();"></select>
+    </div>
+    <div id="leyes-tema-row" style="display:none;margin-bottom:12px;">
+      <select class="modal-select" id="leyes-tema-sel-select" onchange="leyesTemaSel=parseInt(this.value,10);renderLeyesList();"></select>
+    </div>
+    <button class="add-btn tap" onclick="abrirNuevaLey()">+ Nueva ley</button>
+    <div id="leyes-list" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- MODAL: Leyes — alta/edición -->
+<div class="modal-bg" id="leyes-form-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('leyes-form-modal')">‹</button>
+      <div class="lvl-header-title" id="leyes-form-title">Nueva ley</div>
+      <button class="toggle-btn" onclick="closeModal('leyes-form-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label">Tema</label>
+    <select class="modal-select" id="leyes-form-tema-select"></select>
+    <label class="modal-label">Texto</label>
+    <textarea class="modal-input" id="leyes-form-texto" style="font-family:var(--font-sans);min-height:90px;resize:none;" placeholder="p.ej. Ley Orgánica 10/1995, Código Penal" oninput="autosizeTextarea(this)"></textarea>
+    <button class="save-btn" style="margin-top:12px;" onclick="guardarLey()">Guardar</button>
+    <button class="add-btn tap" id="leyes-form-delete-btn" style="display:none;color:var(--red);margin-top:8px;" onclick="borrarLey()">Borrar</button>
   </div>
 </div>
 
@@ -4418,6 +4479,140 @@ function guardarIntroducirTest(){
   renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
   renderIntroducirTest();
   showToast('Guardado ✓','green');
+}
+
+// ========== LEYES ==========
+// Apuntes de normativa: texto libre + el número de tema (1..TOTAL_TEMAS) al
+// que pertenece. Solo temas (nunca psico/inglés) — esto es derecho, no hay
+// equivalente en los otros bloques. Entra en el backup genérico sin más
+// cambios porque exportJSON/handleImport ya vuelcan/restauran localStorage
+// completo por clave, sin lista fija.
+function getLeyes(){ try{ return JSON.parse(localStorage.getItem('estudio_leyes')||'[]'); }catch{ return []; } }
+function saveLeyes(l){ localStorage.setItem('estudio_leyes', JSON.stringify(l)); }
+function autosizeTextarea(el){ el.style.height='auto'; el.style.height = el.scrollHeight+'px'; }
+function leyesTemaOptgroupsHtml(){
+  return BLOQUES_TEMAS.map(b=>'<optgroup label="'+escapeHtml(b.nombre)+'">'+
+    Array.from({length:b.hasta-b.desde+1},(_,i)=>b.desde+i).map(n=>`<option value="${n}">TEMA ${n}</option>`).join('')
+  +'</optgroup>').join('');
+}
+
+let leyesView = 'todo'; // 'todo' | 'bloque' | 'tema'
+let leyesBloqueSel = BLOQUES_TEMAS[0].id;
+let leyesTemaSel = 1;
+let leyesSearch = '';
+let leyesUltimoTema = 1; // se recuerda de una ley a la siguiente alta
+let leyesEditingId = null;
+
+function openLeyes(){
+  leyesView = 'todo';
+  leyesSearch = '';
+  document.getElementById('leyes-search-input').value = '';
+  renderLeyes();
+  openModal('leyes-modal');
+}
+function leyesSetView(v){ leyesView=v; renderLeyes(); }
+function renderLeyes(){
+  document.querySelectorAll('#leyes-view-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.v===leyesView));
+  document.getElementById('leyes-bloque-row').style.display = leyesView==='bloque' ? 'block' : 'none';
+  document.getElementById('leyes-tema-row').style.display = leyesView==='tema' ? 'block' : 'none';
+  const bloqueSel = document.getElementById('leyes-bloque-select');
+  bloqueSel.innerHTML = BLOQUES_TEMAS.map(b=>`<option value="${b.id}">${escapeHtml(b.nombre)}</option>`).join('');
+  bloqueSel.value = leyesBloqueSel;
+  const temaSel = document.getElementById('leyes-tema-sel-select');
+  temaSel.innerHTML = leyesTemaOptgroupsHtml();
+  temaSel.value = leyesTemaSel;
+  renderLeyesList();
+}
+function leyesFiltradas(){
+  const q = normalizaTexto(leyesSearch.trim());
+  let list = getLeyes();
+  if(q) list = list.filter(l=>normalizaTexto(l.texto).includes(q));
+  if(leyesView==='bloque'){
+    const b = BLOQUES_TEMAS.find(x=>x.id===leyesBloqueSel);
+    list = list.filter(l=>b && l.tema>=b.desde && l.tema<=b.hasta);
+  } else if(leyesView==='tema'){
+    list = list.filter(l=>l.tema===leyesTemaSel);
+  }
+  return list;
+}
+function leyesCardHtml(l){
+  return `<div class="leyes-card tap" onclick="abrirLeyParaEditar('${l.id}')">${escapeHtml(l.texto)}</div>`;
+}
+function renderLeyesList(){
+  const el = document.getElementById('leyes-list');
+  const leyes = leyesFiltradas();
+  if(!leyes.length){ el.innerHTML = '<div class="empty-sub">Sin leyes aún</div>'; return; }
+  if(leyesView==='tema'){
+    el.innerHTML = leyes.slice().sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(leyesCardHtml).join('');
+    return;
+  }
+  // TODO / BLOQUE: agrupadas por bloque y, dentro, por tema — los temas sin
+  // ninguna ley no generan ni cabecera ni fila (nada de huecos vacíos).
+  const bloques = leyesView==='bloque' ? BLOQUES_TEMAS.filter(b=>b.id===leyesBloqueSel) : BLOQUES_TEMAS;
+  let html = '';
+  bloques.forEach(b=>{
+    const porTema = {};
+    leyes.filter(l=>l.tema>=b.desde && l.tema<=b.hasta).forEach(l=>{ (porTema[l.tema]=porTema[l.tema]||[]).push(l); });
+    const nums = Object.keys(porTema).map(Number).sort((a,b2)=>a-b2);
+    if(!nums.length) return;
+    html += `<div class="leyes-bloque-header"><span class="lvl-dot" style="background:${b.color};color:${b.color};"></span>${escapeHtml(b.nombre)}</div>`;
+    nums.forEach(n=>{
+      html += `<div class="leyes-tema-label">TEMA ${n}</div>`;
+      html += porTema[n].sort((a,c)=>a.fecha.localeCompare(c.fecha)).map(leyesCardHtml).join('');
+    });
+  });
+  el.innerHTML = html || '<div class="empty-sub">Sin leyes aún</div>';
+}
+function abrirNuevaLey(){
+  leyesEditingId = null;
+  document.getElementById('leyes-form-title').textContent = 'Nueva ley';
+  document.getElementById('leyes-form-delete-btn').style.display = 'none';
+  const sel = document.getElementById('leyes-form-tema-select');
+  sel.innerHTML = leyesTemaOptgroupsHtml();
+  sel.value = leyesUltimoTema;
+  const txt = document.getElementById('leyes-form-texto');
+  txt.value = '';
+  openModal('leyes-form-modal');
+  requestAnimationFrame(()=>autosizeTextarea(txt));
+}
+function abrirLeyParaEditar(id){
+  const l = getLeyes().find(x=>x.id===id);
+  if(!l) return;
+  leyesEditingId = id;
+  document.getElementById('leyes-form-title').textContent = 'Editar ley';
+  document.getElementById('leyes-form-delete-btn').style.display = 'block';
+  const sel = document.getElementById('leyes-form-tema-select');
+  sel.innerHTML = leyesTemaOptgroupsHtml();
+  sel.value = l.tema;
+  const txt = document.getElementById('leyes-form-texto');
+  txt.value = l.texto;
+  openModal('leyes-form-modal');
+  requestAnimationFrame(()=>autosizeTextarea(txt));
+}
+function guardarLey(){
+  const texto = document.getElementById('leyes-form-texto').value.trim();
+  if(!texto){ showToast('Escribe el texto de la ley'); return; }
+  const tema = parseInt(document.getElementById('leyes-form-tema-select').value,10);
+  leyesUltimoTema = tema;
+  const leyes = getLeyes();
+  if(leyesEditingId){
+    const l = leyes.find(x=>x.id===leyesEditingId);
+    if(l){ l.tema=tema; l.texto=texto; }
+  } else {
+    leyes.push({ id:uid(), tema, texto, fecha: todayStr() });
+  }
+  saveLeyes(leyes);
+  closeModal('leyes-form-modal');
+  renderLeyesList();
+  showToast('Guardado ✓','green');
+}
+function borrarLey(){
+  if(!leyesEditingId) return;
+  if(!confirm('¿Borrar esta ley?')) return;
+  saveLeyes(getLeyes().filter(l=>l.id!==leyesEditingId));
+  closeModal('leyes-form-modal');
+  renderLeyesList();
+  showToast('Borrado');
 }
 
 // ========== MNEMOTÉCNICAS ==========
