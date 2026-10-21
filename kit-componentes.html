@@ -38,9 +38,12 @@
   color-scheme:dark;
 }
 
+/* nada se desliza en horizontal: la app es de scroll vertical y punto */
+html{overflow-x:hidden;}
 body{
   background:var(--bg); color:var(--fg);
   font-family:var(--font); margin:0; line-height:1.5;
+  overflow-x:hidden; max-width:100vw;
   padding-left:max(18px,env(safe-area-inset-left,0px));
   padding-right:max(18px,env(safe-area-inset-right,0px));
   padding-block:20px 130px;
@@ -90,12 +93,18 @@ body::before{
 /* ── 4 · TOTAL DEL DÍA — suelto, sin tarjeta ───────────────
    El número vive directamente sobre el fondo, con su propio halo
    difuminado detrás. Tipografía enorme con degradado en el texto. */
-.today{position:relative;padding:10px 2px 0;}
-.today::before{   /* el difuminado detrás del número */
-  content:"";position:absolute;left:-10%;right:-10%;top:-30px;height:230px;
-  pointer-events:none;
-  background:radial-gradient(60% 55% at 22% 48%, color-mix(in srgb,var(--halo) 30%,transparent), transparent 70%);
-  filter:blur(18px);
+.today{position:relative;padding:10px 2px 0;isolation:isolate;}
+/* Resplandor detrás del número.
+   Sin `filter: blur()` y con el degradado llegando a transparente MUY
+   antes del borde: así no se ve el rectángulo del elemento ni desborda. */
+.today::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:50%;top:46%;width:112%;height:300%;transform:translate(-50%,-50%);
+  background:radial-gradient(closest-side circle at 30% 50%,
+    color-mix(in srgb,var(--halo) 62%,transparent) 0%,
+    color-mix(in srgb,var(--halo) 30%,transparent) 32%,
+    color-mix(in srgb,var(--halo) 9%,transparent) 54%,
+    transparent 72%);
 }
 .today > *{position:relative;}
 .label{font-size:var(--t-label);font-weight:600;letter-spacing:.15em;
@@ -108,12 +117,12 @@ body::before{
   font-size:clamp(82px,26vw,116px); font-weight:700;
   letter-spacing:-.045em; line-height:.9; margin:0; flex:none;
   font-variant-numeric:tabular-nums;
-  background:linear-gradient(176deg,#fff 18%,rgba(255,255,255,.76) 62%,rgba(255,255,255,.3));
+  background:linear-gradient(176deg,#fff 14%,rgba(255,255,255,.82) 54%,rgba(255,255,255,.22));
   -webkit-background-clip:text;background-clip:text;color:transparent;
   /* difuminado que se come la base de los números */
   -webkit-mask-image:linear-gradient(180deg,#000 46%,rgba(0,0,0,.78) 68%,rgba(0,0,0,.28) 86%,transparent 100%);
   mask-image:linear-gradient(180deg,#000 46%,rgba(0,0,0,.78) 68%,rgba(0,0,0,.28) 86%,transparent 100%);
-  filter:drop-shadow(0 8px 34px color-mix(in srgb,var(--halo) 48%,transparent));
+  filter:drop-shadow(0 8px 40px color-mix(in srgb,var(--halo) 70%,transparent));
 }
 .today-meta{display:flex;flex-direction:column;gap:12px;padding-bottom:6px;}
 .today-meta span{display:block;}
@@ -173,8 +182,10 @@ body::before{
   display:grid;place-items:center;
   min-height:62px; padding:12px 8px;
   border-radius:var(--r-md);
-  font-family:var(--font);font-weight:600;font-size:17px;
-  letter-spacing:.055em;text-transform:uppercase;text-align:center;
+  /* SF Pro en iPhone: la tipografía del sistema, sin cargar nada */
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,var(--font);
+  font-weight:700;font-size:19px;
+  letter-spacing:.012em;text-transform:uppercase;text-align:center;
   line-height:1.08;
 }
 .bloque > *{position:relative;z-index:1;}
@@ -434,7 +445,6 @@ h2.sec{font-size:var(--t-label);font-weight:600;letter-spacing:.17em;
       <div class="ficha tap"><b>CH</b><i>8</i></div>
       <div class="ficha tap"><b>C</b><i>4</i></div>
     </div>
-    <p class="label" style="text-align:center">pulsa una ficha para cambiar de letra</p>
 
     <input class="campo" value="84" readonly>
     <input class="campo" value="charco" readonly>
