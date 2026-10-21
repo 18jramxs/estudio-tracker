@@ -71,23 +71,10 @@
   /* Halo de fondo (body::before): cambia por sección vía showScreen(). */
   --halo: var(--c-temas);
 
-  /* Escala de 5 pasos antigua — ya no se usa para pintar el mapa (ahora
-     interpola, ver frescuraHeatColorRGB), pero se deja para no romper nada
-     que todavía la lea por el nombre de variable. */
-  --heat-90: var(--green);
-  --heat-75: #9bc23f;
-  --heat-55: #d99a2b;
-  --heat-35: #d9672f;
-  --heat-0:  #a93131;
-  --heat-empty: rgba(255,255,255,.045);
-
-  /* Colores semánticos de frescura/vencido usados en listas y fichas (distintos
-     de la escala del mapa: aquí son 4 bandas + gris, para el estado "vencido") */
+  /* Colores semánticos de nota/antigüedad en RENDIMIENTO (verde/ámbar/rojo) */
   --col-fr-verde:    var(--green);
   --col-fr-amarillo: #e3c21e;
-  --col-fr-naranja:  #ff8a3d;
   --col-fr-rojo:     #ff453a;
-  --col-fr-gris:     #6b7280;
 
   --r-xs: 12px; --r-sm: 18px; --r: 22px; --r-lg: 28px; --r-pill: 999px;
 
@@ -313,14 +300,6 @@ body::before {
 .entry-row.clickable { cursor: pointer; margin: 0 -14px; padding: 13px 14px; border-radius: var(--r-xs); transition: background 0.15s, transform 0.12s var(--ease-pop); }
 .entry-row.clickable:active { background: rgba(56,189,248,0.07); transform: scale(0.99); }
 
-/* —— Fila de cristal genérica (kit, componente 6): usada por el acceso a la
-   curva en HOY y por cualquier fila simple de "nombre + chevron". —— */
-.row { display: flex; align-items: center; gap: 12px; padding: 15px 17px; border-radius: var(--r-sm); font-size: 15px; font-family: inherit; border: none; cursor: pointer; }
-.row .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--halo); flex: none; box-shadow: 0 0 9px color-mix(in srgb, var(--halo) 85%, transparent); }
-.row .t { flex: 1; min-width: 0; font-weight: 600; }
-.row .v { font-variant-numeric: tabular-nums; color: var(--text2); font-size: 13px; }
-.row .ch { color: var(--text3); }
-
 /* —— Botones de acción: mismo molde que .btn-glow/.btn-ghost del kit —— */
 .add-btn {
   width: 100%; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.085); color: var(--text3);
@@ -535,11 +514,6 @@ body::before {
 }
 .modal-bg.open .modal { transform: scale(1); opacity: 1; transition: transform 0.28s var(--ease), opacity 0.28s var(--ease); }
 .modal-bg.closing .modal { transform: scale(0.96); opacity: 0; transition: transform 0.2s var(--ease), opacity 0.2s var(--ease); }
-/* —— Mapa de frescura (Parte 3.5): pantalla propia a pantalla completa, no un
-   diálogo de ancho fijo — necesita todo el ancho para las 45 filas. —— */
-.modal-bg:has(.modal-full) { padding: 0; }
-.modal-full { max-width: 100%; width: 100%; height: 100%; max-height: 100%; border-radius: 0; padding: calc(env(safe-area-inset-top) + 14px) 10px calc(env(safe-area-inset-bottom) + 14px); display: flex; flex-direction: column; }
-.modal-full #mapa-frescura-full { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0 6px; }
 .modal-title { font-family: var(--font-disp); font-size: 20px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; margin-bottom: 14px; }
 .modal-input, .modal-select {
   background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--r-xs); color: var(--text);
@@ -684,25 +658,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .test-tema-row input { width: 52px; flex-shrink: 0; margin-bottom: 0; text-align: center; padding: 9px 4px; }
 .test-tema-row .rm { background: none; border: none; color: var(--red); cursor: pointer; padding: 4px; flex-shrink: 0; }
 
-/* —— EPÍGRAFES: checklist y valoración —— */
-.epi-check-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); cursor: pointer; }
-.epi-check-row:first-of-type { border-top: none; }
-.epi-check-row.hijo { padding-left: 24px; }
-.epi-checkbox { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border-2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; }
-.epi-checkbox svg { opacity: 0; }
-.epi-checkbox.checked { background: var(--gold); border-color: var(--gold); }
-.epi-checkbox.checked svg { opacity: 1; }
-.epi-checkbox.indeterminate { background: rgba(56,189,248,0.3); border-color: var(--gold); }
-.epi-checkbox.indeterminate svg { opacity: 1; }
-.epi-check-name { flex: 1; font-size: 13.5px; color: var(--text); overflow-wrap: anywhere; }
-.epi-check-peso { font-size: 11px; color: var(--text3); font-family: var(--font-mono); flex-shrink: 0; }
-.epi-marcar-todo { background: none; border: none; color: var(--gold2); font-size: 11px; font-weight: 800; letter-spacing: 0.3px; cursor: pointer; padding: 4px 0; font-family: inherit; }
-.valoracion-row { display: flex; gap: 8px; margin: 10px 0 4px; }
-.valoracion-btn { flex: 1; padding: 12px 4px; border-radius: var(--r-sm); border: 1px solid var(--border-2); background: none; color: var(--text2); font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: 0.3px; transition: transform 0.16s var(--ease-pop), background 0.15s, border-color 0.15s, color 0.15s; }
-.valoracion-btn:active { transform: scale(0.96); }
-.valoracion-btn.sel-mal { background: rgba(255,69,58,0.18); border-color: var(--red); color: var(--red); }
-.valoracion-btn.sel-regular { background: rgba(227,194,30,0.16); border-color: var(--col-fr-amarillo); color: var(--col-fr-amarillo); }
-.valoracion-btn.sel-bien { background: var(--green-bg); border-color: var(--green); color: var(--green); }
 .curva-tool-btn {
   display: flex; align-items: center; justify-content: space-between; width: 100%;
   background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0) 60%), var(--panel);
@@ -711,17 +666,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 }
 .curva-tool-btn:active { transform: scale(0.98); border-color: var(--border-3); }
 .curva-tool-btn .t { font-family: var(--font-disp); font-size: 15px; letter-spacing: 0.4px; }
-.curva-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 4px; }
-.curva-stat { text-align: center; padding: 14px 6px; }
-.curva-stat .v { font-family: var(--font-mono); font-weight: 600; font-size: 22px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
-.curva-stat .l { font-size: 9.5px; color: var(--text3); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
-.curva-examen-row { text-align: center; font-size: 12px; color: var(--text2); padding: 10px 0 2px; }
-.curva-list-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border); cursor: pointer; }
-.curva-list-row:first-of-type { border-top: none; }
-.curva-list-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
-.curva-list-meta { font-size: 10.5px; color: var(--text3); margin-top: 2px; font-weight: 500; }
-.curva-list-fresc { font-family: var(--font-mono); font-weight: 700; font-size: 15px; flex-shrink: 0; }
-/* —— MAPA DE FRESCURA (Bloque A): una fila por tema, un día por columna —— */
+/* —— Segmentado genérico (filtros, rangos de gráfica) —— */
 .range-tabs { display: flex; gap: 4px; padding: 4px; border-radius: var(--r-pill); background: var(--glass-bg); margin-bottom: 12px; flex-shrink: 0; }
 .range-tab {
   flex: 1; min-height: 44px; background: transparent; border: 0; color: var(--text3);
@@ -739,66 +684,22 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
     inset 0 1px 0 rgba(255,255,255,.22);
 }
-/* —— Mapa (Parte 1.2/3.5): un único scroller para ambos ejes — nada de un
-   scroll vertical del panel por fuera y otro horizontal de la tabla por
-   dentro peleándose por el gesto táctil. Columna de nombres pegada de verdad
-   (fondo opaco + separador), cabecera de grupo sin recortar arriba, fila de
-   meses visible y celdas a ancho completo (flex, no un tamaño fijo). —— */
-.heat-scroller { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; padding-top: 2px; }
-/* —— Mapa (rehecho sobre CSS Grid, no <table>): WebKit pinta de forma poco
-   fiable el fondo de las celdas sticky dentro de <table>/<th> (la rejilla
-   se cuela por debajo del texto en Safari/iOS), así que la columna de
-   nombres y la rejilla son columnas reales del MISMO grid — nunca capas
-   superpuestas con position:absolute ni márgenes negativos. row-gap/column-gap
-   de 3px separan cada celda, también verticalmente: sin eso, el filo claro
-   de "hoy" de una fila toca el de la fila siguiente y parece una columna
-   continua de bordes blancos en vez de un filo por celda. —— */
-.heat-grid { display: grid; column-gap: 3px; row-gap: 3px; grid-auto-rows: minmax(22px, auto); align-items: center; }
-.heat-corner, .heat-month-cell, .heat-name, .heat-group-head { position: sticky; background: var(--bg-2); }
-.heat-corner { left: 0; top: 0; z-index: 4; border-right: 1px solid var(--glass-border); }
-.heat-month-cell {
-  top: 0; z-index: 3; align-self: end;
-  font-size: 9.5px; color: var(--text3); font-weight: 700; letter-spacing: 0.5px;
-  text-transform: uppercase; white-space: nowrap; padding-bottom: 4px;
-}
-.heat-name {
-  left: 0; z-index: 2;
-  display: flex; align-items: center; height: 22px;
-  text-align: left; font-weight: 600; font-size: 10.5px; color: var(--text2); text-transform: uppercase;
-  padding: 0 8px 0 2px; white-space: nowrap; font-family: var(--font-mono);
-  border-right: 1px solid var(--glass-border); cursor: pointer;
-}
-.heat-cell i {
-  display: block; width: 100%; height: 22px; border-radius: 5px;
-  background: var(--heat-empty); transition: transform 0.12s var(--ease-pop); cursor: pointer;
-}
-.heat-cell i.today-c { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.7); }
-.heat-group-head {
-  grid-column: 1 / -1; left: 0;
-  font-size: 9.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
-  padding: 14px 8px 5px 2px; white-space: nowrap;
-}
-.heat-readout {
-  flex-shrink: 0;
-  font-family: var(--font-mono); font-size: 12.5px; color: var(--text); background: var(--bg-input);
-  border: 1px solid var(--border); border-radius: var(--r-xs); padding: 10px 12px; margin-top: 10px; min-height: 1.3em;
-}
-.heat-readout.idle { color: var(--text3); }
-.heat-readout b { color: var(--gold2); font-weight: 700; }
-.heat-legend { flex-shrink: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--text3); margin-top: 10px; }
-.heat-ramp { width: 90px; height: 10px; border-radius: 5px; display: block; background: linear-gradient(90deg, rgb(216,56,42), rgb(232,122,38), rgb(236,190,46), rgb(203,219,56), rgb(163,222,64), rgb(122,216,84)); }
-.heat-legend-empty { display: flex; align-items: center; gap: 4px; margin-left: 4px; }
-.heat-legend-empty i { width: 10px; height: 10px; border-radius: 2px; display: block; background: var(--heat-empty); }
-.epi-table-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 12px; }
-.epi-table-row:first-of-type { border-top: none; }
-.epi-table-name { flex: 1; color: var(--text2); overflow-wrap: anywhere; }
-.epi-table-val { font-family: var(--font-mono); width: 42px; text-align: right; flex-shrink: 0; }
-.epi-weight-row { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); }
-.epi-weight-row:first-of-type { border-top: none; }
-.epi-weight-name { flex: 1; font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
-.epi-weight-input { width: 56px; flex-shrink: 0; margin-bottom: 0; text-align: center; padding: 8px 4px; }
-.epi-lock-btn { background: none; border: none; cursor: pointer; padding: 4px; flex-shrink: 0; color: var(--text3); }
-.epi-lock-btn.on { color: var(--gold2); }
+/* —— RENDIMIENTO: cabecera, gráficas y tabla por tema —— */
+.rend-stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+.rend-stat { text-align: center; padding: 14px 6px; }
+.rend-stat .v { font-family: var(--font-mono); font-weight: 600; font-size: 22px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
+.rend-stat .l { font-size: 9.5px; color: var(--text3); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+.rend-chart-insight { text-align: center; font-size: 12.5px; color: var(--text2); padding: 8px 4px 0; min-height: 16px; }
+.rend-chart-note { text-align: center; font-size: 10px; color: var(--text3); padding: 2px 4px 0; }
+.rend-sort-row { display: flex; align-items: center; gap: 10px; padding: 10px 0 8px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); border-bottom: 1px solid var(--border); margin-bottom: 2px; }
+.rend-sort-row button { background: none; border: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; }
+.rend-sort-row button.active { color: var(--gold2); }
+.rend-tema-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border); cursor: pointer; }
+.rend-tema-row:first-of-type { border-top: none; }
+.rend-tema-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+.rend-tema-meta { font-size: 10.5px; color: var(--text3); margin-top: 2px; font-weight: 500; }
+.rend-tema-val { font-family: var(--font-mono); font-weight: 700; font-size: 15px; flex-shrink: 0; width: 44px; text-align: right; }
+.rend-tema-dias { font-family: var(--font-mono); font-size: 12px; flex-shrink: 0; width: 60px; text-align: right; }
 /* —— HERRAMIENTAS: Mnemotécnicas —— */
 .mnemo-search { margin-bottom: 12px; font-family: var(--font-sans); }
 .mnemo-tema-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--border); }
@@ -834,7 +735,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 /* —— FEEDBACK AL PULSAR (Bloque D): un único mecanismo reutilizado en toda la app —— */
 .tap,
 .lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn,
-.modal-btn, .f-btn, .epi-check-row, .curva-list-row, .range-tab, .curva-tool-btn,
+.modal-btn, .f-btn, .rend-tema-row, .range-tab, .curva-tool-btn,
 .nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable,
 .entry-row.clickable, .nav-arrow-btn, .toggle-btn, button {
   -webkit-tap-highlight-color: transparent;
@@ -845,16 +746,16 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 }
 .tap:active,
 .lvl-row:active, .lvl-block-btn:active, .cat-row:active, .settings-row:active, .cat-picker-btn:active,
-.add-btn:active, .save-btn:active, .modal-btn:active, .f-btn:active, .epi-check-row:active,
-.curva-list-row:active, .range-tab:active, .curva-tool-btn:active, .nav-btn:active,
+.add-btn:active, .save-btn:active, .modal-btn:active, .f-btn:active, .rend-tema-row:active,
+.range-tab:active, .curva-tool-btn:active, .nav-btn:active,
 .edit-date-btn:active, .opo-edit-btn:active, .history-session-header:active, .act-day.clickable:active,
 .entry-row.clickable:active, .nav-arrow-btn:active, .toggle-btn:active, button:active {
   transform: scale(0.97);
 }
 .tap::after,
 .lvl-row::after, .lvl-block-btn::after, .cat-row::after, .settings-row::after, .cat-picker-btn::after,
-.add-btn::after, .save-btn::after, .modal-btn::after, .f-btn::after, .epi-check-row::after,
-.curva-list-row::after, .range-tab::after, .curva-tool-btn::after, .nav-btn::after,
+.add-btn::after, .save-btn::after, .modal-btn::after, .f-btn::after, .rend-tema-row::after,
+.range-tab::after, .curva-tool-btn::after, .nav-btn::after,
 .edit-date-btn::after, .opo-edit-btn::after, .history-session-header::after, .act-day.clickable::after,
 .entry-row.clickable::after, .nav-arrow-btn::after, .toggle-btn::after, button::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -920,11 +821,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 
   <div id="hoy-list"></div>
-
-  <button class="row glass tap" id="curva-access-row" onclick="openCurva()" style="width:100%;margin-top:4px;text-align:left;color:var(--text);">
-    <span class="t">CURVA DEL OLVIDO</span>
-    <span class="ch">›</span>
-  </button>
 </div>
 
 <!-- ESTADÍSTICAS -->
@@ -1058,15 +954,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 
   <div class="settings-group">
-    <div class="settings-group-title">Planificación</div>
-    <div class="settings-row" onclick="openFechaExamenModal()">
-      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-      <span>Fecha del examen</span>
-      <span id="ajustes-fecha-examen-val" style="margin-left:auto;font-size:12px;color:var(--text3);font-weight:600;"></span>
-    </div>
-    <div class="settings-row" onclick="openModeloModal()">
-      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2" fill="var(--bg)"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="16" cy="17" r="2" fill="var(--bg)"/></svg></div>
-      <span>Ajustes avanzados</span>
+    <div class="settings-group-title">Tests</div>
+    <div class="settings-row" onclick="openAlternativasModal()">
+      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold2)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+      <span>Alternativas por pregunta</span>
+      <span id="ajustes-alternativas-val" style="margin-left:auto;font-size:12px;color:var(--text3);font-weight:600;"></span>
     </div>
   </div>
 
@@ -1116,6 +1008,20 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
+<!-- MODAL: alternativas por pregunta (fórmula oficial de corrección de tests) -->
+<div class="modal-bg" id="alternativas-modal">
+  <div class="modal">
+    <div class="modal-title">Alternativas por pregunta</div>
+    <div class="modal-note">Cada fallo resta 1/(alternativas−1) aciertos. Con 3 alternativas (Policía Nacional) un fallo resta medio acierto; con 4, un tercio.</div>
+    <label class="modal-label">Alternativas</label>
+    <input type="number" class="modal-input" id="alternativas-input" min="2" max="6" inputmode="numeric">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('alternativas-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveAlternativasModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: editar/quitar tiempo de un registro concreto -->
 <div class="modal-bg" id="edit-entry-modal">
   <div class="modal">
@@ -1139,31 +1045,8 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
-<!-- MODAL: epígrafes trabajados + valoración (sesión de estudio de un tema) -->
-<div class="modal-bg" id="tema-epi-modal">
-  <div class="modal">
-    <div class="modal-title" id="tema-epi-title">Tema · Estudio</div>
-    <div id="tema-epi-checklist-wrap">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
-        <label class="modal-label" style="margin-bottom:0;">¿Qué has trabajado?</label>
-        <button type="button" class="epi-marcar-todo" onclick="marcarTodoEpi()">MARCAR TODO</button>
-      </div>
-      <div id="tema-epi-checklist"></div>
-    </div>
-    <label class="modal-label" style="margin-top:14px;">¿Cómo ha ido?</label>
-    <div class="valoracion-row" id="tema-epi-valoracion-row">
-      <button type="button" class="valoracion-btn" data-v="MAL" onclick="elegirValoracion('MAL')">MAL</button>
-      <button type="button" class="valoracion-btn" data-v="REGULAR" onclick="elegirValoracion('REGULAR')">REGULAR</button>
-      <button type="button" class="valoracion-btn" data-v="BIEN" onclick="elegirValoracion('BIEN')">BIEN</button>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="cancelarTemaEpiModal()">Cancelar</button>
-      <button class="modal-btn primary" onclick="confirmTemaSesion()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: TEST de un tema (preguntas, aciertos, epígrafes) -->
+<!-- MODAL: TEST de un tema (TEST académico / INNOTEST — preguntas, aciertos,
+     fallos y blancos opcionales, nota oficial calculada en vivo) -->
 <div class="modal-bg" id="tema-test-modal">
   <div class="modal">
     <div class="modal-title" id="tema-test-title">Tema · Test</div>
@@ -1172,23 +1055,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <div style="display:flex;gap:8px;">
       <div style="flex:1;">
         <label class="modal-label">Preguntas</label>
-        <input type="number" class="modal-input" id="tema-test-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 20" oninput="updateTemaTestNota()">
+        <input type="number" class="modal-input" id="tema-test-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 100" oninput="updateTemaTestNota()">
       </div>
       <div style="flex:1;">
         <label class="modal-label">Aciertos</label>
-        <input type="number" class="modal-input" id="tema-test-aciertos-input" min="0" inputmode="numeric" placeholder="p.ej. 15" oninput="updateTemaTestNota()">
+        <input type="number" class="modal-input" id="tema-test-aciertos-input" min="0" inputmode="numeric" placeholder="p.ej. 72" oninput="updateTemaTestNota()">
       </div>
     </div>
-    <div id="tema-test-nota-auto" style="font-size:12px;color:var(--gold2);font-weight:700;margin:-4px 0 12px;min-height:14px;"></div>
+    <div style="display:flex;gap:8px;">
+      <div style="flex:1;">
+        <label class="modal-label">Fallos <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+        <input type="number" class="modal-input" id="tema-test-fallos-input" min="0" inputmode="numeric" placeholder="p.ej. 18" oninput="updateTemaTestNota()">
+      </div>
+      <div style="flex:1;">
+        <label class="modal-label">Blancos <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+        <input type="number" class="modal-input" id="tema-test-blancos-input" min="0" inputmode="numeric" placeholder="p.ej. 10" oninput="updateTemaTestNota()">
+      </div>
+    </div>
+    <div id="tema-test-nota-auto" style="font-size:12px;color:var(--gold2);font-weight:700;margin:-4px 0 4px;min-height:14px;"></div>
+    <div id="tema-test-aviso-suma" style="font-size:11.5px;color:var(--orange);margin:0 0 10px;min-height:14px;"></div>
     <label class="modal-label">O nota directa <span style="text-transform:none;font-weight:500;opacity:0.7;">(si no tienes el desglose)</span></label>
     <input type="text" class="modal-input" id="tema-test-nota-input" placeholder="p.ej. 7,5" inputmode="decimal" oninput="onTemaTestNotaDirectaInput()">
-    <div id="tema-test-checklist-wrap" style="margin-top:12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
-        <label class="modal-label" style="margin-bottom:0;">¿De qué epígrafes?</label>
-        <button type="button" class="epi-marcar-todo" onclick="marcarTodoEpi()">MARCAR TODO</button>
-      </div>
-      <div id="tema-test-checklist"></div>
-    </div>
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="closeModal('tema-test-modal')">Cancelar</button>
       <button class="modal-btn secondary" id="tema-test-delete-btn" style="display:none;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteTemaTestEntry()">Borrar</button>
@@ -1351,49 +1238,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
-<!-- MODAL: fecha del examen -->
-<div class="modal-bg" id="fecha-examen-modal">
-  <div class="modal">
-    <div class="modal-title">Fecha del examen</div>
-    <div class="modal-note">Sin ella el sistema funciona igual, pero sin recortar los intervalos según se acerca la convocatoria.</div>
-    <label class="modal-label">Fecha</label>
-    <input type="date" class="modal-input" id="fecha-examen-input">
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeModal('fecha-examen-modal')">Cancelar</button>
-      <button class="modal-btn primary" onclick="saveFechaExamenModal()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: ajustes avanzados del modelo de frescura -->
-<div class="modal-bg" id="modelo-modal">
-  <div class="modal">
-    <div class="modal-title">Ajustes avanzados</div>
-    <div class="modal-note">Parámetros del modelo de frescura. Si no sabes qué es esto, probablemente no necesites tocarlo.<br><br>El punto de arranque (cuánto dura la frescura de un tema recién estudiado, antes del primer repaso) viene de estudios de retención de material expositivo — no de una medición tuya. Tus propios tests irán sustituyendo esa estimación en cuanto el bloque de medición acumule suficientes puntos.</div>
-    <label class="modal-label">Ganancia BIEN</label>
-    <input type="text" class="modal-input" id="modelo-gananciaBien-input" inputmode="decimal">
-    <label class="modal-label">Ganancia REGULAR</label>
-    <input type="text" class="modal-input" id="modelo-gananciaRegular-input" inputmode="decimal">
-    <label class="modal-label">Penalización MAL</label>
-    <input type="text" class="modal-input" id="modelo-penalizacionMal-input" inputmode="decimal">
-    <label class="modal-label">Umbral de vencido (%)</label>
-    <input type="text" class="modal-input" id="modelo-umbralVencido-input" inputmode="decimal">
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="restaurarModeloDefaultModal()">Restaurar</button>
-      <button class="modal-btn primary" onclick="saveModeloModal()">Guardar</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: Herramientas -->
 <!-- HERRAMIENTAS -->
 <div id="screen-herramientas" class="screen">
-  <button class="curva-tool-btn tap" onclick="openCurva()">
-    <span class="t">CURVA DEL OLVIDO</span>
-    <span style="color:var(--text3);">›</span>
-  </button>
-  <button class="curva-tool-btn tap" onclick="openMapaFrescura()">
-    <span class="t">MAPA DE FRESCURA</span>
+  <button class="curva-tool-btn tap" onclick="openRendimiento()">
+    <span class="t">RENDIMIENTO</span>
     <span style="color:var(--text3);">›</span>
   </button>
   <button class="curva-tool-btn tap" onclick="openMnemotecnicas()">
@@ -1406,42 +1255,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </button>
 </div>
 
-<!-- MODAL: Curva del olvido -->
-<div class="modal-bg" id="curva-modal">
+<!-- MODAL: Rendimiento (gráficas de tests — Parte 2) -->
+<div class="modal-bg" id="rendimiento-modal">
   <div class="modal" style="max-height:88vh;">
     <div class="lvl-header">
-      <button class="lvl-back" id="curva-back-btn" style="display:none;" onclick="curvaBack()">‹</button>
-      <div class="lvl-header-title" id="curva-header-title">Curva del olvido</div>
-      <button class="toggle-btn" onclick="closeModal('curva-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+      <button class="lvl-back" id="rend-back-btn" style="display:none;" onclick="rendBack()">‹</button>
+      <div class="lvl-header-title" id="rend-header-title">Rendimiento</div>
+      <button class="toggle-btn" onclick="closeModal('rendimiento-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
-    <div id="curva-body"></div>
-  </div>
-</div>
-
-<!-- MODAL: Mapa de frescura (Parte 1.3 — pantalla propia, no un card dentro
-     de la Curva del olvido) -->
-<div class="modal-bg" id="mapa-modal">
-  <div class="modal modal-full">
-    <div class="lvl-header">
-      <div class="lvl-header-title">Mapa de frescura</div>
-      <button class="toggle-btn" onclick="closeModal('mapa-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
-    </div>
-    <div id="mapa-frescura-full"></div>
-  </div>
-</div>
-
-<!-- MODAL: registrar rápido desde una fila del mapa (Parte 3.5) -->
-<div class="modal-bg" id="mapa-registro-panel">
-  <div class="modal">
-    <div class="modal-title" id="mapa-registro-tema-nombre">Tema</div>
-    <label class="modal-label">Subcategoría</label>
-    <select class="modal-select" id="mapa-registro-subcat"></select>
-    <label class="modal-label">Tiempo</label>
-    <input type="text" class="modal-input" id="mapa-registro-minutos" placeholder="h:mm o minutos" inputmode="text">
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="mapaRegistroCancelar()">Cancelar</button>
-      <button class="modal-btn primary" onclick="mapaRegistroGuardar()">Continuar</button>
-    </div>
+    <div id="rend-body"></div>
   </div>
 </div>
 
@@ -1526,8 +1348,6 @@ const PALETTE = ['#ff4848','#ff952f','#f5cc00','#9ff512','#28eb6f','#18d5bd','#1
 const ICON_EDIT = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 const ICON_CLOSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
 const ICON_CHEVRON = '<svg width="14" height="8" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 7 L15 1"/></svg>';
-const ICON_CHECK_SMALL = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#04212e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-const ICON_LOCK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 const DOW_NAMES_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -1577,390 +1397,39 @@ function temaBloque(numOrId){
 }
 function temaColor(temaId){ const b = temaBloque(temaId); return b ? b.color : '#666'; }
 
-// ========== EPÍGRAFES, FRESCURA Y DOMINIO ==========
-// Principio de arquitectura: nada de esto se guarda. Frescura, dominio y
-// estabilidad se recalculan al vuelo cada vez recorriendo registros + ajustes.
-// Lo único persistido son los registros (con sus campos nuevos) y los ajustes
-// (epígrafes/pesos, fecha de examen, parámetros del modelo).
-
-const DEFAULT_MODELO = { gananciaBien: 2.5, gananciaRegular: 1.5, penalizacionMal: 0.4, umbralVencido: 0.90 };
-const FRESH_FACTOR = 19/81, FRESH_DECAY = -0.5;
-// Tope absoluto de estabilidad (Bloque F, recalibrado): ningún tema de un
-// temario denso aguanta más de dos meses al 90% sin tocarlo, por muchas
-// vueltas que lleve — la progresión de nuevaEstabilidad no cambia, solo
-// hasta dónde puede llegar.
-const ESTABILIDAD_MAX = 60;
-
-function getTemasConfig(){ try{ return JSON.parse(localStorage.getItem('estudio_temas_config')||'{}'); }catch{ return {}; } }
-function saveTemasConfig(cfg){ localStorage.setItem('estudio_temas_config', JSON.stringify(cfg)); }
-function getTemaConfig(temaId){ const all = getTemasConfig(); return all[temaId] || { epigrafes: [] }; }
-function setTemaConfig(temaId, temaConfig){ const all = getTemasConfig(); all[temaId] = temaConfig; saveTemasConfig(all); }
-function temaTieneEpigrafes(temaId){ const c = getTemaConfig(temaId); return !!(c.epigrafes && c.epigrafes.length); }
-
-function getAjustesSpaced(){
-  try{ return JSON.parse(localStorage.getItem('estudio_ajustes_spaced')||'{}'); }catch{ return {}; }
+// ========== AJUSTES DE TESTS (alternativas por pregunta) y fórmula oficial ==========
+function getAjustesTests(){ try{ return JSON.parse(localStorage.getItem('estudio_ajustes_tests')||'{}'); }catch{ return {}; } }
+function saveAjustesTests(a){ localStorage.setItem('estudio_ajustes_tests', JSON.stringify(a)); }
+function getAlternativas(){ const a = getAjustesTests(); return a.alternativas>1 ? a.alternativas : 3; }
+function setAlternativas(n){ const a = getAjustesTests(); a.alternativas = n; saveAjustesTests(a); }
+// Fórmula oficial de corrección: cada fallo resta 1/(alternativas-1) aciertos;
+// los blancos no entran en el cálculo, solo completan el total de preguntas.
+// Con fallos=0 se reduce exactamente a aciertos*10/preguntas (el cálculo simple de antes).
+function notaOficial(aciertos, fallos, preguntas){
+  const alt = getAlternativas();
+  const nota = (aciertos - (fallos||0)/(alt-1)) * 10 / preguntas;
+  return Math.max(0, nota);
 }
-function saveAjustesSpaced(a){ localStorage.setItem('estudio_ajustes_spaced', JSON.stringify(a)); }
-function getFechaExamen(){ return getAjustesSpaced().fechaExamen || null; }
-function setFechaExamen(fecha){ const a = getAjustesSpaced(); a.fechaExamen = fecha || null; saveAjustesSpaced(a); }
-function getModeloParams(){ return Object.assign({}, DEFAULT_MODELO, getAjustesSpaced().modelo || {}); }
-function setModeloParams(m){ const a = getAjustesSpaced(); a.modelo = Object.assign({}, getModeloParams(), m); saveAjustesSpaced(a); }
-function restaurarModeloDefault(){ const a = getAjustesSpaced(); delete a.modelo; saveAjustesSpaced(a); }
-
-function getMeasurementPoints(){ try{ return JSON.parse(localStorage.getItem('estudio_measurement_points')||'[]'); }catch{ return []; } }
-function addMeasurementPoint(pt){ const pts = getMeasurementPoints(); pts.push(pt); localStorage.setItem('estudio_measurement_points', JSON.stringify(pts)); }
-
-// --- Fórmulas (Bloque B) ---
-function frescura(dias, estabilidad){
-  const S = estabilidad>0 ? estabilidad : 1;
-  return Math.pow(1 + FRESH_FACTOR*dias/S, FRESH_DECAY);
+function openAlternativasModal(){
+  document.getElementById('alternativas-input').value = getAlternativas();
+  openModal('alternativas-modal');
 }
-function nuevaEstabilidad(S, valoracion, frescuraPrevia, modelo){
-  modelo = modelo || getModeloParams();
-  if(valoracion==='MAL') return Math.max(1, S*modelo.penalizacionMal);
-  const ganancia = valoracion==='REGULAR' ? modelo.gananciaRegular : modelo.gananciaBien;
-  const bonus = 1 + (0.9 - frescuraPrevia)*2;
-  const efectiva = 1 + (ganancia*bonus - 1)/(1+S/60);
-  return Math.min(ESTABILIDAD_MAX, S*efectiva);
-}
-function valoracionDeNota(nota){ if(nota<5) return 'MAL'; if(nota<=7) return 'REGULAR'; return 'BIEN'; }
-function dominioDeTests(tests){
-  const ratios = tests.slice().sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(t=>{
-    if(t.aciertos!=null && t.preguntas>0) return t.aciertos/t.preguntas;
-    if(t.nota!=null) return t.nota/10;
-    return null;
-  }).filter(r=>r!=null);
-  if(!ratios.length) return null;
-  let suma=0, pesos=0;
-  ratios.forEach((r,i)=>{ const p = Math.pow(1.5,i); suma += r*p; pesos += p; });
-  return { valor: suma/pesos, nTests: ratios.length, pocoFiable: ratios.length<=2 };
-}
-
-// --- Recorte por fecha de examen (Bloque E) ---
-function diasHastaExamen(hoyStr){
-  const fe = getFechaExamen();
-  if(!fe) return null;
-  return Math.round((new Date(fe+'T12:00:00') - new Date(hoyStr+'T12:00:00')) / 86400000);
-}
-function topeRecorte(dHastaExamen){ if(dHastaExamen==null) return Infinity; return Math.min(25, Math.max(0, dHastaExamen*0.30)); }
-function estabilidadEfectiva(S, dHastaExamen){ return Math.min(S, topeRecorte(dHastaExamen)); }
-
-// --- Arranque con histórico (Bloque G) ---
-// Recalibrado contra Spitzer (1939, 3.605 estudiantes, texto expositivo y
-// test de opción múltiple, sin repasar): 72% al día, 60% a la semana, 53% a
-// las dos semanas, 48% a los 63 días — una lectura única y pasiva equivale a
-// una estabilidad de 1 día metida en la fórmula de frescura() de arriba. Es
-// una estimación calibrada contra ese dato medido, no una medición propia:
-// cuando el bloque de medición (Bloque H) tenga 20 puntos, sus datos mandan
-// sobre esta tabla.
-function estabilidadInicialPorMinutos(minutosTotal){
-  const horas = minutosTotal/60;
-  if(horas<2) return 2; if(horas<4) return 3; if(horas<7) return 8; if(horas<11) return 16; return 30;
-}
-function diasEntreFechas(a,b){ return Math.round((new Date(b+'T12:00:00') - new Date(a+'T12:00:00')) / 86400000); }
-
-// Simula la evolución de un nodo (tema entero o epígrafe hoja) desde su
-// arranque (minutos pre-feature, sin valoración) y luego evento a evento.
-function simularNodo(minutosPreFeature, ultimoContactoPreFeature, eventos, modelo){
-  let S = minutosPreFeature>0 ? estabilidadInicialPorMinutos(minutosPreFeature) : 1;
-  let ultimoContacto = ultimoContactoPreFeature;
-  const porDia = {};
-  eventos.forEach(e=>{ if(!porDia[e.fecha]) porDia[e.fecha] = e; }); // solo el 1º del día mueve S
-  Object.values(porDia).sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(ev=>{
-    let frescuraPrevia;
-    if(ultimoContacto==null) frescuraPrevia = 0.9;
-    else frescuraPrevia = frescura(Math.max(0, diasEntreFechas(ultimoContacto, ev.fecha)), S);
-    S = nuevaEstabilidad(S, ev.valoracion, frescuraPrevia, modelo);
-    ultimoContacto = ev.fecha;
-  });
-  return { S, ultimoContacto, nEventos: Object.keys(porDia).length };
-}
-
-// --- Árbol de epígrafes ---
-function epigrafeFindById(epigrafes, id){
-  for(const e of (epigrafes||[])){
-    if(e.id===id) return e;
-    if(e.hijos){ const f = epigrafeFindById(e.hijos, id); if(f) return f; }
-  }
-  return null;
-}
-function epigrafeLeaves(epigrafes){
-  const out = [];
-  (epigrafes||[]).forEach(e=>{
-    if(e.hijos && e.hijos.length){
-      e.hijos.forEach(h=> out.push({ id:h.id, nombre:h.nombre, pesoSobreTema: e.peso*h.peso/100, fijado: h.fijado }));
-    } else {
-      out.push({ id:e.id, nombre:e.nombre, pesoSobreTema: e.peso, fijado: e.fijado });
-    }
-  });
-  return out;
-}
-function reajustarPesos(siblings, idCambiado, nuevoPeso){
-  const changed = siblings.find(s=>s.id===idCambiado);
-  if(!changed) return;
-  nuevoPeso = Math.max(0, Math.min(100, nuevoPeso));
-  const fijados = siblings.filter(s=>s.id!==idCambiado && s.fijado);
-  const libres = siblings.filter(s=>s.id!==idCambiado && !s.fijado);
-  const sumFijados = fijados.reduce((a,s)=>a+s.peso,0);
-  if(nuevoPeso + sumFijados > 100) nuevoPeso = Math.max(0, 100-sumFijados);
-  changed.peso = nuevoPeso;
-  const disponible = 100 - nuevoPeso - sumFijados;
-  const sumLibresActual = libres.reduce((a,s)=>a+s.peso,0);
-  if(!libres.length) return;
-  if(sumLibresActual>0.0001) libres.forEach(s=>{ s.peso = Math.max(0, disponible*(s.peso/sumLibresActual)); });
-  else { const each = disponible/libres.length; libres.forEach(s=>{ s.peso = each; }); }
-}
-function agregarEpigrafeASiblings(siblings, nombre){
-  const nuevo = { id:'e_'+uid(), nombre, peso:0, fijado:false };
-  siblings.push(nuevo);
-  const fijados = siblings.filter(s=>s.fijado);
-  const libres = siblings.filter(s=>!s.fijado);
-  const sumFijados = fijados.reduce((a,s)=>a+s.peso,0);
-  const disponible = Math.max(0, 100-sumFijados);
-  const each = libres.length ? disponible/libres.length : 0;
-  libres.forEach(s=>{ s.peso = each; });
-  return nuevo;
-}
-
-// --- Agregación por tema a partir de los registros crudos ---
-// entradasTema: [{fecha, minutos, subKey, epigrafes?, valoracion?, aciertos?, preguntas?, nota?}]
-// testsCartaTema: items de TEST A LA CARTA/SIMULACRO que incluyen este tema: [{fecha, aciertos, preguntas}]
-function construirDatosTema(entradasTema, testsCartaTema, temaConfig, modelo){
-  const leavesCfg = temaConfig && temaConfig.epigrafes && temaConfig.epigrafes.length
-    ? epigrafeLeaves(temaConfig.epigrafes)
-    : [{ id:null, nombre:null, pesoSobreTema:100, fijado:false }];
-
-  let preFeatureMinutos = 0, preFeatureUltimoContacto = null;
-  const porLeaf = {};
-  leavesCfg.forEach(l=> porLeaf[String(l.id)] = { eventos:[], tests:[] });
-
-  entradasTema.forEach(e=>{
-    if(e.valoracion==null){
-      preFeatureMinutos += (e.minutos||0);
-      if(preFeatureUltimoContacto==null || e.fecha>preFeatureUltimoContacto) preFeatureUltimoContacto = e.fecha;
-      return;
-    }
-    const targets = (e.epigrafes && e.epigrafes.length) ? e.epigrafes : null;
-    leavesCfg.forEach(l=>{
-      const aplica = targets==null || l.id==null || targets.includes(l.id);
-      if(!aplica) return;
-      porLeaf[String(l.id)].eventos.push({ fecha:e.fecha, valoracion:e.valoracion });
-      if(e.aciertos!=null || e.preguntas!=null || e.nota!=null){
-        porLeaf[String(l.id)].tests.push({ fecha:e.fecha, aciertos: e.aciertos!=null?e.aciertos:null, preguntas: e.preguntas!=null?e.preguntas:null, nota: e.nota!=null?e.nota:null });
-      }
-    });
-  });
-  (testsCartaTema||[]).forEach(t=>{
-    leavesCfg.forEach(l=>{
-      porLeaf[String(l.id)].tests.push({ fecha:t.fecha, aciertos:t.aciertos, preguntas:t.preguntas, nota:null });
-      if(t.preguntas>0) porLeaf[String(l.id)].eventos.push({ fecha:t.fecha, valoracion: valoracionDeNota((t.aciertos/t.preguntas)*10) });
-    });
-  });
-
-  return leavesCfg.map(l=>{
-    const bucket = porLeaf[String(l.id)];
-    const sim = simularNodo(preFeatureMinutos, preFeatureUltimoContacto, bucket.eventos, modelo);
-    return { id:l.id, nombre:l.nombre, pesoSobreTema:l.pesoSobreTema, fijado:l.fijado, S:sim.S, ultimoContacto:sim.ultimoContacto, nEventos:sim.nEventos, dominio: dominioDeTests(bucket.tests) };
-  });
-}
-function frescuraTemaDesdeLeaves(leaves, hoyStr, dHastaExamen){
-  if(!leaves.length) return null;
-  let suma = 0;
-  leaves.forEach(l=>{
-    let fr = 0;
-    if(l.ultimoContacto!=null){
-      const dias = diasEntreFechas(l.ultimoContacto, hoyStr);
-      fr = frescura(Math.max(0,dias), estabilidadEfectiva(l.S, dHastaExamen));
-    }
-    suma += fr*l.pesoSobreTema;
-  });
-  return suma/100;
-}
-function dominioTemaDesdeLeaves(leaves){
-  const conDatos = leaves.filter(l=>l.dominio!=null);
-  if(!conDatos.length) return null;
-  let suma=0, nTests=0;
-  conDatos.forEach(l=>{ suma += l.dominio.valor*l.pesoSobreTema; nTests += l.dominio.nTests; });
-  return { valor: suma/100, nTests, pocoFiable: nTests<=2 };
-}
-
-// Entrada principal: recoge los registros crudos de un tema y devuelve su
-// estado completo recién calculado. Se llama al vuelo en cada render — con
-// 45 temas y unos cientos de registros esto es instantáneo.
-function entradasCrudasTema(temaId){
-  const out = [];
-  getDias().forEach(d=>{
-    d.entradas.forEach(e=>{
-      if(e.tipo==='tema' && e.temaId===temaId) out.push(Object.assign({fecha:d.fecha}, e));
-    });
-  });
-  return out;
-}
-function testsCartaDeTema(temaId){
-  const out = [];
-  getTests().forEach(t=>{
-    (t.temas||[]).forEach(x=>{
-      if(x.temaId===temaId && x.aciertos!=null && x.preguntas>0) out.push({ fecha:t.fecha, aciertos:x.aciertos, preguntas:x.preguntas });
-    });
-  });
-  return out;
-}
-function getTemaComputado(temaId, hoyStr){
-  hoyStr = hoyStr || todayStr();
-  const temaConfig = getTemaConfig(temaId);
-  const modelo = getModeloParams();
-  const leaves = construirDatosTema(entradasCrudasTema(temaId), testsCartaDeTema(temaId), temaConfig, modelo);
-  const dHastaExamen = diasHastaExamen(hoyStr);
-  const frescuraTema = frescuraTemaDesdeLeaves(leaves, hoyStr, dHastaExamen);
-  const dominioTema = dominioTemaDesdeLeaves(leaves);
-  let ultimoContacto = null;
-  leaves.forEach(l=>{ if(l.ultimoContacto && (ultimoContacto==null || l.ultimoContacto>ultimoContacto)) ultimoContacto = l.ultimoContacto; });
-  return { temaId, leaves, frescuraTema, dominioTema, ultimoContacto, sinEpigrafes: leaves.length===1 && leaves[0].id==null };
-}
-function umbralVencido(){ return getModeloParams().umbralVencido; }
-function frescuraBand(fr){
-  if(fr==null) return 'gris';
-  const u = umbralVencido();
-  if(fr>=u) return 'verde';
-  if(fr>=0.75) return 'amarillo';
-  if(fr>=0.50) return 'naranja';
-  return 'rojo';
-}
-function frescuraColor(band){
-  return { verde:cssVar('--col-fr-verde'), amarillo:cssVar('--col-fr-amarillo'), naranja:cssVar('--col-fr-naranja'), rojo:cssVar('--col-fr-rojo'), gris:cssVar('--col-fr-gris') }[band] || cssVar('--col-fr-gris');
-}
-// Escala continua del mapa (Parte 3.5): el color sale de interpolar esta
-// rampa sobre el porcentaje, no de clases por tramos — así no hay escalones
-// y un 73% tiene su propio tono exacto, igual que en kit-componentes.html.
-const FRESCURA_RAMPA = [
-  [  0, [216, 56, 42]],
-  [ 28, [232,122, 38]],
-  [ 50, [236,190, 46]],
-  [ 68, [203,219, 56]],
-  [ 85, [163,222, 64]],
-  [100, [122,216, 84]]
-];
-function frescuraHeatColor(fr){
-  if(fr==null) return 'var(--heat-empty)';
-  const p = Math.max(0, Math.min(100, fr*100));
-  for(let i=0;i<FRESCURA_RAMPA.length-1;i++){
-    const [pa,ca] = FRESCURA_RAMPA[i], [pb,cb] = FRESCURA_RAMPA[i+1];
-    if(p<=pb){
-      const t = (p-pa)/(pb-pa);
-      const rgb = [0,1,2].map(k=>Math.round(ca[k]+(cb[k]-ca[k])*t));
-      return `rgb(${rgb.join(',')})`;
-    }
-  }
-  return 'rgb(122,216,84)';
-}
-
-// ===== Checklist de epígrafes (compartida entre el modal de sesión y el de TEST) =====
-let epiChecklistTemaId = null;
-let epiChecklistContainerId = null;
-let epiCheckedLeaves = new Set();
-
-function setupEpiChecklist(temaId, containerId){
-  epiChecklistTemaId = temaId;
-  epiChecklistContainerId = containerId;
-  epiCheckedLeaves = new Set();
-  renderEpiChecklist();
-}
-function epiCheckboxHtml(state){ return `<span class="epi-checkbox ${state}">${ICON_CHECK_SMALL}</span>`; }
-function renderEpiChecklist(){
-  const container = document.getElementById(epiChecklistContainerId);
-  const wrap = document.getElementById(epiChecklistContainerId+'-wrap');
-  if(!container) return;
-  const tree = getTemaConfig(epiChecklistTemaId).epigrafes || [];
-  if(!tree.length){ if(wrap) wrap.style.display='none'; container.innerHTML=''; return; }
-  if(wrap) wrap.style.display='block';
-  container.innerHTML = tree.map(node=>{
-    if(node.hijos && node.hijos.length){
-      const leafIds = node.hijos.map(h=>h.id);
-      const nChecked = leafIds.filter(id=>epiCheckedLeaves.has(id)).length;
-      const state = nChecked===0 ? '' : (nChecked===leafIds.length ? 'checked' : 'indeterminate');
-      let html = `<div class="epi-check-row" onclick="toggleEpiParentNode('${node.id}')">
-        ${epiCheckboxHtml(state)}
-        <span class="epi-check-name">${escapeHtml(node.nombre)}</span>
-        <span class="epi-check-peso">${Math.round(node.peso)}%</span>
-      </div>`;
-      html += node.hijos.map(h=>`<div class="epi-check-row hijo" onclick="toggleEpiLeaf('${h.id}')">
-        ${epiCheckboxHtml(epiCheckedLeaves.has(h.id)?'checked':'')}
-        <span class="epi-check-name">${escapeHtml(h.nombre)}</span>
-        <span class="epi-check-peso">${Math.round(node.peso*h.peso/100)}%</span>
-      </div>`).join('');
-      return html;
-    }
-    return `<div class="epi-check-row" onclick="toggleEpiLeaf('${node.id}')">
-      ${epiCheckboxHtml(epiCheckedLeaves.has(node.id)?'checked':'')}
-      <span class="epi-check-name">${escapeHtml(node.nombre)}</span>
-      <span class="epi-check-peso">${Math.round(node.peso)}%</span>
-    </div>`;
-  }).join('');
-}
-function toggleEpiLeaf(id){
-  if(epiCheckedLeaves.has(id)) epiCheckedLeaves.delete(id); else epiCheckedLeaves.add(id);
-  renderEpiChecklist();
-}
-function toggleEpiParentNode(nodeId){
-  const node = epigrafeFindById(getTemaConfig(epiChecklistTemaId).epigrafes, nodeId);
-  if(!node) return;
-  const leafIds = (node.hijos && node.hijos.length) ? node.hijos.map(h=>h.id) : [node.id];
-  const allChecked = leafIds.every(id=>epiCheckedLeaves.has(id));
-  leafIds.forEach(id=> allChecked ? epiCheckedLeaves.delete(id) : epiCheckedLeaves.add(id));
-  renderEpiChecklist();
-}
-function marcarTodoEpi(){
-  epigrafeLeaves(getTemaConfig(epiChecklistTemaId).epigrafes||[]).forEach(l=>epiCheckedLeaves.add(l.id));
-  renderEpiChecklist();
-}
-
-// ===== Registrar: sesión de estudio de un tema (epígrafes + valoración) =====
-let pendingTemaSave = null; // {temaId, subKey, minutos, vuelta}
-let valoracionSeleccionada = null;
-
-function abrirTemaEpiModal(){
-  const {temaId, subKey} = pendingTemaSave;
-  document.getElementById('tema-epi-title').textContent = `${temaNombre(temaId)} · ${subcatTemaNombre(subKey)}`;
-  setupEpiChecklist(temaId, 'tema-epi-checklist');
-  valoracionSeleccionada = null;
-  document.querySelectorAll('#tema-epi-valoracion-row .valoracion-btn').forEach(b=>b.className='valoracion-btn');
-  openModal('tema-epi-modal');
-}
-function elegirValoracion(v){
-  valoracionSeleccionada = v;
-  document.querySelectorAll('#tema-epi-valoracion-row .valoracion-btn').forEach(b=>{
-    b.className = 'valoracion-btn' + (b.dataset.v===v ? ' sel-'+v.toLowerCase() : '');
-  });
-}
-function cancelarTemaEpiModal(){
-  closeModal('tema-epi-modal');
-  pendingTemaSave = null;
-}
-function confirmTemaSesion(){
-  if(!valoracionSeleccionada){ showToast('Elige cómo ha ido'); return; }
-  const { temaId, subKey, minutos, vuelta } = pendingTemaSave;
-  const tieneEpi = temaTieneEpigrafes(temaId);
-  if(tieneEpi && epiCheckedLeaves.size===0){ showToast('Marca al menos un epígrafe'); return; }
-
-  const dias = getDias();
-  let dia = dias.find(d=>d.fecha===currentHoyDate);
-  if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
-  const entry = { id:uid(), tipo:'tema', temaId, subKey, minutos, valoracion: valoracionSeleccionada };
-  if(tieneEpi) entry.epigrafes = Array.from(epiCheckedLeaves);
-  if(vuelta!=null) entry.vuelta = vuelta;
-  dia.entradas.push(entry);
-  saveDias(dias);
-
-  closeModal('tema-epi-modal');
-  pendingTemaSave = null;
-  document.getElementById('entry-time-input').value = '';
-  entrySelection = null;
-  entryVuelta = 1;
-  renderHoy(); renderHistorial(); renderCategoriasList();
+function saveAlternativasModal(){
+  const n = parseInt(document.getElementById('alternativas-input').value,10);
+  if(!Number.isFinite(n) || n<2){ showToast('Introduce un número válido'); return; }
+  setAlternativas(n);
+  closeModal('alternativas-modal');
+  refreshAlternativasLabel();
   showToast('Guardado ✓','green');
 }
+function refreshAlternativasLabel(){
+  const el = document.getElementById('ajustes-alternativas-val');
+  if(el) el.textContent = getAlternativas();
+}
 
-// ===== Registrar: TEST de un tema (REPASO TEST usa el flujo normal de tiempo) =====
+// ===== Registrar: TEST de un tema (TEST académico / INNOTEST — preguntas,
+// aciertos, fallos y blancos opcionales; REPASO TEST/REPASO INNOTEST usan el
+// flujo normal de tiempo, no este formulario) =====
 let pendingTemaTest = null; // {temaId, subKey}
 let temaTestEditing = null; // {fecha,id} | null
 
@@ -1969,9 +1438,9 @@ function openTemaTestForm(temaId, subKey, editing){
   temaTestEditing = editing || null;
   document.getElementById('tema-test-title').textContent = `${temaNombre(temaId)} · ${subcatTemaNombre(subKey)}`;
   document.getElementById('tema-test-delete-btn').style.display = editing ? 'inline-block' : 'none';
-  setupEpiChecklist(temaId, 'tema-test-checklist');
-  document.getElementById('tema-test-preguntas-input').disabled = false;
-  document.getElementById('tema-test-aciertos-input').disabled = false;
+  ['tema-test-preguntas-input','tema-test-aciertos-input','tema-test-fallos-input','tema-test-blancos-input'].forEach(id=>{
+    document.getElementById(id).disabled = false;
+  });
   if(editing){
     const dia = getDia(editing.fecha);
     const e = dia && dia.entradas.find(x=>x.id===editing.id);
@@ -1979,13 +1448,15 @@ function openTemaTestForm(temaId, subKey, editing){
     document.getElementById('tema-test-tiempo-input').value = formatHM(e.minutos);
     document.getElementById('tema-test-preguntas-input').value = e.preguntas!=null ? e.preguntas : '';
     document.getElementById('tema-test-aciertos-input').value = e.aciertos!=null ? e.aciertos : '';
+    document.getElementById('tema-test-fallos-input').value = e.fallos!=null ? e.fallos : '';
+    document.getElementById('tema-test-blancos-input').value = e.blancos!=null ? e.blancos : '';
     document.getElementById('tema-test-nota-input').value = (e.preguntas==null && e.nota!=null) ? formatNota(e.nota) : '';
-    (e.epigrafes||[]).forEach(id=>epiCheckedLeaves.add(id));
-    renderEpiChecklist();
   } else {
     document.getElementById('tema-test-tiempo-input').value = '';
     document.getElementById('tema-test-preguntas-input').value = '';
     document.getElementById('tema-test-aciertos-input').value = '';
+    document.getElementById('tema-test-fallos-input').value = '';
+    document.getElementById('tema-test-blancos-input').value = '';
     document.getElementById('tema-test-nota-input').value = '';
   }
   updateTemaTestNota();
@@ -1994,21 +1465,32 @@ function openTemaTestForm(temaId, subKey, editing){
 function updateTemaTestNota(){
   const preguntas = parseInt(document.getElementById('tema-test-preguntas-input').value,10);
   const aciertos = parseInt(document.getElementById('tema-test-aciertos-input').value,10);
+  const fallosRaw = document.getElementById('tema-test-fallos-input').value.trim();
+  const blancosRaw = document.getElementById('tema-test-blancos-input').value.trim();
+  const fallos = fallosRaw==='' ? 0 : (parseInt(fallosRaw,10)||0);
+  const blancos = blancosRaw==='' ? 0 : (parseInt(blancosRaw,10)||0);
   const notaEl = document.getElementById('tema-test-nota-auto');
+  const avisoEl = document.getElementById('tema-test-aviso-suma');
   const notaInput = document.getElementById('tema-test-nota-input');
   if(Number.isFinite(preguntas) && preguntas>0 && Number.isFinite(aciertos)){
-    notaEl.textContent = 'Nota: ' + formatNota((aciertos/preguntas)*10);
+    notaEl.textContent = 'Nota: ' + formatNota(notaOficial(aciertos, fallos, preguntas));
     notaInput.value = '';
     notaInput.disabled = true;
+    const suma = aciertos + fallos + blancos;
+    avisoEl.textContent = (fallosRaw!=='' || blancosRaw!=='') && suma!==preguntas
+      ? `Aciertos + fallos + blancos (${suma}) no suman las ${preguntas} preguntas`
+      : '';
   } else {
     notaEl.textContent = '';
+    avisoEl.textContent = '';
     notaInput.disabled = false;
   }
 }
 function onTemaTestNotaDirectaInput(){
   const tieneNota = document.getElementById('tema-test-nota-input').value.trim() !== '';
-  document.getElementById('tema-test-preguntas-input').disabled = tieneNota;
-  document.getElementById('tema-test-aciertos-input').disabled = tieneNota;
+  ['tema-test-preguntas-input','tema-test-aciertos-input','tema-test-fallos-input','tema-test-blancos-input'].forEach(id=>{
+    document.getElementById(id).disabled = tieneNota;
+  });
 }
 function saveTemaTestForm(){
   const { temaId, subKey } = pendingTemaTest;
@@ -2016,28 +1498,23 @@ function saveTemaTestForm(){
   if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
   const preguntasRaw = document.getElementById('tema-test-preguntas-input').value.trim();
   const aciertosRaw = document.getElementById('tema-test-aciertos-input').value.trim();
+  const fallosRaw = document.getElementById('tema-test-fallos-input').value.trim();
+  const blancosRaw = document.getElementById('tema-test-blancos-input').value.trim();
   const notaRaw = document.getElementById('tema-test-nota-input').value.trim().replace(',','.');
-  let preguntas=null, aciertos=null, nota=null;
+  let preguntas=null, aciertos=null, fallos=null, blancos=null, nota=null;
   if(preguntasRaw!=='' && aciertosRaw!==''){
     preguntas = parseInt(preguntasRaw,10); aciertos = parseInt(aciertosRaw,10);
     if(!Number.isFinite(preguntas) || preguntas<=0 || !Number.isFinite(aciertos) || aciertos<0 || aciertos>preguntas){ showToast('Revisa preguntas y aciertos'); return; }
-    nota = (aciertos/preguntas)*10;
+    fallos = fallosRaw==='' ? null : Math.max(0, parseInt(fallosRaw,10)||0);
+    blancos = blancosRaw==='' ? null : Math.max(0, parseInt(blancosRaw,10)||0);
+    nota = notaOficial(aciertos, fallos||0, preguntas);
   } else if(notaRaw!==''){
     nota = parseFloat(notaRaw);
     if(!Number.isFinite(nota) || nota<0 || nota>10){ showToast('Introduce una nota válida'); return; }
   } else {
     showToast('Introduce preguntas y aciertos, o una nota'); return;
   }
-  const tieneEpi = temaTieneEpigrafes(temaId);
-  const epigrafes = (tieneEpi && epiCheckedLeaves.size) ? Array.from(epiCheckedLeaves) : null;
-  const valoracion = valoracionDeNota(nota);
   const fecha = temaTestEditing ? temaTestEditing.fecha : currentHoyDate;
-
-  // Punto de medición crudo (Bloque H) — se toma ANTES de guardar, con el estado previo del nodo.
-  const preComputado = getTemaComputado(temaId, fecha);
-  const leafTocada = epigrafes && epigrafes.length===1 ? epigrafes[0] : null;
-  const leafPrevia = preComputado.leaves.find(l=>l.id===leafTocada) || preComputado.leaves.find(l=>l.id==null) || preComputado.leaves[0];
-  const diasSinTocar = leafPrevia && leafPrevia.ultimoContacto!=null ? diasEntreFechas(leafPrevia.ultimoContacto, fecha) : null;
 
   const dias = getDias();
   let entry;
@@ -2052,14 +1529,15 @@ function saveTemaTestForm(){
     dia.entradas.push(entry);
   }
   entry.minutos = minutos;
-  entry.valoracion = valoracion;
-  if(preguntas!=null){ entry.preguntas = preguntas; entry.aciertos = aciertos; entry.nota = nota; }
-  else { delete entry.preguntas; delete entry.aciertos; entry.nota = nota; }
-  if(epigrafes) entry.epigrafes = epigrafes; else delete entry.epigrafes;
+  if(preguntas!=null){
+    entry.preguntas = preguntas; entry.aciertos = aciertos; entry.nota = nota;
+    if(fallos!=null) entry.fallos = fallos; else delete entry.fallos;
+    if(blancos!=null) entry.blancos = blancos; else delete entry.blancos;
+  } else {
+    delete entry.preguntas; delete entry.aciertos; delete entry.fallos; delete entry.blancos; entry.nota = nota;
+  }
 
   saveDias(dias);
-  addMeasurementPoint({ tema: temaId, epigrafe: leafTocada, fecha, diasSinTocar, aciertos, preguntas, nota });
-
   closeModal('tema-test-modal');
   pendingTemaTest = null; temaTestEditing = null;
   renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
@@ -2071,11 +1549,11 @@ function deleteTemaTestEntry(){
   closeModal('tema-test-modal');
   deleteEntry(fecha, id);
 }
-function isTemaTestEntry(e){ return e.tipo==='tema' && e.subKey==='TEST'; }
+function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 5;
-const APP_BUILD_DATE = '21 oct 2026 12:00';
+const APP_VERSION = 6;
+const APP_BUILD_DATE = '21 oct 2026 18:00';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2153,7 +1631,7 @@ function formatBackupStamp(ts){
 // arriba) — brillo al soltar y vibración corta solo en un click real, nunca
 // durante un scroll (un touchmove cancela el click del navegador).
 (function setupTapFeedback(){
-  const SELECTOR = '.tap, .lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn, .modal-btn, .f-btn, .epi-check-row, .curva-list-row, .range-tab, .curva-tool-btn, .nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable, .entry-row.clickable, .nav-arrow-btn, .toggle-btn, button';
+  const SELECTOR = '.tap, .lvl-row, .lvl-block-btn, .cat-row, .settings-row, .cat-picker-btn, .add-btn, .save-btn, .modal-btn, .f-btn, .rend-tema-row, .range-tab, .curva-tool-btn, .nav-btn, .edit-date-btn, .opo-edit-btn, .history-session-header, .act-day.clickable, .entry-row.clickable, .nav-arrow-btn, .toggle-btn, button';
   document.addEventListener('click', e=>{
     const el = e.target.closest(SELECTOR);
     if(!el) return;
@@ -2311,6 +1789,7 @@ function toLocalISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padSta
 function todayStr(){ return toLocalISO(new Date()); }
 function formatDate(s){ if(!s) return ''; const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; }
 function addDays(dateStr,n){ const d = new Date(dateStr+'T12:00:00'); d.setDate(d.getDate()+n); return toLocalISO(d); }
+function diasEntreFechas(a,b){ return Math.round((new Date(b+'T12:00:00') - new Date(a+'T12:00:00')) / 86400000); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 
 function parseTiempo(str){
@@ -2903,11 +2382,26 @@ function addTime(){
     return;
   }
 
-  // kind === 'tema' (el picker desvía TEST a su propio formulario,
-  // así que aquí solo llegan subcategorías de estudio: piden epígrafes+valoración).
+  // kind === 'tema' (el picker desvía TEST/INNOTEST a su propio formulario;
+  // aquí solo llegan subcategorías de solo tiempo, igual que las de psico).
   const {temaId, subKey} = entrySelection;
-  pendingTemaSave = { temaId, subKey, minutos: delta, vuelta: subKey==='LIBRO_RESUMEN' ? entryVuelta : null };
-  abrirTemaEpiModal();
+  const vuelta = subKey==='LIBRO_RESUMEN' ? entryVuelta : null;
+  const dias = getDias();
+  let dia = dias.find(d=>d.fecha===currentHoyDate);
+  if(!dia){ dia = {fecha:currentHoyDate, entradas:[]}; dias.push(dia); }
+  const existing = dia.entradas.find(e=>e.tipo==='tema' && e.temaId===temaId && e.subKey===subKey && (vuelta==null || e.vuelta===vuelta));
+  if(existing){ existing.minutos += delta; }
+  else {
+    const entry = { id:uid(), tipo:'tema', temaId, subKey, minutos:delta };
+    if(vuelta!=null) entry.vuelta = vuelta;
+    dia.entradas.push(entry);
+  }
+  saveDias(dias);
+  document.getElementById('entry-time-input').value = '';
+  entrySelection = null;
+  entryVuelta = 1;
+  renderHoy(); renderHistorial(); renderCategoriasList();
+  showToast('Guardado ✓','green');
 }
 function deleteEntry(fecha,id){
   if(!confirm('¿Borrar este registro?')) return;
@@ -3189,7 +2683,7 @@ function pickerGoBloque(id){ pickerBloqueId=id; pickerStep='temas-lista'; render
 function pickerGoTema(temaId){ pickerTemaId=temaId; pickerStep='temas-sub'; renderPicker(); }
 function pickerGoTests(){ pickerStep='tests-choice'; renderPicker(); }
 function pickerSelectTemaSub(subKey){
-  if(subKey==='TEST'){
+  if(subKey==='TEST' || subKey==='INNOTEST'){
     closeModal('picker-modal');
     openTemaTestForm(pickerTemaId, subKey);
     return;
@@ -4117,17 +3611,7 @@ function saveTestForm(){
   } else {
     tests.push({id:uid(), tipo:testFormTipo, fecha, minutosTotal, temas, nota, totalPreguntas});
   }
-  const preComputados = {};
-  temas.forEach(t=>{ if(t.aciertos!=null) preComputados[t.temaId] = getTemaComputado(t.temaId, fecha); });
   saveTests(tests);
-  temas.forEach(t=>{
-    if(t.aciertos==null) return;
-    const pre = preComputados[t.temaId];
-    const leafEntera = pre && pre.leaves.find(l=>l.id==null);
-    const ultimoPrevio = leafEntera ? leafEntera.ultimoContacto : (pre && pre.ultimoContacto);
-    const diasSinTocar = ultimoPrevio!=null ? diasEntreFechas(ultimoPrevio, fecha) : null;
-    addMeasurementPoint({ tema:t.temaId, epigrafe:null, fecha, diasSinTocar, aciertos:t.aciertos, preguntas:t.preguntas, nota:null });
-  });
   closeModal('test-form-modal');
   showToast('Guardado ✓','green');
   renderHoy(); renderHistorial(); renderEstadisticas();
@@ -4168,725 +3652,342 @@ function renderTestsView(){
     </div>`).join('');
 }
 
-// ========== PLANIFICACIÓN: fecha de examen y modelo ==========
-function openFechaExamenModal(){
-  document.getElementById('fecha-examen-input').value = getFechaExamen() || '';
-  openModal('fecha-examen-modal');
-}
-function saveFechaExamenModal(){
-  setFechaExamen(document.getElementById('fecha-examen-input').value || null);
-  closeModal('fecha-examen-modal');
-  refreshFechaExamenLabel();
-  showToast('Guardado ✓','green');
-}
-function refreshFechaExamenLabel(){
-  const el = document.getElementById('ajustes-fecha-examen-val');
-  if(!el) return;
-  const fe = getFechaExamen();
-  el.textContent = fe ? formatDate(fe) : 'Sin fijar';
-}
-function openModeloModal(){
-  const m = getModeloParams();
-  document.getElementById('modelo-gananciaBien-input').value = m.gananciaBien;
-  document.getElementById('modelo-gananciaRegular-input').value = m.gananciaRegular;
-  document.getElementById('modelo-penalizacionMal-input').value = m.penalizacionMal;
-  document.getElementById('modelo-umbralVencido-input').value = Math.round(m.umbralVencido*100);
-  openModal('modelo-modal');
-}
-function saveModeloModal(){
-  const num = id=>parseFloat(document.getElementById(id).value.trim().replace(',','.'));
-  const gananciaBien = num('modelo-gananciaBien-input');
-  const gananciaRegular = num('modelo-gananciaRegular-input');
-  const penalizacionMal = num('modelo-penalizacionMal-input');
-  const umbralPct = num('modelo-umbralVencido-input');
-  if(![gananciaBien,gananciaRegular,penalizacionMal,umbralPct].every(Number.isFinite)){ showToast('Revisa los valores'); return; }
-  setModeloParams({ gananciaBien, gananciaRegular, penalizacionMal, umbralVencido: umbralPct/100 });
-  closeModal('modelo-modal');
-  showToast('Guardado ✓','green');
-}
-function restaurarModeloDefaultModal(){
-  restaurarModeloDefault();
-  openModeloModal();
-  showToast('Restaurado a los valores por defecto','green');
-}
-
-// ========== HERRAMIENTAS / CURVA DEL OLVIDO (Bloque F) ==========
-function renderHerramientasScreen(){ /* pantalla estática: curva / mnemotécnicas / código fonético */ }
-
-let curvaView = 'resumen'; // 'resumen' | 'tema' | 'editar'
-let curvaTemaId = null;
-let curvaOtroSel = null; // {tipo:'psico',id} | {tipo:'ingles'} | null — selección del desplegable fuera de temas
-
-function openCurva(){ curvaView='resumen'; curvaTemaId=null; curvaOtroSel=null; renderCurva(); openModal('curva-modal'); }
-function curvaBack(){ curvaView='resumen'; curvaTemaId=null; curvaOtroSel=null; renderCurva(); }
-function openCurvaTema(temaId){
-  curvaTemaId=temaId; curvaOtroSel=null; curvaView='tema';
-  // El mapa (Parte 1.3) es ahora un modal separado de la curva — si se entra
-  // a la ficha de un tema desde ahí, se cierra el mapa y se abre la curva
-  // encima, para no dejar dos paneles apilados.
-  if(document.getElementById('mapa-modal').classList.contains('open')) closeModal('mapa-modal');
-  if(!document.getElementById('curva-modal').classList.contains('open')) openModal('curva-modal');
-  renderCurva();
-}
-function abrirEditorEpigrafes(temaId){ curvaTemaId=temaId; curvaView='editar'; renderCurva(); }
-
-// ===== Selector de tema dentro de la ficha (Parte 7): antes solo se podía
-// llegar a un tema desde fuera (resumen/mapa/lista); ahora también se puede
-// saltar a cualquier otro tema, o a psicotécnicos/inglés, sin cerrar la
-// ficha — el desplegable vive en la cabecera del cuerpo, no en el modal. =====
-function curvaSelectorValorActual(){
-  if(curvaOtroSel) return curvaOtroSel.tipo==='psico' ? 'psico:'+curvaOtroSel.id : 'ingles';
-  return 'tema:'+curvaTemaId;
-}
-function curvaSelectorOptionsHtml(){
-  const actual = curvaSelectorValorActual();
-  let html = '';
-  BLOQUES_TEMAS.forEach(b=>{
-    html += `<optgroup label="${escapeHtml(b.nombre)}">`;
-    for(let n=b.desde;n<=b.hasta;n++){
-      const v = 'tema:'+temaIdFromNum(n);
-      html += `<option value="${v}"${v===actual?' selected':''}>${temaNombre(temaIdFromNum(n))}</option>`;
-    }
-    html += `</optgroup>`;
-  });
-  const psicoCats = getCategorias().filter(c=>!isInnotestCat(c));
-  if(psicoCats.length){
-    html += `<optgroup label="Psicotécnicos">` + psicoCats.map(c=>{
-      const v = 'psico:'+c.id;
-      return `<option value="${v}"${v===actual?' selected':''}>${escapeHtml(c.nombre)}</option>`;
-    }).join('') + `</optgroup>`;
-  }
-  html += `<optgroup label="Inglés"><option value="ingles"${actual==='ingles'?' selected':''}>Inglés</option></optgroup>`;
-  return html;
-}
-function cambiarCurvaSeleccion(valor){
-  if(valor.indexOf('tema:')===0){ curvaTemaId = valor.slice(5); curvaOtroSel = null; }
-  else if(valor.indexOf('psico:')===0){ curvaOtroSel = {tipo:'psico', id:valor.slice(6)}; }
-  else { curvaOtroSel = {tipo:'ingles'}; }
-  renderCurva();
-}
-function curvaOtroNombre(sel){
-  if(sel.tipo==='psico'){ const c=getCategoria(sel.id); return c ? c.nombre : 'Psicotécnicos'; }
-  return 'Inglés';
-}
-function renderCurvaOtroHtml(sel){
-  return `<div class="empty-sub">${escapeHtml(curvaOtroNombre(sel))} no sigue un modelo de frescura ni repetición espaciada — aquí solo se registra tiempo. Elige un tema en el desplegable de arriba para ver su curva.</div>`;
-}
-
-function computarTodosLosTemas(hoyStr){
+// ========== RENDIMIENTO (Parte 2): gráficas de tests, solo datos reales ==========
+// Fuente: entradas de tema con subKey TEST/INNOTEST (la única con atribución
+// limpia a un tema + una nota + preguntas/aciertos/fallos/blancos). Nada aquí
+// se estima — todo sale de recorrer los registros tal cual se guardaron.
+function getRendTests(){
   const out = [];
-  for(let n=1;n<=TOTAL_TEMAS;n++){ const tid=temaIdFromNum(n); out.push({temaId:tid, comp:getTemaComputado(tid,hoyStr)}); }
-  return out;
-}
-function renderCurva(){
-  document.getElementById('curva-back-btn').style.display = curvaView==='resumen' ? 'none' : 'flex';
-  document.getElementById('curva-header-title').textContent =
-    curvaView==='resumen' ? 'Curva del olvido' :
-    curvaView==='editar' ? 'Editar epígrafes · ' + temaNombre(curvaTemaId) :
-    (curvaOtroSel ? curvaOtroNombre(curvaOtroSel) : temaNombre(curvaTemaId));
-  const body = document.getElementById('curva-body');
-  if(curvaView==='resumen'){ body.innerHTML = renderCurvaResumenHtml(); return; }
-  if(curvaView==='editar'){ body.innerHTML = renderCurvaEditorHtml(curvaTemaId); return; }
-  const selectorHtml = `<select class="modal-select" id="curva-tema-select" style="margin-bottom:14px;font-family:var(--font-mono);" onchange="cambiarCurvaSeleccion(this.value)">${curvaSelectorOptionsHtml()}</select>`;
-  if(curvaOtroSel){ body.innerHTML = selectorHtml + renderCurvaOtroHtml(curvaOtroSel); return; }
-  body.innerHTML = selectorHtml + renderCurvaTemaHtml(curvaTemaId);
-  setTimeout(()=>renderCurvaChart(curvaTemaId), 0);
-}
-// Frescura media del temario completo en una fecha dada (Parte 3.4): usa
-// calcularSerieFrescuraTema (no getTemaComputado) porque es la única versión
-// que trunca correctamente los registros a "solo hasta esa fecha" — llamar a
-// getTemaComputado con una fecha pasada daría una S/ultimoContacto calculados
-// con TODO el historial (incluye registros futuros respecto a esa fecha).
-function frescuraMediaEnFecha(fechaStr){
-  let suma=0, n=0;
-  for(let num=1; num<=TOTAL_TEMAS; num++){
-    const [fr] = calcularSerieFrescuraTema(temaIdFromNum(num), [fechaStr]);
-    if(fr!=null){ suma+=fr; n++; }
-  }
-  return n ? suma/n : null;
-}
-function temasSinEmpezar(){
-  let count=0;
-  for(let num=1; num<=TOTAL_TEMAS; num++) if(!fechaMasAntiguaContactoTema(temaIdFromNum(num))) count++;
-  return count;
-}
-function renderCurvaResumenHtml(){
-  const hoy = todayStr();
-  const todos = computarTodosLosTemas(hoy);
-  const dHE = diasHastaExamen(hoy);
-  let vencidos=0, hoyMismo=0, alDia=0;
-  const filas = [], todasLasFilas = [];
-  todos.forEach(({temaId,comp})=>{
-    comp.leaves.forEach(l=>{
-      if(l.ultimoContacto==null) return;
-      const dias = diasEntreFechas(l.ultimoContacto, hoy);
-      const Seff = estabilidadEfectiva(l.S, dHE);
-      const fr = frescura(Math.max(0,dias), Seff);
-      const diasVencido = dias - Seff;
-      if(diasVencido>=1) vencidos++;
-      else if(diasVencido>=0) hoyMismo++;
-      else alDia++;
-      const nombre = l.id==null ? `${temaNombre(temaId)} · Tema completo` : `${temaNombre(temaId)} · ${l.nombre}`;
-      todasLasFilas.push({ temaId, fresc:fr, diasVencido, dominio:l.dominio, nombre });
-      if(diasVencido>=0) filas.push({ temaId, fresc:fr, diasVencido, dominio:l.dominio, nombre });
+  getDias().forEach(d=>{
+    d.entradas.forEach(e=>{
+      if(e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST') && e.nota!=null){
+        out.push({
+          id: e.id, fecha: d.fecha, temaId: e.temaId, origen: e.subKey, minutos: e.minutos, nota: e.nota,
+          preguntas: e.preguntas!=null ? e.preguntas : null,
+          aciertos: e.aciertos!=null ? e.aciertos : null,
+          fallos: e.fallos!=null ? e.fallos : null,
+          blancos: e.blancos!=null ? e.blancos : null,
+        });
+      }
     });
   });
-  filas.sort((a,b)=>a.fresc-b.fresc);
-  todasLasFilas.sort((a,b)=>a.fresc-b.fresc);
+  return out.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+}
+let rendFiltro = 'TODOS';
+function rendTestsFiltrados(){
+  const all = getRendTests();
+  return rendFiltro==='TODOS' ? all : all.filter(t=>t.origen===rendFiltro);
+}
+function rendPctAcierto(t){ return t.preguntas>0 ? (t.aciertos/t.preguntas)*100 : t.nota*10; }
+function notaMediaPonderada(tests){
+  let sumaPeso=0, sumaNota=0;
+  tests.forEach(t=>{ const w = t.preguntas>0 ? t.preguntas : 1; sumaPeso+=w; sumaNota+=t.nota*w; });
+  return sumaPeso>0 ? sumaNota/sumaPeso : null;
+}
+// Último registro de ESE tema (cualquier subcategoría) con fecha <= la del
+// propio test, sin contar el test en sí — así "días sin tocar" mide el hueco
+// real desde la última vez que se trabajó el tema, repaso o estudio incluido.
+function diasSinTocarAntes(temaId, fecha, excludeId){
+  let ultimo = null;
+  getDias().forEach(d=>{
+    if(d.fecha>fecha) return;
+    d.entradas.forEach(e=>{
+      if(e.tipo==='tema' && e.temaId===temaId && e.id!==excludeId){
+        if(ultimo==null || d.fecha>ultimo) ultimo = d.fecha;
+      }
+    });
+  });
+  return ultimo==null ? null : diasEntreFechas(ultimo, fecha);
+}
+function rendTieneDesglose(tests){ return tests.some(t=>t.preguntas>0 && t.fallos!=null && t.blancos!=null); }
+// Tamaño de punto proporcional a nº de preguntas (Parte 2): un test de 100
+// preguntas pesa más, visual y estadísticamente, que uno de 10.
+function rendPointRadius(preguntas){
+  const MIN=3, MAX=9, CAP=120;
+  if(!preguntas || preguntas<=0) return MIN+1;
+  return MIN + Math.min(1, preguntas/CAP)*(MAX-MIN);
+}
+// Mínimos cuadrados ponderado — describe los puntos reales, no predice nada.
+function rendRegresion(points){
+  if(points.length<2) return null;
+  let Sw=0,Swx=0,Swy=0,Swxx=0,Swxy=0;
+  points.forEach(p=>{ const w=p.w||1; Sw+=w; Swx+=w*p.x; Swy+=w*p.y; Swxx+=w*p.x*p.x; Swxy+=w*p.x*p.y; });
+  const den = Sw*Swxx - Swx*Swx;
+  if(Math.abs(den)<1e-9) return null;
+  const m = (Sw*Swxy - Swx*Swy)/den;
+  const b = (Swy - m*Swx)/Sw;
+  return {m,b};
+}
+function colorNota(n){ if(n==null) return 'var(--text3)'; if(n>=7) return 'var(--col-fr-verde)'; if(n>=5) return 'var(--col-fr-amarillo)'; return 'var(--col-fr-rojo)'; }
+function colorDiasUltimo(d){ if(d==null) return 'var(--text3)'; if(d>=30) return 'var(--col-fr-rojo)'; if(d>=14) return 'var(--col-fr-amarillo)'; if(d<7) return 'var(--text3)'; return 'var(--text2)'; }
 
-  const sinEmpezar = temasSinEmpezar();
-  const frescMediaHoy = frescuraMediaEnFecha(hoy);
-  const frescMediaSemanaPasada = frescuraMediaEnFecha(addDays(hoy,-7));
-  const tendencia = (frescMediaHoy!=null && frescMediaSemanaPasada!=null) ? (frescMediaHoy-frescMediaSemanaPasada)*100 : null;
-  const masOlvidado = todasLasFilas[0] || null;
+let rendView = 'resumen'; // 'resumen' | 'tema'
+let rendTemaDetailId = null;
+let rendSortBy = 'nota', rendSortDir = 'asc';
+let rendSlideLabels = [];
 
-  const examenHtml = dHE!=null ? `<div class="curva-examen-row">Examen en ${dHE} día${dHE===1?'':'s'}</div>` : '';
-  const listaHtml = filas.length ? filas.map(f=>{
-    const vencidoTxt = f.diasVencido<1 ? 'vencido hoy' : `vencido ${Math.floor(f.diasVencido)} d`;
-    const domTxt = f.dominio==null ? 'sin datos' : `dominio ${Math.round(f.dominio.valor*100)}%${f.dominio.pocoFiable?' *':''}`;
-    return `<div class="curva-list-row" onclick="openCurvaTema('${f.temaId}')">
+function openRendimiento(){ rendView='resumen'; renderRendimiento(); openModal('rendimiento-modal'); }
+function rendBack(){ rendView='resumen'; renderRendimiento(); }
+function rendAbrirTema(temaId){ rendView='tema'; rendTemaDetailId=temaId; renderRendimiento(); }
+function setRendFiltro(f){ rendFiltro = f; renderRendimiento(); }
+function rendOrdenar(campo){
+  if(rendSortBy===campo) rendSortDir = rendSortDir==='asc' ? 'desc' : 'asc';
+  else { rendSortBy = campo; rendSortDir = campo==='nota' ? 'asc' : 'desc'; }
+  renderRendimiento();
+}
+
+function renderRendimiento(){
+  document.getElementById('rend-back-btn').style.display = rendView==='resumen' ? 'none' : 'flex';
+  document.getElementById('rend-header-title').textContent = rendView==='resumen' ? 'Rendimiento' : temaNombre(rendTemaDetailId);
+  const body = document.getElementById('rend-body');
+  if(rendView==='tema'){ body.innerHTML = renderRendTemaDetailHtml(rendTemaDetailId); return; }
+  body.innerHTML = renderRendResumenHtml();
+  setTimeout(renderRendCharts, 0);
+}
+
+function renderRendTemaDetailHtml(temaId){
+  const tests = rendTestsFiltrados().filter(t=>t.temaId===temaId).slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  if(!tests.length) return '<div class="empty-sub">Sin tests de este tema en el filtro actual.</div>';
+  return tests.map(t=>`<div class="rend-tema-row" style="cursor:default;">
       <div style="flex:1;min-width:0;">
-        <div class="curva-list-name">${escapeHtml(f.nombre)}</div>
-        <div class="curva-list-meta">${vencidoTxt} · ${domTxt}</div>
+        <div class="rend-tema-name">${formatDate(t.fecha)} · ${t.origen}</div>
+        <div class="rend-tema-meta">${t.preguntas!=null ? `${t.aciertos}/${t.preguntas} preguntas` : 'nota directa'}${t.minutos?` · ${formatHM(t.minutos)}`:''}</div>
       </div>
-      <span class="curva-list-fresc" style="color:${frescuraColor(frescuraBand(f.fresc))}">${Math.round(f.fresc*100)}%</span>
-    </div>`;
-  }).join('') : '<div class="empty-sub">Nada vencido — vas al día</div>';
+      <span class="rend-tema-val" style="color:${colorNota(t.nota)}">${formatNota(t.nota)}</span>
+    </div>`).join('');
+}
 
-  // Redondear ANTES de decidir signo/flecha: una tendencia real de -0.03%
-  // redondea a 0, y 0 no sube ni baja — si se compara el float crudo con >=0
-  // sale "↓ 0%" en rojo, que es mentira (Bloque de comprobaciones).
-  const tendenciaRed = tendencia==null ? null : Math.round(tendencia);
-  const tendenciaTxt = tendenciaRed==null ? '—' : (tendenciaRed===0 ? '→ 0%' : `${tendenciaRed>0?'↑':'↓'} ${Math.abs(tendenciaRed)}%`);
-  const tendenciaColor = tendenciaRed==null || tendenciaRed===0 ? 'var(--text3)' : (tendenciaRed>0 ? 'var(--green)' : 'var(--red)');
+function renderRendResumenHtml(){
+  const tests = rendTestsFiltrados();
+  const filtroHtml = ['TODOS','TEST','INNOTEST'].map(f=>
+    `<button class="range-tab tap${f===rendFiltro?' active':''}" onclick="setRendFiltro('${f}')">${f}</button>`
+  ).join('');
+
+  if(!tests.length){
+    return `<div class="range-tabs">${filtroHtml}</div><div class="empty-sub">Todavía no hay tests de TEST o INNOTEST registrados.</div>`;
+  }
+
+  const notaMedia = notaMediaPonderada(tests);
+  const totalPreguntas = tests.reduce((a,t)=>a+(t.preguntas||0),0);
+
+  const slides = [];
+  slides.push({ label:'Evolución de notas', html:`<canvas id="rend-chart-a"></canvas><div class="rend-chart-insight" id="rend-insight-a"></div><div class="rend-chart-note" id="rend-readout-a"></div>` });
+  slides.push({ label:'Nota según días sin tocar', html:`<canvas id="rend-chart-b"></canvas><div class="rend-chart-insight" id="rend-insight-b"></div><div class="rend-chart-note" id="rend-readout-b"></div>` });
+  if(rendTieneDesglose(tests)){
+    slides.push({ label:'Aciertos, fallos y blancos', html:`<canvas id="rend-chart-c"></canvas><div class="rend-chart-insight" id="rend-insight-c"></div>` });
+  }
+  slides.push({ label:'Ritmo', html:`<canvas id="rend-chart-d"></canvas><div class="rend-chart-insight" id="rend-insight-d"></div><div class="rend-chart-note" id="rend-readout-d"></div><div class="rend-chart-note">Solo comparable entre tests de formato parecido</div>` });
+  rendSlideLabels = slides.map(s=>s.label);
+
+  const slidesHtml = slides.map(s=>`<div class="chart-carousel-slide">${s.html}</div>`).join('');
+  const dotsHtml = slides.map((s,i)=>`<span class="chart-carousel-dot tap${i===0?' active':''}" onclick="goRendSlide(${i})"></span>`).join('');
+
+  const porTema = rendAgregadoPorTema(tests);
+  porTema.sort((a,b)=>{
+    const dir = rendSortDir==='asc' ? 1 : -1;
+    return (a[rendSortBy]-b[rendSortBy])*dir;
+  });
+  const temaRowsHtml = porTema.map(g=>`<div class="rend-tema-row" onclick="rendAbrirTema('${g.temaId}')">
+      <div style="flex:1;min-width:0;">
+        <div class="rend-tema-name">${temaNombre(g.temaId)}</div>
+        <div class="rend-tema-meta">${g.n} test${g.n===1?'':'s'}</div>
+      </div>
+      <span class="rend-tema-val" style="color:${colorNota(g.nota)}">${formatNota(g.nota)}</span>
+      <span class="rend-tema-dias" style="color:${colorDiasUltimo(g.diasUltimo)}">hace ${g.diasUltimo} d</span>
+    </div>`).join('');
+
+  const arrow = campo => rendSortBy===campo ? (rendSortDir==='asc'?' ↑':' ↓') : '';
 
   return `
-    <div class="curva-stats-row">
-      <div class="curva-stat"><div class="v" style="color:var(--red);">${vencidos}</div><div class="l">Vencidos</div></div>
-      <div class="curva-stat"><div class="v" style="color:var(--col-fr-amarillo);">${hoyMismo}</div><div class="l">Hoy mismo</div></div>
-      <div class="curva-stat"><div class="v" style="color:var(--green);">${alDia}</div><div class="l">Al día</div></div>
+    <div class="rend-stats-row">
+      <div class="rend-stat"><div class="v">${tests.length}</div><div class="l">Tests</div></div>
+      <div class="rend-stat"><div class="v">${notaMedia==null?'—':formatNota(notaMedia)}</div><div class="l">Nota media</div></div>
+      <div class="rend-stat"><div class="v">${totalPreguntas}</div><div class="l">Preguntas</div></div>
     </div>
-    <div class="curva-stats-row" style="margin-top:8px;">
-      <div class="curva-stat"><div class="v" style="color:var(--text3);">${sinEmpezar}</div><div class="l">Sin empezar</div></div>
-      <div class="curva-stat"><div class="v">${frescMediaHoy==null?'—':Math.round(frescMediaHoy*100)+'%'}</div><div class="l">Frescura media</div></div>
-      <div class="curva-stat"><div class="v" style="color:${tendenciaColor};">${tendenciaTxt}</div><div class="l">Tendencia 7d</div></div>
+    <div class="range-tabs">${filtroHtml}</div>
+    <div class="chart-carousel-card">
+      <div class="chart-card-label" style="padding:16px 16px 0;" id="rend-carousel-title">${slides[0].label}</div>
+      <div class="chart-carousel-track" id="rend-carousel-track" onscroll="onRendCarouselScroll()">${slidesHtml}</div>
+      <div class="chart-carousel-dots" id="rend-carousel-dots">${dotsHtml}</div>
     </div>
-    ${masOlvidado ? (masOlvidado.diasVencido>=0 ? `<div class="card" style="padding:4px 16px;margin-top:10px;">
-      <div class="curva-list-row" style="border-top:none;" onclick="openCurvaTema('${masOlvidado.temaId}')">
-        <div style="flex:1;min-width:0;">
-          <div class="curva-list-meta" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin:0 0 2px;">Más olvidado</div>
-          <div class="curva-list-name">${escapeHtml(masOlvidado.nombre)}</div>
-        </div>
-        <span class="curva-list-fresc" style="color:${frescuraColor(frescuraBand(masOlvidado.fresc))}">${Math.round(masOlvidado.fresc*100)}%</span>
+    <div class="chart-card-label" style="margin-top:4px;">Por tema</div>
+    <div class="card" style="padding:4px 16px;">
+      <div class="rend-sort-row">
+        <button class="${rendSortBy==='n'?'active':''}" onclick="rendOrdenar('n')">Tests${arrow('n')}</button>
+        <button class="${rendSortBy==='nota'?'active':''}" onclick="rendOrdenar('nota')">Nota${arrow('nota')}</button>
+        <button class="${rendSortBy==='diasUltimo'?'active':''}" onclick="rendOrdenar('diasUltimo')" style="margin-left:auto;">Última vez${arrow('diasUltimo')}</button>
       </div>
-    </div>` : `<div class="card" style="padding:4px 16px;margin-top:10px;">
-      <div class="curva-list-row" style="border-top:none;" onclick="openCurvaTema('${masOlvidado.temaId}')">
-        <div style="flex:1;min-width:0;">
-          <div class="curva-list-meta" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin:0 0 2px;color:var(--text3);">Nada vencido</div>
-          <div class="curva-list-name">El menos fresco es ${escapeHtml(masOlvidado.nombre)}</div>
-        </div>
-        <span class="curva-list-fresc" style="color:var(--text2);">${Math.round(masOlvidado.fresc*100)}%</span>
-      </div>
-    </div>`) : ''}
-    ${examenHtml}
-    <div class="chart-card-label" style="margin-top:18px;">Lo más olvidado</div>
-    <div class="card" style="padding:4px 16px;">${listaHtml}</div>
+      ${temaRowsHtml}
+    </div>
   `;
 }
-
-// ===== Mapa de frescura (Bloque A): una fila por tema, un día por columna.
-// Se recalcula al vuelo recorriendo los registros reales hasta cada fecha —
-// nada se precalcula ni se guarda, igual que el resto del modelo de frescura.
-let mapaFrescuraRango = '90D';
-function setMapaFrescuraRango(r){ mapaFrescuraRango = r; renderMapaFrescura(); }
-function fechaMasAntiguaGlobal(){
-  let min = null;
-  getDias().forEach(d=>{ if(d.entradas && d.entradas.length && (min==null||d.fecha<min)) min = d.fecha; });
-  getTests().forEach(t=>{ if(min==null||t.fecha<min) min = t.fecha; });
-  return min;
-}
-function fechaMasAntiguaContactoTema(temaId){
-  let min = null;
-  entradasCrudasTema(temaId).forEach(e=>{ if(min==null||e.fecha<min) min = e.fecha; });
-  testsCartaDeTema(temaId).forEach(t=>{ if(min==null||t.fecha<min) min = t.fecha; });
-  return min;
-}
-function heatMapFechas(hoyStr, rango){
-  let dias;
-  if(rango==='30D') dias = 30;
-  else if(rango==='90D') dias = 90;
-  else { const inicio = fechaMasAntiguaGlobal() || hoyStr; dias = Math.max(1, diasEntreFechas(inicio, hoyStr)+1); }
-  const fechas = [];
-  for(let i=dias-1;i>=0;i--) fechas.push(addDays(hoyStr,-i));
-  return fechas;
-}
-// Serie diaria de frescura de un tema: para cada fecha, recorre solo los
-// registros con fecha <= esa fecha (dos punteros, sin recorrer todo cada día).
-function calcularSerieFrescuraTema(temaId, fechas){
-  const temaConfig = getTemaConfig(temaId);
-  const modelo = getModeloParams();
-  const entradas = entradasCrudasTema(temaId).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  const testsCarta = testsCartaDeTema(temaId).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  let ei = 0, ti = 0;
-  const entradasAcc = [], testsAcc = [];
-  return fechas.map(f=>{
-    while(ei<entradas.length && entradas[ei].fecha<=f){ entradasAcc.push(entradas[ei]); ei++; }
-    while(ti<testsCarta.length && testsCarta[ti].fecha<=f){ testsAcc.push(testsCarta[ti]); ti++; }
-    if(!entradasAcc.length) return null;
-    const leaves = construirDatosTema(entradasAcc, testsAcc, temaConfig, modelo);
-    let ultimoContacto = null;
-    leaves.forEach(l=>{ if(l.ultimoContacto && (ultimoContacto==null||l.ultimoContacto>ultimoContacto)) ultimoContacto = l.ultimoContacto; });
-    if(ultimoContacto==null) return null;
-    const dHE = diasHastaExamen(f);
-    return frescuraTemaDesdeLeaves(leaves, f, dHE);
-  });
-}
-// Una celda del grid por fecha (mismas columnas que las filas de datos),
-// con el nombre del mes solo en la primera celda de su tramo vía grid-column:span.
-function heatMonthsGridHtml(fechas){
-  const spans = [];
-  let cur = null, count = 0;
-  fechas.forEach(f=>{
-    const mes = MONTH_NAMES[parseInt(f.slice(5,7),10)-1].toLowerCase();
-    if(mes!==cur){ if(cur!=null) spans.push({mes:cur,count}); cur = mes; count = 1; }
-    else count++;
-  });
-  if(cur!=null) spans.push({mes:cur,count});
-  return spans.map(s=>`<div class="heat-month-cell" style="grid-column:span ${s.count}">${s.count>=4?s.mes:''}</div>`).join('');
-}
-// Pantalla propia dentro de Herramientas (Parte 1.3): ya no es un card dentro
-// de la Curva del olvido, es su propio modal a pantalla completa.
-function openMapaFrescura(){ openModal('mapa-modal'); renderMapaFrescura(); }
-let mapaNamePressTimer = null, mapaNamePressFired = false;
-function mapaNamePressStart(temaId){
-  mapaNamePressFired = false;
-  clearTimeout(mapaNamePressTimer);
-  mapaNamePressTimer = setTimeout(()=>{ mapaNamePressFired = true; mapaRegistrarFila(temaId); }, 550);
-}
-function mapaNamePressEnd(){ clearTimeout(mapaNamePressTimer); }
-function mapaNameTap(temaId){
-  if(mapaNamePressFired){ mapaNamePressFired = false; return; }
-  openCurvaTema(temaId);
-}
-function renderMapaFrescura(){
-  const wrap = document.getElementById('mapa-frescura-full');
-  if(!wrap) return;
+function rendAgregadoPorTema(tests){
   const hoy = todayStr();
-  if(!fechaMasAntiguaGlobal()){
-    wrap.innerHTML = '<div class="empty-sub">Todavía no hay ningún registro — el mapa se llenará en cuanto estudies tu primer tema.</div>';
+  const porTema = {};
+  tests.forEach(t=>{ (porTema[t.temaId] = porTema[t.temaId] || []).push(t); });
+  return Object.keys(porTema).map(temaId=>{
+    const g = porTema[temaId];
+    const ultimaFecha = g.reduce((a,t)=>t.fecha>a?t.fecha:a, g[0].fecha);
+    return { temaId, n:g.length, nota:notaMediaPonderada(g), diasUltimo: diasEntreFechas(ultimaFecha, hoy) };
+  });
+}
+function onRendCarouselScroll(){
+  const track = document.getElementById('rend-carousel-track');
+  if(!track) return;
+  const idx = Math.round(track.scrollLeft / track.clientWidth);
+  document.querySelectorAll('#rend-carousel-dots .chart-carousel-dot').forEach((d,i)=>d.classList.toggle('active', i===idx));
+  const titleEl = document.getElementById('rend-carousel-title');
+  if(titleEl && rendSlideLabels[idx]) titleEl.textContent = rendSlideLabels[idx];
+}
+function goRendSlide(idx){
+  const track = document.getElementById('rend-carousel-track');
+  track.scrollTo({ left: idx*track.clientWidth, behavior:'smooth' });
+}
+
+function renderRendCharts(){
+  const tests = rendTestsFiltrados();
+  if(!tests.length) return;
+  renderRendChartA(tests);
+  renderRendChartB(tests);
+  if(document.getElementById('rend-chart-c')) renderRendChartC(tests.filter(t=>t.preguntas>0 && t.fallos!=null && t.blancos!=null));
+  renderRendChartD(tests.filter(t=>t.preguntas>0 && t.minutos>0));
+}
+function rendTrendDataset(fn, domainMin, domainMax){
+  return { label:'Tendencia', data:[{x:domainMin,y:fn(domainMin)},{x:domainMax,y:fn(domainMax)}],
+    borderColor:'rgba(255,255,255,0.4)', borderWidth:4, borderDash:[], pointRadius:0, fill:false, order:0 };
+}
+function renderRendChartA(tests){
+  const canvas = document.getElementById('rend-chart-a');
+  if(!canvas) return;
+  const fechaInicio = tests[0].fecha;
+  const puntos = tests.map(t=>({ x:diasEntreFechas(fechaInicio,t.fecha), y:t.nota, w: t.preguntas>0?t.preguntas:1, meta:t }));
+  const reg = rendRegresion(puntos);
+  const xMax = Math.max(1, puntos[puntos.length-1].x);
+  const datasets = [];
+  if(reg) datasets.push(rendTrendDataset(x=>reg.m*x+reg.b, 0, xMax));
+  datasets.push({ label:'Nota', data:puntos, borderColor:cssVar('--gold'), backgroundColor:cssVar('--gold'),
+    pointBackgroundColor:cssVar('--gold'), pointRadius:puntos.map(p=>rendPointRadius(p.w)), pointHoverRadius:9,
+    tension:0.2, fill:false, order:1 });
+  if(charts['rend-a']) charts['rend-a'].destroy();
+  charts['rend-a'] = new Chart(canvas.getContext('2d'), { type:'line', data:{datasets}, options: rendChartOptions(fechaInicio, 0, 10, (p)=>{
+    const m = p.meta; mostrarRendClick('a', `${formatDate(m.fecha)} · ${temaNombre(m.temaId)} · nota ${formatNota(m.nota)}`);
+  })});
+  const insight = document.getElementById('rend-insight-a');
+  if(reg){
+    const porMes = reg.m*30;
+    if(Math.abs(porMes)<0.05){ insight.textContent = 'Estable'; insight.style.color = 'var(--text2)'; }
+    else if(porMes>0){ insight.textContent = `Subiendo ${formatNota(Math.abs(porMes))} puntos al mes`; insight.style.color = 'var(--col-fr-verde)'; }
+    else { insight.textContent = `Bajando ${formatNota(Math.abs(porMes))} puntos al mes`; insight.style.color = 'var(--col-fr-rojo)'; }
+  } else { insight.textContent = ''; }
+}
+function renderRendChartB(tests){
+  const canvas = document.getElementById('rend-chart-b');
+  if(!canvas) return;
+  const puntos = [];
+  tests.forEach(t=>{
+    const dias = diasSinTocarAntes(t.temaId, t.fecha, t.id);
+    if(dias==null) return;
+    puntos.push({ x:dias, y:rendPctAcierto(t), w: t.preguntas>0?t.preguntas:1, meta:t });
+  });
+  const reg = rendRegresion(puntos);
+  const xMax = puntos.length ? Math.max(1, ...puntos.map(p=>p.x)) : 1;
+  const datasets = [];
+  if(reg) datasets.push(rendTrendDataset(x=>reg.m*x+reg.b, 0, xMax));
+  datasets.push({ label:'% acierto', data:puntos, showLine:false, backgroundColor:cssVar('--col-ingles'),
+    pointRadius:puntos.map(p=>rendPointRadius(p.w)), pointHoverRadius:9, order:1 });
+  if(charts['rend-b']) charts['rend-b'].destroy();
+  charts['rend-b'] = new Chart(canvas.getContext('2d'), { type:'line', data:{datasets}, options: rendChartOptionsDias((p)=>{
+    const m = p.meta; mostrarRendClick('b', `${formatDate(m.fecha)} · ${temaNombre(m.temaId)} · ${Math.round(rendPctAcierto(m))}% · ${p.x} días sin tocar`);
+  })});
+  const insight = document.getElementById('rend-insight-b');
+  if(puntos.length<8){ insight.textContent = `Pocos datos todavía (${puntos.length} test${puntos.length===1?'':'s'})`; insight.style.color='var(--text3)'; }
+  else if(reg){ const y7 = (reg.m*7+reg.b)/10; insight.textContent = `A los 7 días sacas un ${formatNota(Math.max(0,Math.min(10,y7)))} de media`; insight.style.color='var(--text2)'; }
+  else insight.textContent = '';
+}
+function renderRendChartC(tests){
+  const canvas = document.getElementById('rend-chart-c');
+  if(!canvas) return;
+  if(!tests.length){
+    const insight = document.getElementById('rend-insight-c');
+    if(insight) insight.textContent = 'Sin tests con desglose de fallos y blancos';
     return;
   }
-  const fechas = heatMapFechas(hoy, mapaFrescuraRango);
-  const tabsHtml = ['30D','90D','TODO'].map(r=>
-    `<button class="range-tab tap${r===mapaFrescuraRango?' active':''}" onclick="setMapaFrescuraRango('${r}')">${r}</button>`
-  ).join('');
-  // Un único grid plano (nombres + rejilla son columnas del MISMO grid, nunca
-  // capas superpuestas): fila de meses, luego por bloque una fila de cabecera
-  // que ocupa todo el ancho (grid-column:1/-1) y una fila por tema.
-  let cells = `<div class="heat-corner"></div>${heatMonthsGridHtml(fechas)}`;
-  BLOQUES_TEMAS.forEach(b=>{
-    cells += `<div class="heat-group-head" style="color:${b.color}">${escapeHtml(b.nombre)}</div>`;
-    for(let n=b.desde;n<=b.hasta;n++){
-      const tid = temaIdFromNum(n);
-      const serie = calcularSerieFrescuraTema(tid, fechas);
-      cells += `<div class="heat-name tap"
-        onpointerdown="mapaNamePressStart('${tid}')" onpointerup="mapaNamePressEnd()" onpointerleave="mapaNamePressEnd()" onpointercancel="mapaNamePressEnd()" onpointermove="mapaNamePressEnd()"
-        onclick="mapaNameTap('${tid}')">${temaNombre(tid)}</div>`;
-      cells += serie.map((fr,i)=>{
-        const v = fr==null ? '' : Math.round(fr*100);
-        const isHoy = i===serie.length-1;
-        return `<div class="heat-cell"><i class="tap${isHoy?' today-c':''}" style="background:${frescuraHeatColor(fr)}" onclick="mostrarHeatReadout('${tid}','${fechas[i]}','${v}')"></i></div>`;
-      }).join('');
-    }
-  });
-  wrap.innerHTML = `
-    <div class="range-tabs">${tabsHtml}</div>
-    <div class="heat-scroller" id="heat-scroller">
-      <div class="heat-grid" style="grid-template-columns:76px repeat(${fechas.length},minmax(22px,1fr))">${cells}</div>
-    </div>
-    <div class="heat-readout idle" id="heat-readout">Toca una celda para ver el dato · mantén pulsado un nombre para registrar.</div>
-    <div class="heat-legend">
-      <span>Olvidado</span>
-      <span class="heat-ramp"></span>
-      <span>Fresco</span>
-      <span class="heat-legend-empty"><i></i>sin estudiar</span>
-    </div>`;
-  const scroller = document.getElementById('heat-scroller');
-  if(scroller) scroller.scrollLeft = scroller.scrollWidth;
-}
-function mostrarHeatReadout(temaId, fecha, valorStr){
-  const el = document.getElementById('heat-readout');
-  if(!el) return;
-  el.classList.remove('idle');
-  el.innerHTML = `${temaNombre(temaId)} · ${formatDate(fecha)} · ` + (valorStr==='' ? 'sin estudiar' : `<b>${valorStr}%</b> de frescura`);
-}
-
-// ===== Registrar desde el mapa (Parte 3.5): mantener pulsado el nombre abre
-// este panel con el tema ya elegido, sin pasar por el selector de 4 pasos.
-// Reutiliza el mismo motor de guardado que el selector normal (pendingTemaSave
-// + abrirTemaEpiModal / openTemaTestForm), solo cambia cómo se llega. =====
-let mapaRegistroTemaId = null;
-function mapaRegistrarFila(temaId){
-  mapaRegistroTemaId = temaId;
-  document.getElementById('mapa-registro-tema-nombre').textContent = temaNombre(temaId);
-  const sel = document.getElementById('mapa-registro-subcat');
-  sel.innerHTML = SUBCATS_TEMA_ALL.map(s=>`<option value="${s.key}">${escapeHtml(s.nombre)}</option>`).join('');
-  document.getElementById('mapa-registro-minutos').value = '';
-  openModal('mapa-registro-panel');
-}
-function mapaRegistroCancelar(){ closeModal('mapa-registro-panel'); mapaRegistroTemaId = null; }
-function mapaRegistroGuardar(){
-  const subKey = document.getElementById('mapa-registro-subcat').value;
-  const minutos = parseTiempo(document.getElementById('mapa-registro-minutos').value);
-  if(!minutos){ showToast('Indica un tiempo'); return; }
-  const temaId = mapaRegistroTemaId;
-  closeModal('mapa-registro-panel');
-  if(subKey==='TEST'){ openTemaTestForm(temaId, subKey); return; }
-  pendingTemaSave = { temaId, subKey, minutos, vuelta: subKey==='LIBRO_RESUMEN' ? Math.max(1, maxVueltaConTiempo(temaId)) : null };
-  abrirTemaEpiModal();
-}
-function renderCurvaTemaHtml(temaId){
-  const hoy = todayStr();
-  const comp = getTemaComputado(temaId, hoy);
-  const dHE = diasHastaExamen(hoy);
-  const totalMin = sumMinutosTema(temaId);
-  const ultimoTxt = comp.ultimoContacto ? `hace ${diasEntreFechas(comp.ultimoContacto,hoy)} días` : 'nunca';
-  const domTxt = comp.dominioTema==null ? 'sin datos' : `${Math.round(comp.dominioTema.valor*100)}%${comp.dominioTema.pocoFiable?' *':''}`;
-  const frescTxt = comp.ultimoContacto==null ? '—' : `${Math.round(Math.max(0,comp.frescuraTema)*100)}%`;
-
-  const filasEpi = comp.sinEpigrafes ? '' : comp.leaves.map(l=>{
-    let frTxt = '—';
-    if(l.ultimoContacto!=null) frTxt = Math.round(frescura(Math.max(0,diasEntreFechas(l.ultimoContacto,hoy)), estabilidadEfectiva(l.S, dHE))*100)+'%';
-    const dTxt = l.dominio==null ? 'sin d.' : Math.round(l.dominio.valor*100)+'%';
-    return `<div class="epi-table-row"><span class="epi-table-name">${escapeHtml(l.nombre)}</span><span class="epi-table-val">${Math.round(l.pesoSobreTema)}%</span><span class="epi-table-val">${frTxt}</span><span class="epi-table-val">${dTxt}</span></div>`;
-  }).join('');
-
-  const epigrafesSection = comp.sinEpigrafes
-    ? `<div class="empty-sub">Este tema no tiene epígrafes definidos — funciona como una unidad.<br><button class="add-btn" style="margin-top:10px;" onclick="abrirEditorEpigrafes('${temaId}')">+ Definir epígrafes</button></div>`
-    : `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <div class="chart-card-label" style="margin:0;">Epígrafes</div>
-        <button class="epi-marcar-todo" onclick="abrirEditorEpigrafes('${temaId}')">EDITAR</button>
-      </div>
-      <div class="card" style="padding:4px 16px;margin-bottom:16px;">${filasEpi}</div>`;
-
-  return `
-    <div class="curva-stats-row" style="grid-template-columns:1fr 1fr;">
-      <div class="curva-stat"><div class="v" style="color:${comp.ultimoContacto?frescuraColor(frescuraBand(comp.frescuraTema)):'var(--text3)'}">${frescTxt}</div><div class="l">Frescura</div></div>
-      <div class="curva-stat"><div class="v">${domTxt}</div><div class="l">Dominio</div></div>
-    </div>
-    <div class="curva-examen-row" style="text-align:left;padding:0 0 14px;">Tiempo total ${formatHM(totalMin)} · Último contacto ${ultimoTxt}</div>
-    ${epigrafesSection}
-    <div class="chart-card-label">Curva</div>
-    <div class="range-tabs" id="curva-chart-tabs">
-      ${['7D','30D','TODO'].map(r=>`<button class="range-tab tap${r===curvaChartRango?' active':''}" data-r="${r}" onclick="setCurvaChartRango('${r}')">${r}</button>`).join('')}
-    </div>
-    <div class="card" style="padding:14px 16px;">
-      <div style="position:relative;height:200px;">
-        <canvas id="curva-chart-canvas"></canvas>
-      </div>
-      <div id="curva-chart-meta" style="font-size:11px;color:var(--text3);margin-top:8px;min-height:14px;"></div>
-    </div>
-  `;
-}
-// Estado de rango de la curva (Bloque B): se recuerda mientras dure la sesión,
-// no por tema — así no hay que volver a elegirlo cada vez que cambias de tema.
-let curvaChartRango = '30D';
-function setCurvaChartRango(r){
-  curvaChartRango = r;
-  document.querySelectorAll('#curva-chart-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.r===r));
-  renderCurvaChart(curvaTemaId);
-}
-function renderCurvaChart(temaId){
-  const canvas = document.getElementById('curva-chart-canvas');
-  if(!canvas) return;
-  const hoy = todayStr();
-  const comp = getTemaComputado(temaId, hoy);
-  const metaEl = document.getElementById('curva-chart-meta');
-  if(!comp.ultimoContacto){ if(charts['curva']) charts['curva'].destroy(); metaEl.textContent = 'Sin registros todavía para dibujar la curva.'; return; }
-
-  // --- Pasado: serie real día a día (Bloque A), recortada al rango elegido ---
-  const rangoDias = curvaChartRango==='7D' ? 7 : curvaChartRango==='30D' ? 30 : null;
-  const fechaPrimerContacto = fechaMasAntiguaContactoTema(temaId) || comp.ultimoContacto;
-  const fechaInicio = rangoDias==null ? fechaPrimerContacto : (addDays(hoy,-(rangoDias-1)) > fechaPrimerContacto ? addDays(hoy,-(rangoDias-1)) : fechaPrimerContacto);
-  const fechasPasado = [];
-  for(let f=fechaInicio; f<=hoy; f=addDays(f,1)) fechasPasado.push(f);
-  const seriePasado = calcularSerieFrescuraTema(temaId, fechasPasado).map(v=>v==null?0:v*100);
-  const diasPasados = fechasPasado.length-1;
-
-  // --- Futuro: proyección desde el estado actual (sin más estudio) hasta vencimiento ---
-  const umbral = umbralVencido();
-  const CAP_FUTURO = 400;
-  const serieFuturo = [];
-  let diasVencimiento = null;
-  for(let d=1; d<=CAP_FUTURO; d++){
-    const fechaD = addDays(hoy, d);
-    const dHEf = diasHastaExamen(fechaD);
-    let suma = 0;
-    comp.leaves.forEach(l=>{
-      if(l.ultimoContacto==null) return;
-      const dias = diasEntreFechas(l.ultimoContacto, fechaD);
-      suma += frescura(Math.max(0,dias), estabilidadEfectiva(l.S,dHEf)) * l.pesoSobreTema;
-    });
-    serieFuturo.push(suma);
-    if(diasVencimiento==null && suma < umbral*100){ diasVencimiento = d; break; }
-  }
-  const diasTotales = diasPasados + serieFuturo.length;
-  const fechaVencimiento = diasVencimiento!=null ? addDays(hoy, diasVencimiento) : null;
-
-  // --- Puntos: repasos (de la propia serie) y tests (score real) ---
-  const fechasConRepaso = Array.from(new Set(entradasCrudasTema(temaId).filter(e=>e.valoracion!=null && e.fecha>=fechaInicio && e.fecha<=hoy).map(e=>e.fecha))).sort();
-  let repasoPoints = fechasConRepaso.map(f=>{
-    const idx = diasEntreFechas(fechaInicio, f);
-    return { x: idx, y: Math.round(seriePasado[idx]), meta:{tipo:'repaso', fecha:f} };
-  });
-  if(curvaChartRango==='TODO' && repasoPoints.length>40){
-    const paso = Math.ceil(repasoPoints.length/40);
-    repasoPoints = repasoPoints.filter((p,i)=> i%paso===0 || i===repasoPoints.length-1);
-  }
-  const puntos = getMeasurementPoints().filter(p=>p.tema===temaId && p.fecha>=fechaInicio);
-  const testPoints = puntos.map(p=>{
-    const ratio = p.aciertos!=null && p.preguntas>0 ? p.aciertos/p.preguntas : (p.nota!=null ? p.nota/10 : null);
-    if(ratio==null) return null;
-    const idx = diasEntreFechas(fechaInicio, p.fecha);
-    return { x: idx, y: Math.round(ratio*100), meta:{tipo:'test', fecha:p.fecha, aciertos:p.aciertos, preguntas:p.preguntas, nota:p.nota} };
-  }).filter(p=>p && p.x>=0 && p.x<=diasTotales);
-
-  // --- Marcas del eje X según el rango ---
-  const tickIdx = [];
-  if(curvaChartRango==='7D'){ for(let i=0;i<=diasTotales;i++) tickIdx.push(i); }
-  else if(curvaChartRango==='30D'){ for(let i=0;i<=diasTotales;i+=5) tickIdx.push(i); if(tickIdx[tickIdx.length-1]!==diasTotales) tickIdx.push(diasTotales); }
-  else {
-    let curMes = null;
-    for(let i=0;i<=diasTotales;i++){ const f = addDays(fechaInicio,i); const mes = f.slice(0,7); if(mes!==curMes){ tickIdx.push(i); curMes = mes; } }
-  }
-
-  if(typeof charts!=='object') window.charts = {};
-  if(charts['curva']) charts['curva'].destroy();
-  const ctx = canvas.getContext('2d');
-
-  const refLinesPlugin = {
-    id:'curvaRefLines',
-    beforeDatasetsDraw(chart){
-      const {ctx:c, chartArea:a, scales:{y}} = chart;
-      c.save();
-      [[90,'rgba(255,255,255,0.16)'],[50,'rgba(255,255,255,0.1)']].forEach(([val,col])=>{
-        const yy = y.getPixelForValue(val);
-        c.strokeStyle = col; c.setLineDash([3,3]); c.lineWidth = 1;
-        c.beginPath(); c.moveTo(a.left,yy); c.lineTo(a.right,yy); c.stroke();
-      });
-      c.restore();
-    }
-  };
-  const vencimientoPlugin = {
-    id:'curvaVencimiento',
-    afterDraw(chart){
-      if(diasVencimiento==null) return;
-      const {ctx:c, chartArea:a, scales:{x}} = chart;
-      const xx = x.getPixelForValue(diasPasados+diasVencimiento);
-      if(xx<a.left || xx>a.right) return;
-      c.save();
-      c.strokeStyle = 'rgba(255,69,58,0.5)'; c.setLineDash([3,3]); c.lineWidth = 1;
-      c.beginPath(); c.moveTo(xx,a.top); c.lineTo(xx,a.bottom); c.stroke();
-      c.setLineDash([]);
-      c.fillStyle = 'rgba(255,255,255,0.55)'; c.font = '700 9px -apple-system, sans-serif'; c.textAlign = 'center';
-      c.fillText(formatDate(fechaVencimiento).slice(0,5), xx, a.top-4);
-      c.restore();
-    }
-  };
-  const testLabelPlugin = {
-    id:'curvaTestLabel',
-    afterDatasetsDraw(chart){
-      const meta = chart.getDatasetMeta(3);
-      const c = chart.ctx;
-      c.save(); c.font = '700 10px -apple-system, sans-serif'; c.textAlign = 'center'; c.fillStyle = cssVar('--col-tests');
-      meta.data.forEach((pt,i)=>{ const p = testPoints[i]; if(!p) return; c.fillText(p.y+'%', pt.x, pt.y-10); });
-      c.restore();
-    }
-  };
-
-  charts['curva'] = new Chart(ctx, {
+  const labels = tests.map(t=>formatDate(t.fecha));
+  const ac = tests.map(t=>t.aciertos/t.preguntas*100);
+  const fa = tests.map(t=>t.fallos/t.preguntas*100);
+  const bl = tests.map(t=>t.blancos/t.preguntas*100);
+  if(charts['rend-c']) charts['rend-c'].destroy();
+  charts['rend-c'] = new Chart(canvas.getContext('2d'), {
     type:'line',
-    data:{ datasets:[
-      { label:'Estimada', data: seriePasado.map((v,i)=>({x:i,y:Math.round(v)})), borderColor:cssVar('--gold'), backgroundColor:'rgba(56,189,248,0.12)', tension:0.25, fill:true, pointRadius:0, borderWidth:2 },
-      { label:'Proyección', data: [{x:diasPasados,y:Math.round(seriePasado[diasPasados])}].concat(serieFuturo.map((v,i)=>({x:diasPasados+i+1,y:Math.round(v)}))), borderColor:'rgba(56,189,248,0.4)', borderDash:[4,4], tension:0.25, fill:false, pointRadius:0, borderWidth:2 },
-      { label:'Repasos', data: repasoPoints, showLine:false, backgroundColor:cssVar('--gold'), borderColor:'#04212e', borderWidth:1.5, pointRadius:4, pointHoverRadius:6, pointHitRadius:10 },
-      { label:'Tests', data: testPoints, showLine:false, backgroundColor:cssVar('--col-tests'), pointRadius:5, pointHoverRadius:7, pointHitRadius:10 },
+    data:{ labels, datasets:[
+      { label:'Aciertos', data:ac, borderColor:cssVar('--green'), backgroundColor:'rgba(34,211,122,0.35)', fill:'origin', pointRadius:0, tension:0.15 },
+      { label:'Fallos', data:fa, borderColor:cssVar('--red'), backgroundColor:'rgba(255,69,58,0.35)', fill:'-1', pointRadius:0, tension:0.15 },
+      { label:'Blancos', data:bl, borderColor:'rgba(255,255,255,0.4)', backgroundColor:'rgba(255,255,255,0.18)', fill:'-1', pointRadius:0, tension:0.15 },
     ]},
-    plugins:[refLinesPlugin, vencimientoPlugin, testLabelPlugin],
-    options:{ responsive:true, maintainAspectRatio:false,
-      onClick(evt, els, chart){
-        const el = chart.getElementsAtEventForMode(evt,'nearest',{intersect:true},true)[0];
-        if(!el) return;
-        const ds = chart.data.datasets[el.datasetIndex];
-        const p = ds.data[el.index];
-        if(!p || !p.meta) return;
-        metaEl.innerHTML = p.meta.tipo==='repaso'
-          ? `${formatDate(p.meta.fecha)} · repaso · frescura ${p.y}%`
-          : `${formatDate(p.meta.fecha)} · test${p.meta.preguntas?` · ${p.meta.aciertos}/${p.meta.preguntas} aciertos`:(p.meta.nota!=null?` · nota ${p.meta.nota}`:'')} · ${p.y}%`;
-      },
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{ type:'linear', min:0, max:diasTotales,
-          afterBuildTicks: ax => { ax.ticks = tickIdx.map(v=>({value:v})); },
-          ticks:{ color:'rgba(255,255,255,0.32)', font:{size:8}, callback:v=>{ const f=addDays(fechaInicio,Math.round(v)); return curvaChartRango==='TODO' ? MONTH_NAMES[parseInt(f.slice(5,7),10)-1].slice(0,3) : formatDate(f).slice(0,5); } },
-          grid:{display:false} },
-        y:{ min:0, max:100, ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}, stepSize:25}, grid:{color:'rgba(255,255,255,0.04)'} }
-      }
-    }
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ticks:{color:'rgba(255,255,255,0.32)',font:{size:8},maxTicksLimit:6},grid:{display:false}},
+               y:{stacked:true,min:0,max:100,ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}} } }
   });
-  if(!metaEl.innerHTML) metaEl.textContent = puntos.length ? `Puntos medidos: ${puntos.length}` : '';
+  const pesoTotal = tests.reduce((a,t)=>a+t.preguntas,0);
+  const media = arr => tests.reduce((a,t,i)=>a+arr[i]*t.preguntas,0)/pesoTotal;
+  document.getElementById('rend-insight-c').textContent =
+    `Aciertos ${Math.round(media(ac))}% · Fallos ${Math.round(media(fa))}% · Blancos ${Math.round(media(bl))}%`;
 }
-
-// ========== EDITOR DE EPÍGRAFES (desde la ficha del tema) ==========
-function siblingsDe(tree, id){
-  function buscar(nodes){
-    for(const node of nodes){
-      if(node.id===id) return nodes;
-      if(node.hijos && node.hijos.length){
-        const f = buscar(node.hijos);
-        if(f) return f;
-      }
+function renderRendChartD(tests){
+  const canvas = document.getElementById('rend-chart-d');
+  if(!canvas) return;
+  if(!tests.length){ document.getElementById('rend-insight-d').textContent = 'Sin tests con preguntas y tiempo registrados'; return; }
+  const fechaInicio = tests[0].fecha;
+  const puntos = tests.map(t=>({ x:diasEntreFechas(fechaInicio,t.fecha), y:t.preguntas/t.minutos, w:t.preguntas, meta:t }));
+  const reg = rendRegresion(puntos);
+  const xMax = Math.max(1, ...puntos.map(p=>p.x));
+  const datasets = [];
+  if(reg) datasets.push(rendTrendDataset(x=>reg.m*x+reg.b, 0, xMax));
+  datasets.push({ label:'Ritmo', data:puntos, borderColor:cssVar('--col-tests'), backgroundColor:cssVar('--col-tests'),
+    pointBackgroundColor:cssVar('--col-tests'), pointRadius:puntos.map(p=>rendPointRadius(p.w)), pointHoverRadius:9,
+    tension:0.2, fill:false, order:1 });
+  if(charts['rend-d']) charts['rend-d'].destroy();
+  const yMax = Math.max(2, ...puntos.map(p=>p.y))*1.15;
+  charts['rend-d'] = new Chart(canvas.getContext('2d'), { type:'line', data:{datasets}, options: rendChartOptions(fechaInicio, 0, yMax, (p)=>{
+    const m = p.meta; mostrarRendClick('d', `${formatDate(m.fecha)} · ${temaNombre(m.temaId)} · ${p.y.toFixed(1)} preg/min`);
+  })});
+  const pesoTotal = tests.reduce((a,t)=>a+t.preguntas,0);
+  const mediaRitmo = tests.reduce((a,t)=>a+(t.preguntas/t.minutos)*t.preguntas,0)/pesoTotal;
+  document.getElementById('rend-insight-d').textContent = `Ritmo medio: ${mediaRitmo.toFixed(1)} preg/min`;
+}
+function mostrarRendClick(slide, texto){
+  const el = document.getElementById('rend-readout-'+slide);
+  if(el) el.textContent = texto;
+}
+function rendChartOptions(fechaInicio, yMin, yMax, onPointClick){
+  return { responsive:true, maintainAspectRatio:false,
+    onClick(evt, els, chart){
+      const el = chart.getElementsAtEventForMode(evt,'nearest',{intersect:true},true)[0];
+      if(!el) return;
+      const p = chart.data.datasets[el.datasetIndex].data[el.index];
+      if(p && p.meta) onPointClick(p);
+    },
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ type:'linear', ticks:{ color:'rgba(255,255,255,0.32)', font:{size:8}, callback:v=>formatDate(addDays(fechaInicio,Math.round(v))).slice(0,5) }, grid:{display:false} },
+      y:{ min:yMin, max:yMax, ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'} }
     }
-    return null;
-  }
-  return buscar(tree||[]) || tree;
+  };
 }
-function renderCurvaEditorHtml(temaId){
-  const cfg = getTemaConfig(temaId);
-  const tree = cfg.epigrafes || [];
-  const filas = tree.map(node=>renderEditorNodeHtml(tree, node, false)).join('');
-  return `
-    <div class="modal-note">Los pesos se reparten a partes iguales al crear un epígrafe nuevo, y se reajustan proporcionalmente cuando cambias uno a mano — salvo los que fijes con el candado.</div>
-    <div id="editor-epi-list">${filas || '<div class="empty-sub">Sin epígrafes todavía</div>'}</div>
-    <label class="modal-label" style="margin-top:14px;">Nuevo epígrafe</label>
-    <div style="display:flex;gap:8px;">
-      <input type="text" class="modal-input" id="editor-nuevo-epi-nombre" placeholder="p.ej. 27.4 Carta de Derechos" style="flex:1;font-family:var(--font-sans);margin-bottom:0;">
-      <button class="save-btn" style="width:auto;padding:0 18px;margin:0;" onclick="editorAnadirEpigrafe(null)">+</button>
-    </div>
-  `;
-}
-function renderEditorNodeHtml(siblings, node, esHijo){
-  const fusionSelect = siblings.length>1 ? `
-    <select class="modal-select" style="font-size:11px;padding:6px 8px;margin:4px 0 0;" onchange="if(this.value){editorFusionar('${node.id}', this.value);} this.value='';">
-      <option value="">Fusionar con…</option>
-      ${siblings.filter(s=>s.id!==node.id).map(s=>`<option value="${s.id}">${escapeHtml(s.nombre)}</option>`).join('')}
-    </select>` : '';
-  const hijosHtml = (node.hijos||[]).map(h=>renderEditorNodeHtml(node.hijos, h, true)).join('');
-  const subAdder = !esHijo ? `
-    <div style="display:flex;gap:8px;padding:6px 0 10px;">
-      <input type="text" class="modal-input" id="editor-nuevo-sub-${node.id}" placeholder="+ subepígrafe" style="flex:1;font-family:var(--font-sans);margin-bottom:0;font-size:12px;">
-      <button class="epi-marcar-todo" onclick="editorAnadirEpigrafe('${node.id}')">AÑADIR</button>
-    </div>` : '';
-  return `
-    <div class="epi-weight-row ${esHijo?'hijo':''}">
-      <input type="text" class="modal-input" style="flex:1;margin-bottom:0;font-family:var(--font-sans);" value="${escapeHtml(node.nombre)}" onchange="editorRenombrar('${node.id}', this.value)">
-      <input type="number" class="epi-weight-input modal-input" value="${Math.round(node.peso*10)/10}" ${node.fijado?'disabled':''} onchange="editorCambiarPeso('${node.id}', this.value)">
-      <button class="epi-lock-btn ${node.fijado?'on':''}" onclick="editorToggleFijado('${node.id}')" title="Fijar peso">${ICON_LOCK}</button>
-      <button class="epi-lock-btn" style="color:var(--red);" onclick="editorBorrarEpigrafe('${node.id}')">${ICON_CLOSE}</button>
-    </div>
-    ${fusionSelect}
-    <div style="padding-left:${esHijo?'0':'20px'};">${hijosHtml}${subAdder}</div>
-  `;
-}
-function editorAnadirEpigrafe(parentId){
-  const inputId = parentId ? `editor-nuevo-sub-${parentId}` : 'editor-nuevo-epi-nombre';
-  const input = document.getElementById(inputId);
-  const nombre = input.value.trim();
-  if(!nombre){ showToast('Ponle un nombre'); return; }
-  const cfg = getTemaConfig(curvaTemaId);
-  if(!cfg.epigrafes) cfg.epigrafes = [];
-  let siblings;
-  if(parentId){
-    const parent = epigrafeFindById(cfg.epigrafes, parentId);
-    if(!parent) return;
-    if(!parent.hijos) parent.hijos = [];
-    siblings = parent.hijos;
-  } else siblings = cfg.epigrafes;
-  agregarEpigrafeASiblings(siblings, nombre);
-  setTemaConfig(curvaTemaId, cfg);
-  renderCurva();
-}
-function editorRenombrar(id, nombre){
-  const cfg = getTemaConfig(curvaTemaId);
-  const node = epigrafeFindById(cfg.epigrafes, id);
-  if(!node) return;
-  const limpio = nombre.trim();
-  if(limpio) node.nombre = limpio;
-  setTemaConfig(curvaTemaId, cfg);
-}
-function editorCambiarPeso(id, valor){
-  const cfg = getTemaConfig(curvaTemaId);
-  const siblings = siblingsDe(cfg.epigrafes, id);
-  reajustarPesos(siblings, id, parseFloat(String(valor).replace(',','.'))||0);
-  setTemaConfig(curvaTemaId, cfg);
-  renderCurva();
-}
-function editorToggleFijado(id){
-  const cfg = getTemaConfig(curvaTemaId);
-  const node = epigrafeFindById(cfg.epigrafes, id);
-  if(!node) return;
-  node.fijado = !node.fijado;
-  setTemaConfig(curvaTemaId, cfg);
-  renderCurva();
-}
-function limpiarReferenciasEpigrafe(temaId, idsQuitarArr){
-  const idsQuitar = new Set(idsQuitarArr);
-  const dias = getDias();
-  let changed = false;
-  dias.forEach(d=>d.entradas.forEach(e=>{
-    if(e.tipo==='tema' && e.temaId===temaId && e.epigrafes){
-      const filtrado = e.epigrafes.filter(id=>!idsQuitar.has(id));
-      if(filtrado.length!==e.epigrafes.length){ e.epigrafes = filtrado.length?filtrado:undefined; changed=true; }
+function rendChartOptionsDias(onPointClick){
+  return { responsive:true, maintainAspectRatio:false,
+    onClick(evt, els, chart){
+      const el = chart.getElementsAtEventForMode(evt,'nearest',{intersect:true},true)[0];
+      if(!el) return;
+      const p = chart.data.datasets[el.datasetIndex].data[el.index];
+      if(p && p.meta) onPointClick(p);
+    },
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ type:'linear', min:0, title:{display:false}, ticks:{color:'rgba(255,255,255,0.32)',font:{size:9}}, grid:{display:false} },
+      y:{ min:0, max:100, ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'} }
     }
-  }));
-  if(changed) saveDias(dias);
-}
-function editorBorrarEpigrafe(id){
-  if(!confirm('¿Borrar este epígrafe? Los registros que lo marcaban pasarán a contar como del tema entero.')) return;
-  const cfg = getTemaConfig(curvaTemaId);
-  const siblings = siblingsDe(cfg.epigrafes, id);
-  const idx = siblings.findIndex(s=>s.id===id);
-  if(idx<0) return;
-  const borrado = siblings[idx];
-  siblings.splice(idx,1);
-  const fijados = siblings.filter(s=>s.fijado);
-  const libres = siblings.filter(s=>!s.fijado);
-  const sumFijados = fijados.reduce((a,s)=>a+s.peso,0);
-  const disponible = Math.max(0,100-sumFijados);
-  const sumLibresActual = libres.reduce((a,s)=>a+s.peso,0);
-  if(libres.length){
-    if(sumLibresActual>0.0001) libres.forEach(s=>{ s.peso = disponible*(s.peso/sumLibresActual); });
-    else { const each = disponible/libres.length; libres.forEach(s=>s.peso=each); }
-  }
-  setTemaConfig(curvaTemaId, cfg);
-  limpiarReferenciasEpigrafe(curvaTemaId, [borrado.id, ...((borrado.hijos||[]).map(h=>h.id))]);
-  renderCurva();
-}
-function editorFusionar(idA, idB){
-  if(!confirm('¿Fusionar estos dos epígrafes? Sus pesos se suman y los registros de ambos pasan a contar para el resultante.')) return;
-  const cfg = getTemaConfig(curvaTemaId);
-  const siblings = siblingsDe(cfg.epigrafes, idA);
-  const nodeA = siblings.find(s=>s.id===idA);
-  const idxB = siblings.findIndex(s=>s.id===idB);
-  if(!nodeA || idxB<0) return;
-  const nodeB = siblings[idxB];
-  nodeA.peso += nodeB.peso;
-  siblings.splice(idxB,1);
-  setTemaConfig(curvaTemaId, cfg);
-  reescribirReferenciasEpigrafe(curvaTemaId, [idB, ...((nodeB.hijos||[]).map(h=>h.id))], idA);
-  renderCurva();
-}
-function reescribirReferenciasEpigrafe(temaId, idsOrigen, idDestino){
-  const set = new Set(idsOrigen);
-  const dias = getDias();
-  let changed = false;
-  dias.forEach(d=>d.entradas.forEach(e=>{
-    if(e.tipo==='tema' && e.temaId===temaId && e.epigrafes){
-      const nuevo = Array.from(new Set(e.epigrafes.map(id=> set.has(id) ? idDestino : id)));
-      if(JSON.stringify(nuevo)!==JSON.stringify(e.epigrafes)){ e.epigrafes = nuevo; changed=true; }
-    }
-  }));
-  if(changed) saveDias(dias);
+  };
 }
 
 // ========== MNEMOTÉCNICAS ==========
@@ -5202,7 +4303,7 @@ function showScreen(name,btn){
   }
   if(name==='herramientas') renderHerramientasScreen();
   if(name==='categorias') renderCategoriasList();
-  if(name==='ajustes') refreshFechaExamenLabel();
+  if(name==='ajustes') refreshAlternativasLabel();
 }
 // Abrir/cerrar panel flotante (Parte 1.4 / 3.3): display:none→flex y el
 // arranque de la transición de opacidad se separan en dos pasos con un reflow
