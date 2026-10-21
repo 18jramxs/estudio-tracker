@@ -1245,6 +1245,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <span class="t">RENDIMIENTO</span>
     <span style="color:var(--text3);">›</span>
   </button>
+  <button class="curva-tool-btn tap" onclick="openIntroducirTest()">
+    <span class="t">INTRODUCIR TEST</span>
+    <span style="color:var(--text3);">›</span>
+  </button>
   <button class="curva-tool-btn tap" onclick="openMnemotecnicas()">
     <span class="t">MNEMOTÉCNICAS</span>
     <span style="color:var(--text3);">›</span>
@@ -1264,6 +1268,48 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <button class="toggle-btn" onclick="closeModal('rendimiento-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
     <div id="rend-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Introducir test (desglosar tiempo TEST/INNOTEST ya registrado) -->
+<div class="modal-bg" id="introducir-test-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <div class="lvl-header-title">Introducir test</div>
+      <button class="toggle-btn" onclick="closeModal('introducir-test-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div class="modal-note">Esto no añade tests nuevos. Sirve para desglosar tiempo de test ya registrado y ponerle su nota. Para registrar un test de hoy, hazlo desde TEMAS.</div>
+
+    <label class="modal-label">Tipo</label>
+    <div class="range-tabs" id="it-tipo-tabs">
+      <button class="range-tab tap active" data-t="TEST" onclick="itSetTipo('TEST')">TEST</button>
+      <button class="range-tab tap" data-t="INNOTEST" onclick="itSetTipo('INNOTEST')">INNOTEST</button>
+    </div>
+
+    <label class="modal-label">Tema</label>
+    <select class="modal-select" id="it-tema-select" onchange="itOnTemaChange()"></select>
+
+    <label class="modal-label">Fecha</label>
+    <select class="modal-select" id="it-fecha-select" onchange="itOnFechaChange()"></select>
+    <div id="it-disponible" style="font-size:12px;color:var(--text2);margin:-6px 0 14px;"></div>
+
+    <div style="display:flex;gap:8px;">
+      <div style="flex:1;">
+        <label class="modal-label">Tiempo (min)</label>
+        <input type="number" class="modal-input" id="it-tiempo-input" min="1" inputmode="numeric" placeholder="p.ej. 25">
+      </div>
+      <div style="flex:1;">
+        <label class="modal-label">Nota</label>
+        <input type="text" class="modal-input" id="it-nota-input" placeholder="p.ej. 7,5" inputmode="decimal">
+      </div>
+    </div>
+    <label class="modal-label">Preguntas <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+    <input type="number" class="modal-input" id="it-preguntas-input" min="0" inputmode="numeric" placeholder="p.ej. 20">
+    <div id="it-aviso" style="font-size:11.5px;color:var(--orange);margin:-4px 0 10px;min-height:14px;"></div>
+    <button class="save-btn" onclick="guardarIntroducirTest()">Guardar</button>
+
+    <div class="chart-card-label" style="margin-top:20px;">Sin desglosar</div>
+    <div class="card" style="padding:4px 16px;" id="it-pendientes-card"></div>
   </div>
 </div>
 
@@ -1552,8 +1598,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 6;
-const APP_BUILD_DATE = '21 oct 2026 18:00';
+const APP_VERSION = 7;
+const APP_BUILD_DATE = '21 oct 2026 20:30';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2408,6 +2454,22 @@ function deleteEntry(fecha,id){
   const dias = getDias();
   const dia = dias.find(d=>d.fecha===fecha);
   if(!dia) return;
+  // Deshacer un desglose (INTRODUCIR TEST): el tiempo vuelve al bloque sin
+  // nota de ese mismo día/tema/subcategoría en vez de perderse — al bloque
+  // que ya exista, o a uno nuevo si se vació del todo al desglosar.
+  const entry = dia.entradas.find(e=>e.id===id);
+  if(entry && entry.desglosado){
+    const mismoBloque = o => o!==entry && o.nota==null && (entry.tipo==='tema'
+      ? (o.tipo==='tema' && o.temaId===entry.temaId && o.subKey===entry.subKey)
+      : (o.tipo==='psico' && o.categoriaId===entry.categoriaId && o.subcategoriaId===entry.subcategoriaId));
+    const sibling = dia.entradas.find(mismoBloque);
+    if(sibling) sibling.minutos += entry.minutos;
+    else {
+      dia.entradas.push(entry.tipo==='tema'
+        ? { id:uid(), tipo:'tema', temaId:entry.temaId, subKey:entry.subKey, minutos:entry.minutos }
+        : { id:uid(), tipo:'psico', categoriaId:entry.categoriaId, subcategoriaId:entry.subcategoriaId, minutos:entry.minutos });
+    }
+  }
   dia.entradas = dia.entradas.filter(e=>e.id!==id);
   saveDias(dias.filter(d=>d.entradas.length>0));
   showToast('Registro borrado');
@@ -3988,6 +4050,182 @@ function rendChartOptionsDias(onPointClick){
       y:{ min:0, max:100, ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'} }
     }
   };
+}
+
+// ========== INTRODUCIR TEST: desglosar tiempo TEST/INNOTEST ya registrado ==========
+// No añade tiempo nuevo: resta minutos de un bloque sin nota (subKey TEST de
+// un tema, o subcategoría "TEST" de una categoría psico — no la categoría
+// especial "INNOTEST", que ya tiene su propio formulario con nota) y los
+// mueve a un registro nuevo con nota. El total del día/tema/mes no cambia:
+// es un movimiento interno, igual que vaciar un cajón a otro.
+function itSubcatTestId(categoriaId){
+  const cat = getCategoria(categoriaId);
+  if(!cat) return null;
+  const sub = (cat.subcategorias||[]).find(s=>normNombre(s.nombre)==='TEST');
+  return sub ? sub.id : null;
+}
+function itBloquesSinNota(tipo){
+  const out = [];
+  getDias().forEach(d=>{
+    d.entradas.forEach(e=>{
+      if(e.nota!=null || !(e.minutos>0)) return;
+      if(tipo==='TEST'){
+        if(e.tipo==='tema' && e.subKey==='TEST') out.push({ fecha:d.fecha, grupoId:e.temaId, minutos:e.minutos });
+      } else {
+        if(e.tipo==='psico'){
+          const subTestId = itSubcatTestId(e.categoriaId);
+          if(subTestId && e.subcategoriaId===subTestId) out.push({ fecha:d.fecha, grupoId:e.categoriaId, minutos:e.minutos });
+        }
+      }
+    });
+  });
+  return out;
+}
+function itGruposDisponibles(tipo){
+  const ids = Array.from(new Set(itBloquesSinNota(tipo).map(b=>b.grupoId)));
+  if(tipo==='TEST') return ids.sort((a,b)=>temaNumero(a)-temaNumero(b)).map(id=>({id, nombre:temaNombre(id)}));
+  return ids.map(id=>({id, nombre:getCategoriaNombre(id)})).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+}
+function itFechasDisponibles(tipo, grupoId){
+  const map = {};
+  itBloquesSinNota(tipo).filter(b=>b.grupoId===grupoId).forEach(b=>{ map[b.fecha] = (map[b.fecha]||0)+b.minutos; });
+  return Object.keys(map).sort().map(fecha=>({fecha, minutos:map[fecha]})); // ascendente: la más antigua primero
+}
+function itDisponible(tipo, grupoId, fecha){
+  return itBloquesSinNota(tipo).filter(b=>b.grupoId===grupoId && b.fecha===fecha).reduce((a,b)=>a+b.minutos,0);
+}
+function itPendientes(){
+  const grupos = {};
+  ['TEST','INNOTEST'].forEach(tipo=>{
+    itBloquesSinNota(tipo).forEach(b=>{
+      const key = tipo+'|'+b.grupoId;
+      if(!grupos[key]) grupos[key] = { tipo, grupoId:b.grupoId, total:0 };
+      grupos[key].total += b.minutos;
+    });
+  });
+  return Object.values(grupos).sort((a,b)=>b.total-a.total);
+}
+
+let itTipo = 'TEST', itGrupoId = null, itFecha = null;
+
+function openIntroducirTest(){
+  itTipo = 'TEST'; itGrupoId = null; itFecha = null;
+  document.getElementById('it-tiempo-input').value = '';
+  document.getElementById('it-nota-input').value = '';
+  document.getElementById('it-preguntas-input').value = '';
+  renderIntroducirTest();
+  openModal('introducir-test-modal');
+}
+function itSetTipo(t){ itTipo = t; itGrupoId = null; itFecha = null; renderIntroducirTest(); }
+function itOnTemaChange(){ itGrupoId = document.getElementById('it-tema-select').value || null; itFecha = null; renderIntroducirTest(); }
+function itOnFechaChange(){ itFecha = document.getElementById('it-fecha-select').value || null; renderIntroducirTest(); }
+function itAbrirDesdeGrupo(tipo, grupoId){
+  itTipo = tipo; itGrupoId = grupoId;
+  const fechas = itFechasDisponibles(tipo, grupoId);
+  itFecha = fechas.length ? fechas[0].fecha : null; // la más antigua pendiente
+  document.getElementById('it-tiempo-input').value = '';
+  document.getElementById('it-nota-input').value = '';
+  document.getElementById('it-preguntas-input').value = '';
+  renderIntroducirTest();
+  document.getElementById('it-tiempo-input').scrollIntoView({behavior:'smooth', block:'center'});
+}
+function renderIntroducirTest(){
+  document.querySelectorAll('#it-tipo-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.t===itTipo));
+
+  const grupos = itGruposDisponibles(itTipo);
+  const temaSel = document.getElementById('it-tema-select');
+  if(!grupos.length){
+    temaSel.innerHTML = '<option value="">Sin bloques pendientes</option>';
+    itGrupoId = null;
+  } else {
+    if(!itGrupoId || !grupos.some(g=>g.id===itGrupoId)) itGrupoId = grupos[0].id;
+    temaSel.innerHTML = grupos.map(g=>`<option value="${g.id}"${g.id===itGrupoId?' selected':''}>${escapeHtml(g.nombre)}</option>`).join('');
+  }
+
+  const fechaSel = document.getElementById('it-fecha-select');
+  const fechas = itGrupoId ? itFechasDisponibles(itTipo, itGrupoId) : [];
+  if(!fechas.length){
+    fechaSel.innerHTML = '<option value="">—</option>';
+    itFecha = null;
+  } else {
+    if(!itFecha || !fechas.some(f=>f.fecha===itFecha)) itFecha = fechas[0].fecha;
+    fechaSel.innerHTML = fechas.map(f=>`<option value="${f.fecha}"${f.fecha===itFecha?' selected':''}>${formatDate(f.fecha)} · ${formatHM(f.minutos)}</option>`).join('');
+  }
+
+  const disponible = (itGrupoId && itFecha) ? itDisponible(itTipo, itGrupoId, itFecha) : 0;
+  document.getElementById('it-disponible').textContent = 'Disponible ese día: ' + formatHM(disponible);
+
+  renderItPendientes();
+}
+function renderItPendientes(){
+  const card = document.getElementById('it-pendientes-card');
+  const pendientes = itPendientes();
+  if(!pendientes.length){
+    card.innerHTML = '<div class="empty-sub">Todo el tiempo de test tiene su nota</div>';
+    return;
+  }
+  const total = pendientes.reduce((a,p)=>a+p.total,0);
+  card.innerHTML = pendientes.map(p=>{
+    const nombre = p.tipo==='TEST' ? temaNombre(p.grupoId) : getCategoriaNombre(p.grupoId);
+    return `<div class="lvl-row" onclick="itAbrirDesdeGrupo('${p.tipo}','${p.grupoId}')">
+      <span class="lvl-name">${escapeHtml(nombre)} · ${p.tipo}</span>
+      <span class="lvl-val">${formatHM(p.total)}</span>
+      <span class="lvl-chevron">${ICON_CHEVRON}</span>
+    </div>`;
+  }).join('') + `<div class="modal-note" style="margin:10px 0 0;text-align:right;">Total pendiente: ${formatHM(total)}</div>`;
+}
+function guardarIntroducirTest(){
+  const avisoEl = document.getElementById('it-aviso');
+  avisoEl.textContent = '';
+  if(!itGrupoId || !itFecha){ avisoEl.textContent = 'Elige tema y fecha'; return; }
+  const minutos = parseInt(document.getElementById('it-tiempo-input').value, 10);
+  const notaRaw = document.getElementById('it-nota-input').value.trim().replace(',','.');
+  const nota = notaRaw==='' ? NaN : parseFloat(notaRaw);
+  const preguntasRaw = document.getElementById('it-preguntas-input').value.trim();
+  const preguntas = preguntasRaw==='' ? null : parseInt(preguntasRaw,10);
+
+  if(!Number.isFinite(minutos) || minutos<=0){ avisoEl.textContent = 'Introduce un tiempo válido'; return; }
+  if(!Number.isFinite(nota) || nota<0 || nota>10){ avisoEl.textContent = 'Introduce una nota válida'; return; }
+
+  const nombreGrupo = itTipo==='TEST' ? temaNombre(itGrupoId) : getCategoriaNombre(itGrupoId);
+  const disponible = itDisponible(itTipo, itGrupoId, itFecha);
+  if(disponible<=0){
+    avisoEl.textContent = `No hay tiempo de ${itTipo} registrado en ${nombreGrupo} el ${formatDate(itFecha)}`;
+    return;
+  }
+  if(minutos>disponible){
+    avisoEl.textContent = `Solo quedan ${formatHM(disponible)} sin desglosar ese día`;
+    return;
+  }
+
+  const dias = getDias();
+  const dia = dias.find(d=>d.fecha===itFecha);
+  let bloqueEntry;
+  if(itTipo==='TEST'){
+    bloqueEntry = dia.entradas.find(e=>e.tipo==='tema' && e.temaId===itGrupoId && e.subKey==='TEST' && e.nota==null);
+  } else {
+    const subId = itSubcatTestId(itGrupoId);
+    bloqueEntry = dia.entradas.find(e=>e.tipo==='psico' && e.categoriaId===itGrupoId && e.subcategoriaId===subId && e.nota==null);
+  }
+  if(!bloqueEntry){ avisoEl.textContent = 'Ese bloque ya no existe — revisa la lista de abajo'; renderIntroducirTest(); return; }
+
+  bloqueEntry.minutos -= minutos;
+  if(bloqueEntry.minutos<=0) dia.entradas = dia.entradas.filter(e=>e!==bloqueEntry);
+
+  const nuevo = itTipo==='TEST'
+    ? { id:uid(), tipo:'tema', temaId:itGrupoId, subKey:'TEST', minutos, nota, desglosado:true }
+    : { id:uid(), tipo:'psico', categoriaId:itGrupoId, subcategoriaId:itSubcatTestId(itGrupoId), minutos, nota, desglosado:true };
+  if(preguntas!=null) nuevo.preguntas = preguntas;
+  dia.entradas.push(nuevo);
+
+  saveDias(dias.filter(d=>d.entradas.length>0));
+  document.getElementById('it-tiempo-input').value = '';
+  document.getElementById('it-nota-input').value = '';
+  document.getElementById('it-preguntas-input').value = '';
+  itFecha = null;
+  renderHoy(); renderHistorial(); renderCategoriasList(); renderEstadisticas();
+  renderIntroducirTest();
+  showToast('Guardado ✓','green');
 }
 
 // ========== MNEMOTÉCNICAS ==========
