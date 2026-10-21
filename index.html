@@ -22,18 +22,18 @@
 
 :root {
   /* —— KIT v2: negro profundo + cristal + halo por sección —— */
-  --bg:        #06070A;
-  --bg-2:      #0d0f14;
-  --glass-bg:     rgba(255,255,255,.055);
-  --glass-bg-hi:  rgba(255,255,255,.085);
-  --glass-border: rgba(255,255,255,.10);
-  --glass-blur:   blur(30px) saturate(165%);
+  --bg:        #030304;
+  --bg-2:      #0a0a0b;
+  --glass-bg:     rgba(255,255,255,.035);
+  --glass-bg-hi:  rgba(255,255,255,.07);
+  --glass-border: rgba(255,255,255,.085);
+  --glass-blur:   blur(30px) saturate(118%);
 
   --panel:     var(--glass-bg);
   --panel-2:   var(--glass-bg-hi);
-  --bg-input:  rgba(255,255,255,0.06);
+  --bg-input:  rgba(255,255,255,0.04);
   --glass:        var(--glass-blur);
-  --glass-strong: blur(44px) saturate(200%);
+  --glass-strong: blur(44px) saturate(118%);
 
   --border:   var(--glass-border);
   --border-2: rgba(255,255,255,0.14);
@@ -175,9 +175,18 @@ body::before {
   transition: all .2s var(--ease);
 }
 .nav-btn.active {
-  color: var(--text);
-  background: linear-gradient(90deg, color-mix(in srgb, var(--halo) 34%, transparent), rgba(255,255,255,.07));
-  box-shadow: 0 0 20px -4px color-mix(in srgb, var(--halo) 80%, transparent), inset 0 1px 0 rgba(255,255,255,.22);
+  --c: var(--halo);
+  color: #fff;
+  background: rgba(255,255,255,.075);
+  border: 1px solid color-mix(in srgb, var(--c) 48%, transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+}
+.nav-btn.active::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 1px; z-index: 3; border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
 }
 .nav-btn:active { transform: scale(0.92); }
 .nav-icon svg { display: block; width: 21px; height: 21px; }
@@ -216,6 +225,41 @@ body::before {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
 }
 .card { margin-bottom: 12px; overflow: hidden; }
+
+/* —— BOTÓN GLOW (kit, componente único): el mismo tratamiento para cualquier
+   botón con peso visual propio — bloques, activo de segmentados/tab bar y
+   acciones primarias. Nada de rellenos sólidos ni bordes planos de color
+   aparte de este. --c se fija por contexto (inline o selector). —— */
+.btn-glow {
+  --c: var(--gold);
+  position: relative; overflow: hidden;
+  background: rgba(255,255,255,.075);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid color-mix(in srgb, var(--c) 48%, transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  color: #fff;
+  transition: transform .12s var(--ease), box-shadow .22s var(--ease);
+}
+.btn-glow::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 1px; z-index: 3;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
+}
+.btn-glow:active {
+  transform: scale(.97);
+  box-shadow:
+    0 0 36px 0 color-mix(in srgb, var(--c) 60%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--c) 85%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
+.btn-ghost {
+  background: rgba(255,255,255,.035);
+  border: 1px solid rgba(255,255,255,.085);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+  color: var(--text3);
+}
 
 /* —— Total del día (Parte 3.1): deja de ser tarjeta. El número vive suelto
    sobre el fondo con su propio resplandor detrás; la base se desvanece con
@@ -277,54 +321,53 @@ body::before {
 .row .v { font-variant-numeric: tabular-nums; color: var(--text2); font-size: 13px; }
 .row .ch { color: var(--text3); }
 
+/* —— Botones de acción: mismo molde que .btn-glow/.btn-ghost del kit —— */
 .add-btn {
-  width: 100%; background: none; border: 1px solid var(--border-2); color: var(--text2);
+  width: 100%; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.085); color: var(--text3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
   border-radius: var(--r-sm); padding: 13px; font-size: 13.5px; font-weight: 600; cursor: pointer; margin-top: 4px;
   display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit;
-  transition: transform 0.16s var(--ease-pop), border-color 0.2s, color 0.2s;
+  transition: transform 0.16s var(--ease-pop), color 0.2s;
 }
-.add-btn:active { transform: scale(0.98); border-color: var(--border-3); color: var(--gold2); }
+.add-btn:active { transform: scale(0.98); color: var(--gold2); }
 .save-btn {
-  width: 100%; position: relative; background: linear-gradient(180deg, #6cd0ff 0%, var(--gold) 50%, #1f9fe0 100%);
-  color: #04212e; border: none; border-radius: var(--r-sm); padding: 15px; font-family: var(--font-disp); font-size: 16px;
+  --c: var(--halo);
+  width: 100%; position: relative; overflow: hidden;
+  background: rgba(255,255,255,.075);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid color-mix(in srgb, var(--c) 48%, transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  color: #fff; border-radius: var(--r-sm); padding: 15px; font-family: var(--font-disp); font-size: 16px;
   font-weight: 400; letter-spacing: 0.8px; text-transform: uppercase; cursor: pointer; margin-top: 4px;
-  box-shadow: 0 6px 18px rgba(56,189,248,0.3), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.15);
-  transition: transform 0.18s var(--ease-pop), box-shadow 0.2s ease, filter 0.2s ease;
+  transition: transform .12s var(--ease), box-shadow .22s var(--ease);
 }
-.save-btn:hover { filter: brightness(1.05); }
-.save-btn:active { transform: scale(0.985); box-shadow: 0 3px 10px rgba(56,189,248,0.45), inset 0 1px 0 rgba(255,255,255,0.4); }
+.save-btn::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 1px; z-index: 3;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
+}
+.save-btn:active {
+  transform: scale(.985);
+  box-shadow:
+    0 0 36px 0 color-mix(in srgb, var(--c) 60%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--c) 85%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
 
-/* —— Los tres bloques (Parte 3.1): cristal neutro + mancha de color difuminada
-   saliendo de la esquina inferior izquierda. Sin barra de luz ni punto. —— */
+/* —— Los tres bloques (kit, botón glow): el tratamiento visual (fondo,
+   borde y halo) viene de .btn-glow — aquí solo el tamaño/tipografía. —— */
 .cat-picker-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-bottom: 14px; }
 .cat-picker-btn {
-  --c: var(--gold);
-  position: relative;
   display: grid; place-items: center;
   min-height: 62px; padding: 12px 8px;
   border-radius: var(--r-sm);
-  background: rgba(255,255,255,.05);
-  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid color-mix(in srgb, var(--c) 22%, transparent);
-  box-shadow: 0 0 28px -10px color-mix(in srgb, var(--c) 85%, transparent), inset 0 1px 0 rgba(255,255,255,.2);
-  overflow: hidden;
   font-family: var(--font-sans); font-weight: 600; font-size: 17px;
-  letter-spacing: .055em; text-transform: uppercase; text-align: center; line-height: 1.08; color: #fff;
+  letter-spacing: .055em; text-transform: uppercase; text-align: center; line-height: 1.08;
   cursor: pointer;
-  transition: transform .12s var(--ease), box-shadow .22s var(--ease);
-}
-.cat-picker-btn::after {
-  content: ""; position: absolute; inset: -30%; pointer-events: none;
-  background: radial-gradient(48% 62% at 14% 88%, color-mix(in srgb, var(--c) 85%, transparent), transparent 72%);
-  filter: blur(14px); opacity: .85;
-  transition: opacity .22s var(--ease);
 }
 .cat-picker-btn > * { position: relative; z-index: 1; }
-.cat-picker-btn:active {
-  transform: scale(0.97);
-  box-shadow: 0 0 38px -6px color-mix(in srgb, var(--c) 95%, transparent), inset 0 1px 0 rgba(255,255,255,.28);
-}
-.cat-picker-btn:active::after { opacity: 1; }
 
 .entry-selected-wrap { text-align: center; margin-bottom: 14px; }
 .entry-selected-title { font-family: var(--font-disp); font-size: 19px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1.2; }
@@ -338,13 +381,32 @@ body::before {
 .f-row { display: flex; align-items: center; gap: 9px; margin-bottom: 0; }
 .f-row .f-input { flex: 1; margin-bottom: 0; text-align: center; font-weight: 600; }
 .f-btn {
-  background: linear-gradient(180deg, #6cd0ff 0%, var(--gold) 50%, #1f9fe0 100%); color: #04212e; border: none;
+  --c: var(--halo);
+  position: relative; overflow: hidden;
+  background: rgba(255,255,255,.075);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid color-mix(in srgb, var(--c) 48%, transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  color: #fff;
   border-radius: var(--r-sm); padding: 11px 18px;
   font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0;
-  font-family: inherit; box-shadow: 0 4px 10px rgba(56,189,248,0.3);
-  transition: transform 0.15s var(--ease-pop), filter 0.2s;
+  font-family: inherit;
+  transition: transform .12s var(--ease), box-shadow .22s var(--ease);
 }
-.f-btn:active { transform: scale(0.96); filter: brightness(1.08); }
+.f-btn::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 1px; z-index: 3;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
+}
+.f-btn:active {
+  transform: scale(.96);
+  box-shadow:
+    0 0 36px 0 color-mix(in srgb, var(--c) 60%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--c) 85%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
 
 .history-session { margin-bottom: 10px; overflow: hidden; }
 .history-session-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
@@ -455,15 +517,15 @@ body::before {
 .modal-bg {
   display: none; position: fixed; inset: 0; z-index: 1000;
   align-items: center; justify-content: center; padding: 20px;
-  background: rgba(4,6,10,0.55);
-  backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%);
+  background: rgba(3,3,4,0.55);
+  backdrop-filter: blur(30px) saturate(118%); -webkit-backdrop-filter: blur(30px) saturate(118%);
   opacity: 0;
 }
 .modal-bg.visible, .modal-bg.closing { display: flex; }
 .modal-bg.open { opacity: 1; transition: opacity 0.28s var(--ease); }
 .modal-bg.closing { opacity: 0; transition: opacity 0.2s var(--ease); }
 .modal {
-  width: 100%; max-width: 420px; background: rgba(22,23,28,0.78);
+  width: 100%; max-width: 420px; background: rgba(10,10,11,0.78);
   backdrop-filter: var(--glass-strong); -webkit-backdrop-filter: var(--glass-strong);
   border: 1px solid var(--border-2);
   border-radius: var(--r-lg);
@@ -489,16 +551,36 @@ body::before {
 .modal-input:focus, .modal-select:focus { border-color: var(--border-3); background: rgba(255,255,255,0.09); }
 .modal-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 6px; display: block; }
 .modal-actions { display: flex; gap: 8px; margin-top: 6px; }
-.modal-btn { flex: 1; padding: 13px; border-radius: var(--r-sm); font-size: 13.5px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: transform 0.16s var(--ease-pop); }
+.modal-btn { flex: 1; position: relative; overflow: hidden; padding: 13px; border-radius: var(--r-sm); font-size: 13.5px; font-weight: 700; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: transform 0.16s var(--ease-pop), box-shadow .22s var(--ease); }
 .modal-btn:active { transform: scale(0.97); }
-.modal-btn.primary { background: var(--gold); color: #04212e; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-.modal-btn.secondary { background: none; border: 1px solid var(--border-2); color: var(--text2); }
+.modal-btn.primary {
+  --c: var(--halo);
+  background: rgba(255,255,255,.075);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border-color: color-mix(in srgb, var(--c) 48%, transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  color: #fff;
+}
+.modal-btn.primary::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 1px; z-index: 3;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
+}
+.modal-btn.primary:active {
+  box-shadow:
+    0 0 36px 0 color-mix(in srgb, var(--c) 60%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--c) 85%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
+.modal-btn.secondary { background: rgba(255,255,255,.035); border-color: rgba(255,255,255,.085); box-shadow: inset 0 1px 0 rgba(255,255,255,.1); color: var(--text3); }
 .modal-note { font-size: 12.5px; color: var(--text2); line-height: 1.5; margin-bottom: 14px; }
 
 .sys-banner-top, .sys-banner-bottom {
   position: fixed; left: 50%; width: calc(100% - 32px); max-width: 420px; z-index: 300;
-  background: rgba(14,14,18,0.82);
-  backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
+  background: rgba(10,10,11,0.82);
+  backdrop-filter: blur(30px) saturate(118%); -webkit-backdrop-filter: blur(30px) saturate(118%);
   border: 1px solid var(--border-2); border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   padding: 11px 14px; font-size: 12.5px; font-weight: 600; color: var(--text2);
@@ -510,7 +592,25 @@ body::before {
 .sys-banner-bottom { bottom: 86px; transform: translateX(-50%) translateY(14px); }
 .sys-banner-top.show, .sys-banner-bottom.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
 .sys-banner-text { flex: 1; min-width: 0; }
-.sys-banner-btn { background: var(--gold); color: #04212e; border: none; border-radius: var(--r-xs); padding: 7px 12px; font-size: 11.5px; font-weight: 800; cursor: pointer; flex-shrink: 0; font-family: inherit; }
+.sys-banner-btn {
+  --c: var(--gold);
+  position: relative; overflow: hidden;
+  background: rgba(255,255,255,.075);
+  border: 1px solid color-mix(in srgb, var(--c) 48%, transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  color: #fff; border-radius: var(--r-xs); padding: 7px 12px; font-size: 11.5px; font-weight: 800; cursor: pointer; flex-shrink: 0; font-family: inherit;
+  transition: transform .12s var(--ease), box-shadow .22s var(--ease);
+}
+.sys-banner-btn:active {
+  transform: scale(.96);
+  box-shadow:
+    0 0 36px 0 color-mix(in srgb, var(--c) 60%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--c) 85%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
 .sys-banner-close { background: none; border: none; color: var(--text3); font-size: 15px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
 
 .color-swatch-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -537,7 +637,7 @@ body::before {
 
 .toast {
   position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(14px);
-  background: rgba(20,20,26,0.94);
+  background: rgba(14,14,15,0.94);
   backdrop-filter: var(--glass-strong); -webkit-backdrop-filter: var(--glass-strong);
   border: 1px solid var(--border-2);
   color: var(--text); padding: 11px 22px; border-radius: var(--r-pill);
@@ -630,9 +730,14 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   transition: all .2s var(--ease);
 }
 .range-tab.active {
-  color: var(--text);
-  background: linear-gradient(90deg, color-mix(in srgb, var(--halo) 38%, transparent), rgba(255,255,255,.07));
-  box-shadow: 0 0 18px -5px color-mix(in srgb, var(--halo) 80%, transparent), inset 0 1px 0 rgba(255,255,255,.2);
+  --c: var(--halo);
+  color: #fff;
+  background: rgba(255,255,255,.075);
+  border: 1px solid color-mix(in srgb, var(--c) 48%, transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 10px -2px color-mix(in srgb, var(--c) 70%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
 }
 /* —— Mapa (Parte 1.2/3.5): un único scroller para ambos ejes — nada de un
    scroll vertical del panel por fuera y otro horizontal de la tabla por
@@ -640,31 +745,39 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
    (fondo opaco + separador), cabecera de grupo sin recortar arriba, fila de
    meses visible y celdas a ancho completo (flex, no un tamaño fijo). —— */
 .heat-scroller { flex: 1; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; padding-top: 2px; }
-.heat-months { display: flex; font-size: 9.5px; color: var(--text3); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding-left: 78px; margin-bottom: 4px; }
-.heat-months span { white-space: nowrap; }
-/* table-layout:auto (no "fixed"): con pocas columnas (30D) el navegador
-   reparte el ancho sobrante entre las celdas (flex-like, llenan el panel);
-   con muchas (90D/TODO) cada celda conserva su min-width y la tabla crece
-   más allá del 100%, que es lo que hace scrollar el único contenedor. */
-table.heat-table { border-collapse: separate; border-spacing: 0; width: 100%; }
-table.heat-table th.heat-name {
-  position: sticky; left: 0; z-index: 2; background: var(--bg-2);
+/* —— Mapa (rehecho sobre CSS Grid, no <table>): WebKit pinta de forma poco
+   fiable el fondo de las celdas sticky dentro de <table>/<th> (la rejilla
+   se cuela por debajo del texto en Safari/iOS), así que la columna de
+   nombres y la rejilla son columnas reales del MISMO grid — nunca capas
+   superpuestas con position:absolute ni márgenes negativos. row-gap/column-gap
+   de 3px separan cada celda, también verticalmente: sin eso, el filo claro
+   de "hoy" de una fila toca el de la fila siguiente y parece una columna
+   continua de bordes blancos en vez de un filo por celda. —— */
+.heat-grid { display: grid; column-gap: 3px; row-gap: 3px; grid-auto-rows: minmax(22px, auto); align-items: center; }
+.heat-corner, .heat-month-cell, .heat-name, .heat-group-head { position: sticky; background: var(--bg-2); }
+.heat-corner { left: 0; top: 0; z-index: 4; border-right: 1px solid var(--glass-border); }
+.heat-month-cell {
+  top: 0; z-index: 3; align-self: end;
+  font-size: 9.5px; color: var(--text3); font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; white-space: nowrap; padding-bottom: 4px;
+}
+.heat-name {
+  left: 0; z-index: 2;
+  display: flex; align-items: center; height: 22px;
   text-align: left; font-weight: 600; font-size: 10.5px; color: var(--text2); text-transform: uppercase;
-  padding: 0 8px 0 2px; white-space: nowrap; width: 76px; font-family: var(--font-mono);
-  border-right: 1px solid var(--glass-border);
+  padding: 0 8px 0 2px; white-space: nowrap; font-family: var(--font-mono);
+  border-right: 1px solid var(--glass-border); cursor: pointer;
 }
-table.heat-table td.heat-cell { padding: 0 1.5px; min-width: 11px; }
-table.heat-table td.heat-cell i {
+.heat-cell i {
   display: block; width: 100%; height: 22px; border-radius: 5px;
-  background: var(--heat-empty); transition: transform 0.12s var(--ease-pop);
+  background: var(--heat-empty); transition: transform 0.12s var(--ease-pop); cursor: pointer;
 }
-table.heat-table td.heat-cell i.today-c { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.7); }
-tr.heat-group-head th {
-  text-align: left; font-size: 9.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
-  padding: 14px 8px 5px 2px; position: sticky; left: 0; background: var(--bg-2); white-space: nowrap;
-  border-right: 1px solid var(--glass-border);
+.heat-cell i.today-c { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.7); }
+.heat-group-head {
+  grid-column: 1 / -1; left: 0;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
+  padding: 14px 8px 5px 2px; white-space: nowrap;
 }
-tr.heat-group-head:first-child th { padding-top: 2px; }
 .heat-readout {
   flex-shrink: 0;
   font-family: var(--font-mono); font-size: 12.5px; color: var(--text); background: var(--bg-input);
@@ -700,10 +813,16 @@ tr.heat-group-head:first-child th { padding-top: 2px; }
 .mnemo-fonetico-palabra { font-size: 15px; margin-top: 4px; color: var(--text2); }
 .mnemo-fonetico-palabra b { color: var(--gold2); font-weight: 800; }
 
-/* —— HERRAMIENTAS: Código fonético —— */
-.cf-tabla-row { display: flex; align-items: center; gap: 14px; padding: 6px 4px; font-size: 13px; }
-.cf-tabla-num { font-family: var(--font-disp); font-size: 18px; width: 24px; text-align: center; color: var(--gold2); flex-shrink: 0; }
-.cf-tabla-letras { color: var(--text2); font-family: var(--font-mono); }
+/* —— HERRAMIENTAS: Código fonético (kit, componente .cod): rejilla 5×2,
+   número grande en el color de acento, letras en blanco 88% —— */
+.cod-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; }
+.cod-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 4px; border-radius: var(--r-sm);
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+}
+.cod-cell b { font-family: var(--font-disp); font-size: 23px; font-weight: 400; line-height: 1; color: var(--halo); }
+.cod-cell span { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; color: rgba(255,255,255,.88); font-family: var(--font-mono); }
 .cf-fichas-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 14px 0 4px; }
 .cf-ficha { width: 54px; height: 54px; border-radius: var(--r-xs); background: var(--bg-input); border: 1px solid var(--border-2); display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .cf-ficha-letra { font-family: var(--font-disp); font-size: 18px; color: var(--text); letter-spacing: 0.3px; }
@@ -774,9 +893,9 @@ tr.heat-group-head:first-child th { padding-top: 2px; }
   </div>
 
   <div class="cat-picker-row" id="cat-picker-row">
-    <button class="cat-picker-btn" style="--c:var(--col-temas)" onclick="openPicker('temas')"><span>Temas</span></button>
-    <button class="cat-picker-btn" style="--c:var(--col-psico)" onclick="openPicker('psico')"><span>Psicos</span></button>
-    <button class="cat-picker-btn" style="--c:var(--col-ingles)" onclick="openPicker('ingles')"><span>Inglés</span></button>
+    <button class="cat-picker-btn btn-glow" style="--c:var(--col-temas)" onclick="openPicker('temas')"><span>Temas</span></button>
+    <button class="cat-picker-btn btn-glow" style="--c:var(--col-psico)" onclick="openPicker('psico')"><span>Psicos</span></button>
+    <button class="cat-picker-btn btn-glow" style="--c:var(--col-ingles)" onclick="openPicker('ingles')"><span>Inglés</span></button>
   </div>
 
   <div class="entry-selected-wrap" id="entry-selected-wrap" style="display:none;">
@@ -1044,7 +1163,7 @@ tr.heat-group-head:first-child th { padding-top: 2px; }
   </div>
 </div>
 
-<!-- MODAL: TEST / REPASO TEST de un tema (preguntas, aciertos, fuente, epígrafes) -->
+<!-- MODAL: TEST de un tema (preguntas, aciertos, epígrafes) -->
 <div class="modal-bg" id="tema-test-modal">
   <div class="modal">
     <div class="modal-title" id="tema-test-title">Tema · Test</div>
@@ -1063,14 +1182,6 @@ tr.heat-group-head:first-child th { padding-top: 2px; }
     <div id="tema-test-nota-auto" style="font-size:12px;color:var(--gold2);font-weight:700;margin:-4px 0 12px;min-height:14px;"></div>
     <label class="modal-label">O nota directa <span style="text-transform:none;font-weight:500;opacity:0.7;">(si no tienes el desglose)</span></label>
     <input type="text" class="modal-input" id="tema-test-nota-input" placeholder="p.ej. 7,5" inputmode="decimal" oninput="onTemaTestNotaDirectaInput()">
-    <label class="modal-label">Fuente</label>
-    <select class="modal-select" id="tema-test-fuente-input">
-      <option value="">Sin especificar</option>
-      <option value="Jurispol">Jurispol</option>
-      <option value="InoTest">InoTest</option>
-      <option value="Oficial">Oficial</option>
-      <option value="Otra">Otra</option>
-    </select>
     <div id="tema-test-checklist-wrap" style="margin-top:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
         <label class="modal-label" style="margin-bottom:0;">¿De qué epígrafes?</label>
@@ -1258,7 +1369,7 @@ tr.heat-group-head:first-child th { padding-top: 2px; }
 <div class="modal-bg" id="modelo-modal">
   <div class="modal">
     <div class="modal-title">Ajustes avanzados</div>
-    <div class="modal-note">Parámetros del modelo de frescura. Si no sabes qué es esto, probablemente no necesites tocarlo.</div>
+    <div class="modal-note">Parámetros del modelo de frescura. Si no sabes qué es esto, probablemente no necesites tocarlo.<br><br>El punto de arranque (cuánto dura la frescura de un tema recién estudiado, antes del primer repaso) viene de estudios de retención de material expositivo — no de una medición tuya. Tus propios tests irán sustituyendo esa estimación en cuanto el bloque de medición acumule suficientes puntos.</div>
     <label class="modal-label">Ganancia BIEN</label>
     <input type="text" class="modal-input" id="modelo-gananciaBien-input" inputmode="decimal">
     <label class="modal-label">Ganancia REGULAR</label>
@@ -1365,8 +1476,8 @@ tr.heat-group-head:first-child th { padding-top: 2px; }
       <div class="lvl-header-title">Código fonético</div>
       <button class="toggle-btn" onclick="closeModal('fonetico-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
-    <div class="card" style="padding:10px 12px;margin-bottom:16px;">
-      <div id="cf-tabla"></div>
+    <div class="card" style="padding:14px;margin-bottom:16px;">
+      <div class="cod-grid" id="cf-tabla"></div>
     </div>
     <label class="modal-label">Número</label>
     <input type="text" class="modal-input" id="cf-numero-input" inputmode="numeric" placeholder="p.ej. 84" oninput="onCfNumeroInput()">
@@ -1474,6 +1585,11 @@ function temaColor(temaId){ const b = temaBloque(temaId); return b ? b.color : '
 
 const DEFAULT_MODELO = { gananciaBien: 2.5, gananciaRegular: 1.5, penalizacionMal: 0.4, umbralVencido: 0.90 };
 const FRESH_FACTOR = 19/81, FRESH_DECAY = -0.5;
+// Tope absoluto de estabilidad (Bloque F, recalibrado): ningún tema de un
+// temario denso aguanta más de dos meses al 90% sin tocarlo, por muchas
+// vueltas que lleve — la progresión de nuevaEstabilidad no cambia, solo
+// hasta dónde puede llegar.
+const ESTABILIDAD_MAX = 60;
 
 function getTemasConfig(){ try{ return JSON.parse(localStorage.getItem('estudio_temas_config')||'{}'); }catch{ return {}; } }
 function saveTemasConfig(cfg){ localStorage.setItem('estudio_temas_config', JSON.stringify(cfg)); }
@@ -1505,7 +1621,7 @@ function nuevaEstabilidad(S, valoracion, frescuraPrevia, modelo){
   const ganancia = valoracion==='REGULAR' ? modelo.gananciaRegular : modelo.gananciaBien;
   const bonus = 1 + (0.9 - frescuraPrevia)*2;
   const efectiva = 1 + (ganancia*bonus - 1)/(1+S/60);
-  return S*efectiva;
+  return Math.min(ESTABILIDAD_MAX, S*efectiva);
 }
 function valoracionDeNota(nota){ if(nota<5) return 'MAL'; if(nota<=7) return 'REGULAR'; return 'BIEN'; }
 function dominioDeTests(tests){
@@ -1530,9 +1646,16 @@ function topeRecorte(dHastaExamen){ if(dHastaExamen==null) return Infinity; retu
 function estabilidadEfectiva(S, dHastaExamen){ return Math.min(S, topeRecorte(dHastaExamen)); }
 
 // --- Arranque con histórico (Bloque G) ---
+// Recalibrado contra Spitzer (1939, 3.605 estudiantes, texto expositivo y
+// test de opción múltiple, sin repasar): 72% al día, 60% a la semana, 53% a
+// las dos semanas, 48% a los 63 días — una lectura única y pasiva equivale a
+// una estabilidad de 1 día metida en la fórmula de frescura() de arriba. Es
+// una estimación calibrada contra ese dato medido, no una medición propia:
+// cuando el bloque de medición (Bloque H) tenga 20 puntos, sus datos mandan
+// sobre esta tabla.
 function estabilidadInicialPorMinutos(minutosTotal){
   const horas = minutosTotal/60;
-  if(horas<1) return 2; if(horas<3) return 5; if(horas<5) return 10; if(horas<8) return 18; return 25;
+  if(horas<2) return 2; if(horas<4) return 3; if(horas<7) return 8; if(horas<11) return 16; return 30;
 }
 function diasEntreFechas(a,b){ return Math.round((new Date(b+'T12:00:00') - new Date(a+'T12:00:00')) / 86400000); }
 
@@ -1837,7 +1960,7 @@ function confirmTemaSesion(){
   showToast('Guardado ✓','green');
 }
 
-// ===== Registrar: TEST / REPASO TEST de un tema =====
+// ===== Registrar: TEST de un tema (REPASO TEST usa el flujo normal de tiempo) =====
 let pendingTemaTest = null; // {temaId, subKey}
 let temaTestEditing = null; // {fecha,id} | null
 
@@ -1857,7 +1980,6 @@ function openTemaTestForm(temaId, subKey, editing){
     document.getElementById('tema-test-preguntas-input').value = e.preguntas!=null ? e.preguntas : '';
     document.getElementById('tema-test-aciertos-input').value = e.aciertos!=null ? e.aciertos : '';
     document.getElementById('tema-test-nota-input').value = (e.preguntas==null && e.nota!=null) ? formatNota(e.nota) : '';
-    document.getElementById('tema-test-fuente-input').value = e.fuente || '';
     (e.epigrafes||[]).forEach(id=>epiCheckedLeaves.add(id));
     renderEpiChecklist();
   } else {
@@ -1865,7 +1987,6 @@ function openTemaTestForm(temaId, subKey, editing){
     document.getElementById('tema-test-preguntas-input').value = '';
     document.getElementById('tema-test-aciertos-input').value = '';
     document.getElementById('tema-test-nota-input').value = '';
-    document.getElementById('tema-test-fuente-input').value = '';
   }
   updateTemaTestNota();
   openModal('tema-test-modal');
@@ -1907,7 +2028,6 @@ function saveTemaTestForm(){
   } else {
     showToast('Introduce preguntas y aciertos, o una nota'); return;
   }
-  const fuente = document.getElementById('tema-test-fuente-input').value || '';
   const tieneEpi = temaTieneEpigrafes(temaId);
   const epigrafes = (tieneEpi && epiCheckedLeaves.size) ? Array.from(epiCheckedLeaves) : null;
   const valoracion = valoracionDeNota(nota);
@@ -1935,7 +2055,6 @@ function saveTemaTestForm(){
   entry.valoracion = valoracion;
   if(preguntas!=null){ entry.preguntas = preguntas; entry.aciertos = aciertos; entry.nota = nota; }
   else { delete entry.preguntas; delete entry.aciertos; entry.nota = nota; }
-  if(fuente) entry.fuente = fuente; else delete entry.fuente;
   if(epigrafes) entry.epigrafes = epigrafes; else delete entry.epigrafes;
 
   saveDias(dias);
@@ -1952,11 +2071,11 @@ function deleteTemaTestEntry(){
   closeModal('tema-test-modal');
   deleteEntry(fecha, id);
 }
-function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='REPASO_TEST'); }
+function isTemaTestEntry(e){ return e.tipo==='tema' && e.subKey==='TEST'; }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 4;
-const APP_BUILD_DATE = '21 oct 2026 01:23';
+const APP_VERSION = 5;
+const APP_BUILD_DATE = '21 oct 2026 12:00';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2784,7 +2903,7 @@ function addTime(){
     return;
   }
 
-  // kind === 'tema' (el picker desvía TEST/REPASO_TEST a su propio formulario,
+  // kind === 'tema' (el picker desvía TEST a su propio formulario,
   // así que aquí solo llegan subcategorías de estudio: piden epígrafes+valoración).
   const {temaId, subKey} = entrySelection;
   pendingTemaSave = { temaId, subKey, minutos: delta, vuelta: subKey==='LIBRO_RESUMEN' ? entryVuelta : null };
@@ -3070,7 +3189,7 @@ function pickerGoBloque(id){ pickerBloqueId=id; pickerStep='temas-lista'; render
 function pickerGoTema(temaId){ pickerTemaId=temaId; pickerStep='temas-sub'; renderPicker(); }
 function pickerGoTests(){ pickerStep='tests-choice'; renderPicker(); }
 function pickerSelectTemaSub(subKey){
-  if(subKey==='TEST' || subKey==='REPASO_TEST'){
+  if(subKey==='TEST'){
     closeModal('picker-modal');
     openTemaTestForm(pickerTemaId, subKey);
     return;
@@ -4096,11 +4215,12 @@ function renderHerramientasScreen(){ /* pantalla estática: curva / mnemotécnic
 
 let curvaView = 'resumen'; // 'resumen' | 'tema' | 'editar'
 let curvaTemaId = null;
+let curvaOtroSel = null; // {tipo:'psico',id} | {tipo:'ingles'} | null — selección del desplegable fuera de temas
 
-function openCurva(){ curvaView='resumen'; curvaTemaId=null; renderCurva(); openModal('curva-modal'); }
-function curvaBack(){ curvaView='resumen'; curvaTemaId=null; renderCurva(); }
+function openCurva(){ curvaView='resumen'; curvaTemaId=null; curvaOtroSel=null; renderCurva(); openModal('curva-modal'); }
+function curvaBack(){ curvaView='resumen'; curvaTemaId=null; curvaOtroSel=null; renderCurva(); }
 function openCurvaTema(temaId){
-  curvaTemaId=temaId; curvaView='tema';
+  curvaTemaId=temaId; curvaOtroSel=null; curvaView='tema';
   // El mapa (Parte 1.3) es ahora un modal separado de la curva — si se entra
   // a la ficha de un tema desde ahí, se cierra el mapa y se abre la curva
   // encima, para no dejar dos paneles apilados.
@@ -4109,6 +4229,49 @@ function openCurvaTema(temaId){
   renderCurva();
 }
 function abrirEditorEpigrafes(temaId){ curvaTemaId=temaId; curvaView='editar'; renderCurva(); }
+
+// ===== Selector de tema dentro de la ficha (Parte 7): antes solo se podía
+// llegar a un tema desde fuera (resumen/mapa/lista); ahora también se puede
+// saltar a cualquier otro tema, o a psicotécnicos/inglés, sin cerrar la
+// ficha — el desplegable vive en la cabecera del cuerpo, no en el modal. =====
+function curvaSelectorValorActual(){
+  if(curvaOtroSel) return curvaOtroSel.tipo==='psico' ? 'psico:'+curvaOtroSel.id : 'ingles';
+  return 'tema:'+curvaTemaId;
+}
+function curvaSelectorOptionsHtml(){
+  const actual = curvaSelectorValorActual();
+  let html = '';
+  BLOQUES_TEMAS.forEach(b=>{
+    html += `<optgroup label="${escapeHtml(b.nombre)}">`;
+    for(let n=b.desde;n<=b.hasta;n++){
+      const v = 'tema:'+temaIdFromNum(n);
+      html += `<option value="${v}"${v===actual?' selected':''}>${temaNombre(temaIdFromNum(n))}</option>`;
+    }
+    html += `</optgroup>`;
+  });
+  const psicoCats = getCategorias().filter(c=>!isInnotestCat(c));
+  if(psicoCats.length){
+    html += `<optgroup label="Psicotécnicos">` + psicoCats.map(c=>{
+      const v = 'psico:'+c.id;
+      return `<option value="${v}"${v===actual?' selected':''}>${escapeHtml(c.nombre)}</option>`;
+    }).join('') + `</optgroup>`;
+  }
+  html += `<optgroup label="Inglés"><option value="ingles"${actual==='ingles'?' selected':''}>Inglés</option></optgroup>`;
+  return html;
+}
+function cambiarCurvaSeleccion(valor){
+  if(valor.indexOf('tema:')===0){ curvaTemaId = valor.slice(5); curvaOtroSel = null; }
+  else if(valor.indexOf('psico:')===0){ curvaOtroSel = {tipo:'psico', id:valor.slice(6)}; }
+  else { curvaOtroSel = {tipo:'ingles'}; }
+  renderCurva();
+}
+function curvaOtroNombre(sel){
+  if(sel.tipo==='psico'){ const c=getCategoria(sel.id); return c ? c.nombre : 'Psicotécnicos'; }
+  return 'Inglés';
+}
+function renderCurvaOtroHtml(sel){
+  return `<div class="empty-sub">${escapeHtml(curvaOtroNombre(sel))} no sigue un modelo de frescura ni repetición espaciada — aquí solo se registra tiempo. Elige un tema en el desplegable de arriba para ver su curva.</div>`;
+}
 
 function computarTodosLosTemas(hoyStr){
   const out = [];
@@ -4120,11 +4283,13 @@ function renderCurva(){
   document.getElementById('curva-header-title').textContent =
     curvaView==='resumen' ? 'Curva del olvido' :
     curvaView==='editar' ? 'Editar epígrafes · ' + temaNombre(curvaTemaId) :
-    temaNombre(curvaTemaId);
+    (curvaOtroSel ? curvaOtroNombre(curvaOtroSel) : temaNombre(curvaTemaId));
   const body = document.getElementById('curva-body');
   if(curvaView==='resumen'){ body.innerHTML = renderCurvaResumenHtml(); return; }
   if(curvaView==='editar'){ body.innerHTML = renderCurvaEditorHtml(curvaTemaId); return; }
-  body.innerHTML = renderCurvaTemaHtml(curvaTemaId);
+  const selectorHtml = `<select class="modal-select" id="curva-tema-select" style="margin-bottom:14px;font-family:var(--font-mono);" onchange="cambiarCurvaSeleccion(this.value)">${curvaSelectorOptionsHtml()}</select>`;
+  if(curvaOtroSel){ body.innerHTML = selectorHtml + renderCurvaOtroHtml(curvaOtroSel); return; }
+  body.innerHTML = selectorHtml + renderCurvaTemaHtml(curvaTemaId);
   setTimeout(()=>renderCurvaChart(curvaTemaId), 0);
 }
 // Frescura media del temario completo en una fecha dada (Parte 3.4): usa
@@ -4188,8 +4353,12 @@ function renderCurvaResumenHtml(){
     </div>`;
   }).join('') : '<div class="empty-sub">Nada vencido — vas al día</div>';
 
-  const tendenciaTxt = tendencia==null ? '—' : `${tendencia>=0?'↑':'↓'} ${Math.abs(Math.round(tendencia))}%`;
-  const tendenciaColor = tendencia==null ? 'var(--text3)' : (tendencia>=0 ? 'var(--green)' : 'var(--red)');
+  // Redondear ANTES de decidir signo/flecha: una tendencia real de -0.03%
+  // redondea a 0, y 0 no sube ni baja — si se compara el float crudo con >=0
+  // sale "↓ 0%" en rojo, que es mentira (Bloque de comprobaciones).
+  const tendenciaRed = tendencia==null ? null : Math.round(tendencia);
+  const tendenciaTxt = tendenciaRed==null ? '—' : (tendenciaRed===0 ? '→ 0%' : `${tendenciaRed>0?'↑':'↓'} ${Math.abs(tendenciaRed)}%`);
+  const tendenciaColor = tendenciaRed==null || tendenciaRed===0 ? 'var(--text3)' : (tendenciaRed>0 ? 'var(--green)' : 'var(--red)');
 
   return `
     <div class="curva-stats-row">
@@ -4202,7 +4371,7 @@ function renderCurvaResumenHtml(){
       <div class="curva-stat"><div class="v">${frescMediaHoy==null?'—':Math.round(frescMediaHoy*100)+'%'}</div><div class="l">Frescura media</div></div>
       <div class="curva-stat"><div class="v" style="color:${tendenciaColor};">${tendenciaTxt}</div><div class="l">Tendencia 7d</div></div>
     </div>
-    ${masOlvidado ? `<div class="card" style="padding:4px 16px;margin-top:10px;">
+    ${masOlvidado ? (masOlvidado.diasVencido>=0 ? `<div class="card" style="padding:4px 16px;margin-top:10px;">
       <div class="curva-list-row" style="border-top:none;" onclick="openCurvaTema('${masOlvidado.temaId}')">
         <div style="flex:1;min-width:0;">
           <div class="curva-list-meta" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin:0 0 2px;">Más olvidado</div>
@@ -4210,7 +4379,15 @@ function renderCurvaResumenHtml(){
         </div>
         <span class="curva-list-fresc" style="color:${frescuraColor(frescuraBand(masOlvidado.fresc))}">${Math.round(masOlvidado.fresc*100)}%</span>
       </div>
-    </div>` : ''}
+    </div>` : `<div class="card" style="padding:4px 16px;margin-top:10px;">
+      <div class="curva-list-row" style="border-top:none;" onclick="openCurvaTema('${masOlvidado.temaId}')">
+        <div style="flex:1;min-width:0;">
+          <div class="curva-list-meta" style="text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin:0 0 2px;color:var(--text3);">Nada vencido</div>
+          <div class="curva-list-name">El menos fresco es ${escapeHtml(masOlvidado.nombre)}</div>
+        </div>
+        <span class="curva-list-fresc" style="color:var(--text2);">${Math.round(masOlvidado.fresc*100)}%</span>
+      </div>
+    </div>`) : ''}
     ${examenHtml}
     <div class="chart-card-label" style="margin-top:18px;">Lo más olvidado</div>
     <div class="card" style="padding:4px 16px;">${listaHtml}</div>
@@ -4264,7 +4441,9 @@ function calcularSerieFrescuraTema(temaId, fechas){
     return frescuraTemaDesdeLeaves(leaves, f, dHE);
   });
 }
-function heatMonthsHeaderHtml(fechas){
+// Una celda del grid por fecha (mismas columnas que las filas de datos),
+// con el nombre del mes solo en la primera celda de su tramo vía grid-column:span.
+function heatMonthsGridHtml(fechas){
   const spans = [];
   let cur = null, count = 0;
   fechas.forEach(f=>{
@@ -4273,7 +4452,7 @@ function heatMonthsHeaderHtml(fechas){
     else count++;
   });
   if(cur!=null) spans.push({mes:cur,count});
-  return spans.map(s=>`<span style="width:${s.count*11}px">${s.count>=4?s.mes:''}</span>`).join('');
+  return spans.map(s=>`<div class="heat-month-cell" style="grid-column:span ${s.count}">${s.count>=4?s.mes:''}</div>`).join('');
 }
 // Pantalla propia dentro de Herramientas (Parte 1.3): ya no es un card dentro
 // de la Curva del olvido, es su propio modal a pantalla completa.
@@ -4301,28 +4480,29 @@ function renderMapaFrescura(){
   const tabsHtml = ['30D','90D','TODO'].map(r=>
     `<button class="range-tab tap${r===mapaFrescuraRango?' active':''}" onclick="setMapaFrescuraRango('${r}')">${r}</button>`
   ).join('');
-  let filas = '';
+  // Un único grid plano (nombres + rejilla son columnas del MISMO grid, nunca
+  // capas superpuestas): fila de meses, luego por bloque una fila de cabecera
+  // que ocupa todo el ancho (grid-column:1/-1) y una fila por tema.
+  let cells = `<div class="heat-corner"></div>${heatMonthsGridHtml(fechas)}`;
   BLOQUES_TEMAS.forEach(b=>{
-    filas += `<tr class="heat-group-head"><th style="color:${b.color}">${escapeHtml(b.nombre)}</th><td colspan="${fechas.length}"></td></tr>`;
+    cells += `<div class="heat-group-head" style="color:${b.color}">${escapeHtml(b.nombre)}</div>`;
     for(let n=b.desde;n<=b.hasta;n++){
       const tid = temaIdFromNum(n);
       const serie = calcularSerieFrescuraTema(tid, fechas);
-      filas += `<tr><th class="heat-name tap"
+      cells += `<div class="heat-name tap"
         onpointerdown="mapaNamePressStart('${tid}')" onpointerup="mapaNamePressEnd()" onpointerleave="mapaNamePressEnd()" onpointercancel="mapaNamePressEnd()" onpointermove="mapaNamePressEnd()"
-        onclick="mapaNameTap('${tid}')">${temaNombre(tid)}</th>`;
-      filas += serie.map((fr,i)=>{
+        onclick="mapaNameTap('${tid}')">${temaNombre(tid)}</div>`;
+      cells += serie.map((fr,i)=>{
         const v = fr==null ? '' : Math.round(fr*100);
         const isHoy = i===serie.length-1;
-        return `<td class="heat-cell"><i class="tap${isHoy?' today-c':''}" style="background:${frescuraHeatColor(fr)}" onclick="mostrarHeatReadout('${tid}','${fechas[i]}','${v}')"></i></td>`;
+        return `<div class="heat-cell"><i class="tap${isHoy?' today-c':''}" style="background:${frescuraHeatColor(fr)}" onclick="mostrarHeatReadout('${tid}','${fechas[i]}','${v}')"></i></div>`;
       }).join('');
-      filas += `</tr>`;
     }
   });
   wrap.innerHTML = `
     <div class="range-tabs">${tabsHtml}</div>
     <div class="heat-scroller" id="heat-scroller">
-      <div class="heat-months">${heatMonthsHeaderHtml(fechas)}</div>
-      <table class="heat-table">${filas}</table>
+      <div class="heat-grid" style="grid-template-columns:76px repeat(${fechas.length},minmax(22px,1fr))">${cells}</div>
     </div>
     <div class="heat-readout idle" id="heat-readout">Toca una celda para ver el dato · mantén pulsado un nombre para registrar.</div>
     <div class="heat-legend">
@@ -4361,7 +4541,7 @@ function mapaRegistroGuardar(){
   if(!minutos){ showToast('Indica un tiempo'); return; }
   const temaId = mapaRegistroTemaId;
   closeModal('mapa-registro-panel');
-  if(subKey==='TEST' || subKey==='REPASO_TEST'){ openTemaTestForm(temaId, subKey); return; }
+  if(subKey==='TEST'){ openTemaTestForm(temaId, subKey); return; }
   pendingTemaSave = { temaId, subKey, minutos, vuelta: subKey==='LIBRO_RESUMEN' ? Math.max(1, maxVueltaConTiempo(temaId)) : null };
   abrirTemaEpiModal();
 }
@@ -4892,7 +5072,7 @@ function highlightPalabraHtml(palabra, letras){ return highlightPalabraInfo(pala
 function renderCfTabla(){
   const el = document.getElementById('cf-tabla');
   if(!el) return;
-  el.innerHTML = Object.keys(CODIGO_FONETICO).map(d=>`<div class="cf-tabla-row"><span class="cf-tabla-num">${d}</span><span class="cf-tabla-letras">${CODIGO_FONETICO[d].join(' · ')}</span></div>`).join('');
+  el.innerHTML = Object.keys(CODIGO_FONETICO).map(d=>`<div class="cod-cell"><b>${d}</b><span>${CODIGO_FONETICO[d].join('·')}</span></div>`).join('');
 }
 function poblarCfTemaSelect(){
   const sel = document.getElementById('cf-tema-select');

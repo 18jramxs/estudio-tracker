@@ -9,13 +9,13 @@
    ============================================================ */
 
 :root{
-  --bg:#06070A;
+  --bg:#030304;              /* negro casi puro, neutro: sin tinte azulado */
 
-  /* cristal — más translúcido que v1 */
-  --glass-bg:rgba(255,255,255,.055);
-  --glass-bg-hi:rgba(255,255,255,.085);
-  --glass-border:rgba(255,255,255,.10);
-  --glass-blur:blur(30px) saturate(165%);
+  /* cristal — translúcido pero oscuro, nunca gris azulado */
+  --glass-bg:rgba(255,255,255,.035);
+  --glass-bg-hi:rgba(255,255,255,.07);
+  --glass-border:rgba(255,255,255,.085);
+  --glass-blur:blur(30px) saturate(118%);   /* saturate bajo: el azulado venía de aquí */
 
   --c-temas:#FF3B4E;
   --c-psico:#FF4D9D;
@@ -131,41 +131,54 @@ body::before{
    El efecto del item activo del sidebar: la luz del color entra
    por el borde IZQUIERDO y se desvanece hacia la derecha, con una
    barra de luz vertical pegada fuera. Sin punto, sin LED. */
+/* ── BOTÓN GLOW ─────────────────────────────────────────────
+   ESTE es el estilo de botón de toda la app: cristal claro,
+   borde del color y un halo exterior difuso. El mismo para los
+   bloques, el selector activo, la tab bar y cualquier acción. */
+.btn-glow{
+  --c:var(--c-ingles);
+  position:relative; overflow:hidden;
+  background:rgba(255,255,255,.075);
+  -webkit-backdrop-filter:var(--glass-blur);
+  backdrop-filter:var(--glass-blur);
+  border:1px solid color-mix(in srgb,var(--c) 48%,transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb,var(--c) 45%,transparent),
+    0 0 10px -2px color-mix(in srgb,var(--c) 70%,transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  color:#fff;
+  transition:transform .12s var(--ease), box-shadow .22s var(--ease);
+}
+.btn-glow::before{      /* filo de luz superior */
+  content:"";position:absolute;inset:0 0 auto;height:1px;z-index:3;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent);
+}
+.btn-glow:active{
+  transform:scale(.97);
+  box-shadow:
+    0 0 36px 0 color-mix(in srgb,var(--c) 60%,transparent),
+    0 0 14px -2px color-mix(in srgb,var(--c) 85%,transparent),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
+/* apagado: mismo molde, sin color */
+.btn-ghost{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.085);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+  color:var(--fg-3);
+}
+
 .bloques{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
 .bloque{
-  --c:var(--c-temas);
-  position:relative;
   display:grid;place-items:center;
   min-height:62px; padding:12px 8px;
   border-radius:var(--r-md);
-  background:rgba(255,255,255,.05);
-  -webkit-backdrop-filter:var(--glass-blur);
-  backdrop-filter:var(--glass-blur);
-  border:1px solid color-mix(in srgb,var(--c) 22%,transparent);
-  box-shadow:
-    0 0 28px -10px color-mix(in srgb,var(--c) 85%,transparent),
-    inset 0 1px 0 rgba(255,255,255,.2);
-  overflow:hidden;
   font-family:var(--font);font-weight:600;font-size:17px;
   letter-spacing:.055em;text-transform:uppercase;text-align:center;
-  line-height:1.08; color:#fff;
-  transition:transform .12s var(--ease), box-shadow .22s var(--ease);
-}
-.bloque::after{        /* solo difuminado de color, sin barra */
-  content:"";position:absolute;inset:-30%;pointer-events:none;
-  background:radial-gradient(48% 62% at 14% 88%,
-    color-mix(in srgb,var(--c) 85%,transparent), transparent 72%);
-  filter:blur(14px); opacity:.85;
-  transition:opacity .22s var(--ease);
+  line-height:1.08;
 }
 .bloque > *{position:relative;z-index:1;}
-.bloque:active{box-shadow:0 0 38px -6px color-mix(in srgb,var(--c) 95%,transparent),
-  inset 0 1px 0 rgba(255,255,255,.28);}
-.bloque:active::after{opacity:1;}
 .b-temas{--c:var(--c-temas)} .b-psico{--c:var(--c-psico)} .b-ingles{--c:var(--c-ingles)}
-/* dos líneas equilibradas: la corta más grande para que ambas ocupen lo mismo */
-.l1{display:block;font-size:20px;letter-spacing:.09em;}
-.l2{display:block;font-size:13px;letter-spacing:.055em;}
 
 /* ── 6 · FILAS ─────────────────────────────────────────── */
 .row{display:flex;align-items:center;gap:12px;padding:15px 17px;
@@ -177,18 +190,20 @@ body::before{
 .row .ch{color:var(--fg-3);}
 
 /* ── 7 · SEGMENTED CONTROL ─────────────────────────────── */
-.seg{display:flex;gap:4px;padding:4px;border-radius:var(--r-pill);}
-.seg button{flex:1;border:0;background:transparent;color:var(--fg-3);
+.seg{display:flex;gap:5px;padding:5px;border-radius:var(--r-pill);}
+.seg button{flex:1;border:1px solid transparent;background:transparent;color:var(--fg-3);
   font-family:var(--font);font-weight:600;font-size:13px;letter-spacing:.07em;
-  padding:9px 0;border-radius:var(--r-pill);cursor:pointer;
+  padding:10px 0;border-radius:var(--r-pill);cursor:pointer;
   transition:all .2s var(--ease);position:relative;z-index:2;}
-.seg button[aria-pressed="true"]{
-  color:var(--fg);
-  background:linear-gradient(90deg,
-    color-mix(in srgb,var(--halo) 38%,transparent),
-    rgba(255,255,255,.07));
-  box-shadow:0 0 18px -5px color-mix(in srgb,var(--halo) 80%,transparent),
-             inset 0 1px 0 rgba(255,255,255,.2);
+/* el activo usa el mismo botón glow que todo lo demás */
+.seg button[aria-pressed="true"]{--c:var(--halo);
+  background:rgba(255,255,255,.075);
+  border-color:color-mix(in srgb,var(--c) 48%,transparent);
+  box-shadow:
+    0 0 26px -2px color-mix(in srgb,var(--c) 45%,transparent),
+    0 0 10px -2px color-mix(in srgb,var(--c) 70%,transparent),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  color:#fff;
 }
 
 /* ── 8 · CURVA NEÓN ────────────────────────────────────── */
@@ -262,6 +277,49 @@ body::before{
              inset 0 1px 0 rgba(255,255,255,.22);
 }
 
+/* ── 13 · TABLA DEL CÓDIGO FONÉTICO ────────────────────────
+   Compacta: 5 columnas × 2 filas en vez de 10 filas largas. */
+.cod{padding:14px;}
+.cod-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.cod-cell{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 4px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+}
+.cod-cell b{
+  font-family:var(--font-cond);font-size:23px;font-weight:700;
+  line-height:1;color:var(--halo);
+}
+.cod-cell span{
+  font-size:11px;font-weight:600;letter-spacing:.07em;
+  color:rgba(255,255,255,.88);
+}
+/* fichas del generador */
+.fichas{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:14px 0 4px;}
+.ficha{
+  min-width:50px;padding:10px 8px;border-radius:var(--r-sm);text-align:center;
+  background:rgba(255,255,255,.075);
+  border:1px solid color-mix(in srgb,var(--halo) 42%,transparent);
+  box-shadow:0 0 18px -4px color-mix(in srgb,var(--halo) 60%,transparent);
+  cursor:pointer;transition:transform .12s var(--ease);
+}
+.ficha:active{transform:scale(.94);}
+.ficha b{display:block;font-family:var(--font-cond);font-size:21px;font-weight:700;line-height:1;}
+.ficha i{display:block;font-style:normal;font-size:10px;margin-top:3px;color:var(--halo);font-weight:700;}
+.campo{
+  width:100%;box-sizing:border-box;margin-top:6px;
+  padding:13px 15px;border-radius:var(--r-md);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:var(--fg);font-family:var(--font);font-size:15px;
+}
+.campo::placeholder{color:var(--fg-3);}
+.preview{
+  text-align:center;margin:14px 0 2px;font-family:var(--font-cond);
+  font-size:30px;letter-spacing:.01em;color:var(--fg-3);font-weight:600;
+}
+.preview b{color:#fff;font-weight:700;}
+
 h2.sec{font-size:var(--t-label);font-weight:600;letter-spacing:.17em;
   text-transform:uppercase;color:var(--fg-3);margin:0 0 -16px;}
 .chip{display:inline-block;padding:5px 12px;border-radius:var(--r-pill);
@@ -288,9 +346,9 @@ h2.sec{font-size:var(--t-label);font-weight:600;letter-spacing:.17em;
 
   <h2 class="sec">Bloques</h2>
   <div class="bloques">
-    <div class="tap bloque b-temas"><span class="shine"></span><span>Temas</span></div>
-    <div class="tap bloque b-psico"><span class="shine"></span><span>Psicos</span></div>
-    <div class="tap bloque b-ingles"><span class="shine"></span><span>Inglés</span></div>
+    <div class="tap btn-glow bloque b-temas"><span class="shine"></span><span>Temas</span></div>
+    <div class="tap btn-glow bloque b-psico"><span class="shine"></span><span>Psicos</span></div>
+    <div class="tap btn-glow bloque b-ingles"><span class="shine"></span><span>Inglés</span></div>
   </div>
 
   <h2 class="sec">Registros de hoy</h2>
@@ -355,6 +413,36 @@ h2.sec{font-size:var(--t-label);font-weight:600;letter-spacing:.17em;
     <div class="map-row"><b>Tema 26</b><span class="cells" data-v="97,74,46,30,22,17,14,12,10,9,8,7,6,6"></span></div>
     <div class="map-row"><b>Tema 38</b><span class="cells" data-v="-,-,-,-,-,-,-,-,-,-,-,-,-,-"></span></div>
     <div class="map-row" style="margin-top:4px"><b></b><span class="cells" style="font-size:9px;color:var(--fg-3);letter-spacing:.1em;display:flex;justify-content:space-between"><span>8 OCT</span><span>14 OCT</span><span>20 OCT</span></span></div>
+  </div>
+
+  <h2 class="sec">Código fonético</h2>
+  <div class="glass cod">
+    <div class="cod-grid">
+      <div class="cod-cell"><b>0</b><span>R</span></div>
+      <div class="cod-cell"><b>1</b><span>T·D</span></div>
+      <div class="cod-cell"><b>2</b><span>N·Ñ</span></div>
+      <div class="cod-cell"><b>3</b><span>M</span></div>
+      <div class="cod-cell"><b>4</b><span>C·K·Q</span></div>
+      <div class="cod-cell"><b>5</b><span>L</span></div>
+      <div class="cod-cell"><b>6</b><span>S·Z</span></div>
+      <div class="cod-cell"><b>7</b><span>F</span></div>
+      <div class="cod-cell"><b>8</b><span>CH·J·G</span></div>
+      <div class="cod-cell"><b>9</b><span>V·B·P</span></div>
+    </div>
+
+    <div class="fichas">
+      <div class="ficha tap"><b>CH</b><i>8</i></div>
+      <div class="ficha tap"><b>C</b><i>4</i></div>
+    </div>
+    <p class="label" style="text-align:center">pulsa una ficha para cambiar de letra</p>
+
+    <input class="campo" value="84" readonly>
+    <input class="campo" value="charco" readonly>
+    <p class="preview"><b>CH</b>ar<b>c</b>o</p>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <div class="tap btn-ghost" style="flex:1;padding:13px;border-radius:var(--r-md);text-align:center;font-weight:600;font-size:14px">Limpiar</div>
+      <div class="tap btn-glow" style="--c:var(--halo);flex:1.4;padding:13px;border-radius:var(--r-md);text-align:center;font-weight:600;font-size:14px">Guardar</div>
+    </div>
   </div>
 
   <p class="note">Pulsa los iconos de abajo: el halo y los acentos de toda la pantalla cambian con la sección.</p>
