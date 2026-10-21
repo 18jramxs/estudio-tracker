@@ -95,7 +95,7 @@
   --ease:          var(--ease-drawer);
 }
 
-html, body { background: var(--bg); overflow-x: hidden; }
+html, body { background: var(--bg); overflow-x: hidden; overscroll-behavior-y: none; }
 body {
   color: var(--text);
   font-family: var(--font-sans);
@@ -105,6 +105,15 @@ body {
   padding-bottom: 100px;
   -webkit-font-smoothing: antialiased;
   position: relative;
+}
+/* Banda fija que tapa la safe-area superior durante el rebote elástico de iOS
+   (overscroll-behavior-y ya lo frena, esto cubre el resquicio mientras tanto).
+   body::before ya está ocupado por el halo de fondo — este usa ::after. */
+body::after {
+  content: ""; position: fixed; inset: 0 0 auto; pointer-events: none;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+  z-index: 11;
 }
 
 /* Halo de fondo (Parte 2.1 del kit): dos radial-gradient muy difuminados que
@@ -648,7 +657,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .lvl-chevron { color: var(--text3); flex-shrink: 0; display: flex; transform: rotate(-90deg); }
 .lvl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .lvl-header-title { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; text-transform: uppercase; flex: 1; color: var(--text); }
-.lvl-back { background: none; border: 1px solid var(--border); color: var(--text2); width: 30px; height: 30px; border-radius: var(--r-xs); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: inherit; }
+.lvl-back { background: none; border: 1px solid var(--border); color: var(--text2); width: 44px; height: 44px; box-sizing: border-box; border-radius: var(--r-xs); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: inherit; }
 .lvl-back:active { transform: scale(0.92); border-color: var(--border-3); color: var(--gold2); }
 .lvl-block-btn {
   display: block; width: 100%; text-align: left;
@@ -938,10 +947,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- CATEGORÍAS -->
 <div id="screen-categorias" class="screen">
   <div id="categorias-list"></div>
-  <button class="add-btn" id="categorias-add-btn" onclick="openNewCategoryModal()" style="display:none;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Nueva categoría
-  </button>
 </div>
 
 <!-- AJUSTES -->
@@ -1008,7 +1013,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: fecha de inicio de la oposición -->
 <div class="modal-bg" id="opo-modal">
   <div class="modal">
-    <div class="modal-title">Días opositando</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('opo-modal')">‹</button>
+      <div class="lvl-header-title">Días opositando</div>
+      <button class="toggle-btn" onclick="closeModal('opo-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <label class="modal-label">Fecha de inicio</label>
     <input type="date" class="modal-input" id="opo-inicio-input">
     <div class="modal-actions">
@@ -1021,7 +1030,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: alternativas por pregunta (fórmula oficial de corrección de tests) -->
 <div class="modal-bg" id="alternativas-modal">
   <div class="modal">
-    <div class="modal-title">Alternativas por pregunta</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('alternativas-modal')">‹</button>
+      <div class="lvl-header-title">Alternativas por pregunta</div>
+      <button class="toggle-btn" onclick="closeModal('alternativas-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <div class="modal-note">Cada fallo resta 1/(alternativas−1) aciertos. Con 3 alternativas (Policía Nacional) un fallo resta medio acierto; con 4, un tercio.</div>
     <label class="modal-label">Alternativas</label>
     <input type="number" class="modal-input" id="alternativas-input" min="2" max="6" inputmode="numeric">
@@ -1035,7 +1048,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: editar/quitar tiempo de un registro concreto -->
 <div class="modal-bg" id="edit-entry-modal">
   <div class="modal">
-    <div class="modal-title">Editar tiempo</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('edit-entry-modal')">‹</button>
+      <div class="lvl-header-title">Editar tiempo</div>
+      <button class="toggle-btn" onclick="closeModal('edit-entry-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <div class="modal-note" id="edit-entry-meta"></div>
     <label class="modal-label">Tiempo total</label>
     <input type="text" class="modal-input" id="edit-entry-time-input" placeholder="h:mm o minutos" inputmode="text">
@@ -1059,7 +1076,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
      fallos y blancos opcionales, nota oficial calculada en vivo) -->
 <div class="modal-bg" id="tema-test-modal">
   <div class="modal">
-    <div class="modal-title" id="tema-test-title">Tema · Test</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('tema-test-modal')">‹</button>
+      <div class="lvl-header-title" id="tema-test-title">Tema · Test</div>
+      <button class="toggle-btn" onclick="closeModal('tema-test-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <label class="modal-label">Tiempo</label>
     <input type="text" class="modal-input" id="tema-test-tiempo-input" placeholder="h:mm o minutos" inputmode="text">
     <div style="display:flex;gap:8px;">
@@ -1097,7 +1118,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: categoría psicotécnica (crear/editar) -->
 <div class="modal-bg" id="category-modal">
   <div class="modal">
-    <div class="modal-title" id="category-modal-title">Nueva categoría</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('category-modal')">‹</button>
+      <div class="lvl-header-title" id="category-modal-title">Editar categoría</div>
+      <button class="toggle-btn" onclick="closeModal('category-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <label class="modal-label">Nombre</label>
     <input type="text" class="modal-input" id="category-name-input" placeholder="p.ej. PSI ÓMNIBUS" style="font-family:var(--font-sans);">
     <label class="modal-label">Color</label>
@@ -1112,7 +1137,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: subcategoría (crear/editar) -->
 <div class="modal-bg" id="subcategory-modal">
   <div class="modal">
-    <div class="modal-title" id="subcategory-modal-title">Nueva subcategoría</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('subcategory-modal')">‹</button>
+      <div class="lvl-header-title" id="subcategory-modal-title">Editar subcategoría</div>
+      <button class="toggle-btn" onclick="closeModal('subcategory-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <label class="modal-label">Nombre</label>
     <input type="text" class="modal-input" id="subcategory-name-input" placeholder="p.ej. CUBOS" style="font-family:var(--font-sans);">
     <div class="modal-actions">
@@ -1125,7 +1154,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: test con tiempo (psico TEST TIEMPO / INNOTEST) -->
 <div class="modal-bg" id="test-tiempo-modal">
   <div class="modal">
-    <div class="modal-title" id="test-tiempo-title">Test tiempo</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('test-tiempo-modal')">‹</button>
+      <div class="lvl-header-title" id="test-tiempo-title">Test tiempo</div>
+      <button class="toggle-btn" onclick="closeModal('test-tiempo-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <div id="test-tiempo-nombre-row">
       <label class="modal-label">Nombre</label>
       <input type="text" class="modal-input" id="test-tiempo-nombre-input" placeholder="p.ej. Simulacro ADAMS 4" style="font-family:var(--font-sans);">
@@ -1147,7 +1180,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: detalle de subcategoría psicotécnica (ver/editar/quitar tiempo) -->
 <div class="modal-bg" id="subcat-detail-modal">
   <div class="modal">
-    <div class="modal-title" id="subcat-detail-title">Subcategoría</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('subcat-detail-modal')">‹</button>
+      <div class="lvl-header-title" id="subcat-detail-title">Subcategoría</div>
+      <button class="toggle-btn" onclick="closeModal('subcat-detail-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <div class="modal-note" id="subcat-detail-total"></div>
     <div id="subcat-detail-list"></div>
     <div class="modal-actions" id="subcat-detail-actions">
@@ -1161,7 +1198,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: borrar categoría psicotécnica -->
 <div class="modal-bg" id="delete-cat-modal">
   <div class="modal">
-    <div class="modal-title">Borrar categoría</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('delete-cat-modal')">‹</button>
+      <div class="lvl-header-title">Borrar categoría</div>
+      <button class="toggle-btn" onclick="closeModal('delete-cat-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <div class="modal-note" id="delete-cat-text"></div>
     <div id="delete-cat-select-row">
       <label class="modal-label">Reasignar registros a</label>
@@ -1213,15 +1254,45 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: formulario test a la carta / simulacro -->
 <div class="modal-bg" id="test-form-modal">
   <div class="modal">
-    <div class="modal-title" id="test-form-title">Test a la carta</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('test-form-modal')">‹</button>
+      <div class="lvl-header-title" id="test-form-title">Test a la carta</div>
+      <button class="toggle-btn" onclick="closeModal('test-form-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <label class="modal-label">Fecha</label>
     <input type="date" class="modal-input" id="test-form-fecha">
     <label class="modal-label">Tiempo tardado</label>
     <input type="text" class="modal-input" id="test-form-tiempo" placeholder="h:mm o minutos">
-    <div id="test-form-nota-row" style="display:none;">
-      <label class="modal-label">Nota obtenida</label>
-      <input type="text" class="modal-input" id="test-form-nota" placeholder="p.ej. 7.25" inputmode="decimal">
+
+    <label class="modal-label">Resultado</label>
+    <div class="range-tabs" id="tf-resultado-tabs">
+      <button class="range-tab tap active" data-r="NOTA" onclick="tfSetResultadoModo('NOTA')">NOTA</button>
+      <button class="range-tab tap" data-r="DESGLOSE" onclick="tfSetResultadoModo('DESGLOSE')">DESGLOSE</button>
     </div>
+    <div id="tf-modo-nota">
+      <label class="modal-label">Nota <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+      <input type="text" class="modal-input" id="test-form-nota" placeholder="p.ej. 7,25" inputmode="decimal">
+    </div>
+    <div id="tf-modo-desglose" style="display:none;">
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;">
+          <label class="modal-label">Aciertos <span style="text-transform:none;font-weight:500;opacity:0.7;">(total)</span></label>
+          <input type="number" class="modal-input" id="tf-d-aciertos-input" min="0" inputmode="numeric" placeholder="p.ej. 95" oninput="updateTestFormNotaDesglose()">
+        </div>
+        <div style="flex:1;">
+          <label class="modal-label">Fallos <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+          <input type="number" class="modal-input" id="tf-d-fallos-input" min="0" inputmode="numeric" placeholder="p.ej. 4" oninput="updateTestFormNotaDesglose()">
+        </div>
+        <div style="flex:1;">
+          <label class="modal-label">Blancos <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+          <input type="number" class="modal-input" id="tf-d-blancos-input" min="0" inputmode="numeric" placeholder="p.ej. 1" oninput="updateTestFormNotaDesglose()">
+        </div>
+      </div>
+      <div class="modal-note" style="margin:-4px 0 6px;">Preguntas: la suma de los temas de abajo (<span id="tf-d-preguntas-echo">0</span>).</div>
+      <div id="tf-d-nota-auto" style="font-size:12px;color:var(--gold2);font-weight:700;margin:-4px 0 4px;min-height:14px;"></div>
+      <div id="tf-d-aviso-suma" style="font-size:11.5px;color:var(--orange);margin:0 0 10px;min-height:14px;"></div>
+    </div>
+
     <label class="modal-label">Temas incluidos <span style="text-transform:none;font-weight:500;opacity:0.7;">(preguntas · total <span id="test-form-total-preguntas">0</span>)</span></label>
     <div id="test-form-temas-list"></div>
     <button class="add-btn" onclick="openTestTemaPicker()">+ Añadir tema</button>
@@ -1233,6 +1304,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <div class="modal-bg" id="tests-view-modal">
   <div class="modal">
     <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('tests-view-modal')">‹</button>
       <div class="lvl-header-title">Tests</div>
       <button class="toggle-btn" onclick="closeModal('tests-view-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
@@ -1285,6 +1357,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <div class="modal-bg" id="introducir-test-modal">
   <div class="modal" style="max-height:88vh;">
     <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('introducir-test-modal')">‹</button>
       <div class="lvl-header-title">Introducir test</div>
       <button class="toggle-btn" onclick="closeModal('introducir-test-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
@@ -1377,7 +1450,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <!-- MODAL: nota mnemotécnica manual (crear/editar) -->
 <div class="modal-bg" id="nota-manual-modal">
   <div class="modal">
-    <div class="modal-title" id="nota-manual-title">Nueva nota</div>
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('nota-manual-modal')">‹</button>
+      <div class="lvl-header-title" id="nota-manual-title">Nueva nota</div>
+      <button class="toggle-btn" onclick="closeModal('nota-manual-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
     <textarea class="modal-input" id="nota-manual-texto" style="font-family:var(--font-sans);min-height:120px;resize:vertical;" placeholder="Escribe tu regla mnemotécnica…"></textarea>
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="closeModal('nota-manual-modal')">Cancelar</button>
@@ -1390,6 +1467,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 <div class="modal-bg" id="fonetico-modal">
   <div class="modal" style="max-height:88vh;">
     <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('fonetico-modal')">‹</button>
       <div class="lvl-header-title">Código fonético</div>
       <button class="toggle-btn" onclick="closeModal('fonetico-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
@@ -1843,7 +1921,6 @@ let pickerBloqueId = null;
 let pickerTemaId = null;
 let pickerCatBlock = 'psico'; // 'psico' | 'ingles' — bloque del picker de categorías
 let pickerPsicoCatId = null;
-let pickerNewCatColor = PALETTE[0];
 
 let historialLevel = 'meses';
 let historialMes = null;
@@ -1867,6 +1944,7 @@ let temaDetailVuelta = null;
 let testFormTipo = null;
 let testFormEditingId = null;
 let testFormTemas = [];
+let testFormResultadoModo = 'NOTA';
 let testPickerBloque = null;
 
 let testTiempoTarget = null; // {categoriaId, subcategoriaId}
@@ -2010,19 +2088,6 @@ function getCategoriaNombre(id){ const c = getCategoria(id); return c?c.nombre:'
 function getCategoriaColor(id){ const c = getCategoria(id); return c?c.color:'#666'; }
 function catBloqueOf(c){ return (c && c.bloque==='ingles') ? 'ingles' : 'psico'; }
 function getCategoriasBloque(bloque){ return getCategorias().filter(c=>catBloqueOf(c)===bloque); }
-function nextSuggestedColor(bloque){ const cats = bloque ? getCategoriasBloque(bloque) : getCategorias(); return PALETTE[cats.length % PALETTE.length]; }
-
-function getOrCreateCategoria(nombre,color,bloque){
-  bloque = bloque==='ingles' ? 'ingles' : 'psico';
-  const cats = getCategorias();
-  const existing = cats.find(c=>catBloqueOf(c)===bloque && c.nombre.trim().toLowerCase()===nombre.trim().toLowerCase());
-  if(existing) return existing.id;
-  const cat = {id:uid(), nombre:nombre.trim(), color, bloque, subcategorias:[]};
-  cats.push(cat);
-  saveCategorias(cats);
-  return cat.id;
-}
-
 function getSubcategoria(catId,subId){ const c = getCategoria(catId); return c && (c.subcategorias||[]).find(s=>s.id===subId); }
 function getSubcategoriaNombre(catId,subId){ if(!subId) return ''; const s = getSubcategoria(catId,subId); return s?s.nombre:''; }
 function sumMinutosSubcategoria(catId,subId){
@@ -2680,8 +2745,6 @@ function pickerBack(){
   else if(pickerStep==='temas-sub'){ pickerStep='temas-lista'; }
   else if(pickerStep==='tests-choice'){ pickerStep='temas-bloques'; }
   else if(pickerStep==='cat-sub'){ pickerStep='cat-lista'; }
-  else if(pickerStep==='cat-new'){ pickerStep='cat-lista'; }
-  else if(pickerStep==='cat-newsub'){ pickerStep='cat-sub'; }
   renderPicker();
 }
 function renderPicker(){
@@ -2750,20 +2813,7 @@ function renderPicker(){
       <span class="lvl-name">${escapeHtml(c.nombre)}</span>
       <span class="lvl-val">${formatHM(sumMinutosCategoria(c.id))}</span>
     </div>`).join('');
-    rows += `<div class="lvl-row" onclick="pickerStep='cat-new';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva categoría</span></div>`;
     body.innerHTML = (cats.length?'':'<div class="empty-sub">Sin categorías aún</div>') + rows;
-    return;
-  }
-  if(pickerStep==='cat-new'){
-    title.textContent = 'Nueva categoría';
-    pickerNewCatColor = nextSuggestedColor(pickerCatBlock);
-    body.innerHTML = `
-      <label class="modal-label">Nombre</label>
-      <input type="text" class="modal-input" id="picker-newcat-name" placeholder="${pickerCatBlock==='ingles'?'p.ej. VERBOS IRREGULARES':'p.ej. PSI ÓMNIBUS'}" style="font-family:var(--font-sans);">
-      <label class="modal-label">Color</label>
-      <div class="color-swatch-row" id="picker-newcat-colors"></div>
-      <button class="save-btn" onclick="pickerSaveCat()">Guardar</button>`;
-    renderSwatches('picker-newcat-colors', pickerNewCatColor, 'pickerSelectNewCatColor');
     return;
   }
   if(pickerStep==='cat-sub'){
@@ -2781,16 +2831,7 @@ function renderPicker(){
       <span class="lvl-val">${formatHM(sumMinutosSubcategoria(pickerPsicoCatId,s.id))}</span>
     </div>`;
     }).join('');
-    rows += `<div class="lvl-row" onclick="pickerStep='cat-newsub';renderPicker();" style="color:var(--gold2);"><span class="lvl-name">+ Nueva subcategoría</span></div>`;
     body.innerHTML = rows;
-    return;
-  }
-  if(pickerStep==='cat-newsub'){
-    title.textContent = 'Nueva subcategoría';
-    body.innerHTML = `
-      <label class="modal-label">Nombre</label>
-      <input type="text" class="modal-input" id="picker-newsub-name" placeholder="p.ej. AGILIDAD MENTAL" style="font-family:var(--font-sans);">
-      <button class="save-btn" onclick="pickerSavePsicoSub()">Guardar</button>`;
     return;
   }
 }
@@ -2818,23 +2859,10 @@ function pickerGoCat(id){
   ensurePsicoDefaultSubcats(id);
   pickerPsicoCatId=id; pickerStep='cat-sub'; renderPicker();
 }
-function pickerSelectNewCatColor(c){ pickerNewCatColor=c; renderSwatches('picker-newcat-colors', c, 'pickerSelectNewCatColor'); }
-function pickerSaveCat(){
-  const nombre = document.getElementById('picker-newcat-name').value.trim();
-  if(!nombre){ showToast('Ponle un nombre'); return; }
-  const id = getOrCreateCategoria(nombre, pickerNewCatColor, pickerCatBlock);
-  pickerGoCat(id);
-}
 function pickerSelectPsicoSub(subId){
   entrySelection = {kind:'psico', categoriaId:pickerPsicoCatId, subcategoriaId:subId};
   closeModal('picker-modal');
   renderEntrySelector();
-}
-function pickerSavePsicoSub(){
-  const nombre = document.getElementById('picker-newsub-name').value.trim();
-  if(!nombre){ showToast('Ponle un nombre'); return; }
-  const subId = getOrCreateSubcategoria(pickerPsicoCatId, nombre);
-  pickerSelectPsicoSub(subId);
 }
 function renderSwatches(containerId, selected, fn){
   document.getElementById(containerId).innerHTML = PALETTE.map(c=>
@@ -3234,8 +3262,6 @@ function heatColor(mins, maxMin){
 // ========== CATEGORÍAS (niveles: TEMAS / PSICOTÉCNICOS / INGLÉS) ==========
 function renderCategoriasList(){
   const list = document.getElementById('categorias-list');
-  const addBtn = document.getElementById('categorias-add-btn');
-  addBtn.style.display = (catLevel==='psico' || catLevel==='ingles') ? 'flex' : 'none';
 
   if(catLevel==='root'){
     list.innerHTML = `
@@ -3303,10 +3329,7 @@ function renderCategoriasList(){
         <span class="cat-row-name">${escapeHtml(s.nombre)}</span>
         <span class="cat-row-count">${formatHM(sumMinutosSubcategoria(c.id,s.id))}</span>
       </div>`).join('');
-      newSubBtn = `<div class="settings-row" style="padding:11px 4px;border-top:1px solid var(--border);margin-top:8px;cursor:pointer;" onclick="openNewSubcategoryModal('${c.id}')">
-            <div class="settings-row-icon" style="width:28px;height:28px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-            <span style="font-size:13px;">Nueva subcategoría</span>
-          </div>`;
+      newSubBtn = '';
     }
     return `<div class="history-session">
       <div class="history-session-header" style="cursor:pointer;" onclick="toggleCatExpand('${c.id}')">
@@ -3339,13 +3362,6 @@ function toggleCatExpand(id){
   const a = document.getElementById('cat-arr-'+id);
   const o = b.classList.toggle('open');
   a.classList.toggle('open', o);
-}
-function openNewSubcategoryModal(catId){
-  editingSubcategoryId = null;
-  subcategoryModalCatId = catId;
-  document.getElementById('subcategory-modal-title').textContent = 'Nueva subcategoría';
-  document.getElementById('subcategory-name-input').value = '';
-  openModal('subcategory-modal');
 }
 function openEditSubcategoryModal(catId,subId){
   const sub = getSubcategoria(catId,subId);
@@ -3466,15 +3482,6 @@ function moveCategory(id,dir){
   [cats[ia],cats[ib]] = [cats[ib],cats[ia]];
   saveCategorias(cats);
   renderCategoriasList();
-}
-function openNewCategoryModal(){
-  editingCategoryId = null;
-  categoryModalBloque = catLevel; // 'psico' | 'ingles'
-  document.getElementById('category-modal-title').textContent = 'Nueva categoría';
-  document.getElementById('category-name-input').value = '';
-  categoryModalColor = nextSuggestedColor(categoryModalBloque);
-  renderSwatches('category-colors', categoryModalColor, 'selectCategoryColor');
-  openModal('category-modal');
 }
 function openEditCategoryModal(id){
   const c = getCategoria(id);
@@ -3631,22 +3638,70 @@ function testTemaRound(minutosTotal, temasConPreguntas){
 function openTestForm(tipo, editId){
   testFormTipo = tipo;
   testFormEditingId = editId || null;
+  testFormResultadoModo = 'NOTA';
+  ['tf-d-aciertos-input','tf-d-fallos-input','tf-d-blancos-input'].forEach(id=>{ document.getElementById(id).value = ''; });
   if(editId){
     const t = getTests().find(x=>x.id===editId);
     document.getElementById('test-form-fecha').value = t.fecha;
     document.getElementById('test-form-tiempo').value = formatHM(t.minutosTotal);
     testFormTemas = (t.temas||[]).map(x=>({temaId:x.temaId, preguntas:x.preguntas, aciertos: x.aciertos!=null?x.aciertos:null}));
-    if(tipo==='simulacro') document.getElementById('test-form-nota').value = t.nota!=null ? t.nota : '';
+    document.getElementById('test-form-nota').value = t.nota!=null ? t.nota : '';
+    if(t.fallos!=null || t.blancos!=null || t.aciertosTotal!=null){
+      testFormResultadoModo = 'DESGLOSE';
+      if(t.aciertosTotal!=null) document.getElementById('tf-d-aciertos-input').value = t.aciertosTotal;
+      if(t.fallos!=null) document.getElementById('tf-d-fallos-input').value = t.fallos;
+      if(t.blancos!=null) document.getElementById('tf-d-blancos-input').value = t.blancos;
+    }
   } else {
     document.getElementById('test-form-fecha').value = todayStr();
     document.getElementById('test-form-tiempo').value = '';
     testFormTemas = [];
-    if(tipo==='simulacro') document.getElementById('test-form-nota').value = '';
+    document.getElementById('test-form-nota').value = '';
   }
   document.getElementById('test-form-title').textContent = (editId?'Editar ':'') + (tipo==='simulacro'?'Simulacro':'Test a la carta');
-  document.getElementById('test-form-nota-row').style.display = tipo==='simulacro' ? 'block' : 'none';
+  renderTestFormResultadoModo();
   renderTestFormTemas();
   openModal('test-form-modal');
+}
+function tfSetResultadoModo(m){ testFormResultadoModo = m; renderTestFormResultadoModo(); }
+function renderTestFormResultadoModo(){
+  document.querySelectorAll('#tf-resultado-tabs .range-tab').forEach(b=>b.classList.toggle('active', b.dataset.r===testFormResultadoModo));
+  document.getElementById('tf-modo-nota').style.display = testFormResultadoModo==='NOTA' ? 'block' : 'none';
+  document.getElementById('tf-modo-desglose').style.display = testFormResultadoModo==='DESGLOSE' ? 'block' : 'none';
+  updateTestFormNotaDesglose();
+}
+// Preguntas y aciertos TOTALES del desglose salen de la suma del desglose por
+// tema (testFormTemas) cuando existe — no hay que volver a escribirlos; solo
+// fallos y blancos son del simulacro completo y se piden una vez, sueltos.
+function updateTestFormNotaDesglose(){
+  const preguntasTotal = testFormTemas.reduce((a,t)=>a+t.preguntas,0);
+  document.getElementById('tf-d-preguntas-echo').textContent = preguntasTotal;
+  const temasConAciertos = testFormTemas.filter(t=>t.aciertos!=null);
+  const aciertosInput = document.getElementById('tf-d-aciertos-input');
+  if(temasConAciertos.length && temasConAciertos.length===testFormTemas.length && testFormTemas.length>0){
+    const aciertosAuto = temasConAciertos.reduce((a,t)=>a+t.aciertos,0);
+    aciertosInput.value = aciertosAuto;
+    aciertosInput.readOnly = true;
+  } else {
+    aciertosInput.readOnly = false;
+  }
+  const aciertos = parseInt(aciertosInput.value,10);
+  const fallosRaw = document.getElementById('tf-d-fallos-input').value.trim();
+  const blancosRaw = document.getElementById('tf-d-blancos-input').value.trim();
+  const fallos = fallosRaw==='' ? 0 : (parseInt(fallosRaw,10)||0);
+  const blancos = blancosRaw==='' ? 0 : (parseInt(blancosRaw,10)||0);
+  const notaEl = document.getElementById('tf-d-nota-auto');
+  const avisoEl = document.getElementById('tf-d-aviso-suma');
+  if(preguntasTotal>0 && Number.isFinite(aciertos)){
+    notaEl.textContent = 'Nota calculada: ' + formatNota(notaOficial(aciertos, fallos, preguntasTotal));
+    const suma = aciertos + fallos + blancos;
+    avisoEl.textContent = (fallosRaw!=='' || blancosRaw!=='') && suma!==preguntasTotal
+      ? `Aciertos + fallos + blancos (${suma}) no suman las ${preguntasTotal} preguntas`
+      : '';
+  } else {
+    notaEl.textContent = '';
+    avisoEl.textContent = '';
+  }
 }
 function renderTestFormTemas(){
   const el = document.getElementById('test-form-temas-list');
@@ -3658,6 +3713,7 @@ function renderTestFormTemas(){
       <button class="rm" onclick="removeTestFormTema(${i})">${ICON_CLOSE}</button>
     </div>`).join('');
   document.getElementById('test-form-total-preguntas').textContent = totalPreguntas;
+  updateTestFormNotaDesglose();
 }
 function updateTestFormPreguntas(i,v){
   testFormTemas[i].preguntas = Math.max(0, parseInt(v,10)||0);
@@ -3715,18 +3771,36 @@ function saveTestForm(){
     const orig = validTemas.find(v=>v.temaId===t.temaId);
     return Object.assign({}, t, { aciertos: orig && orig.aciertos!=null ? orig.aciertos : null });
   });
-  let nota = null;
-  if(testFormTipo==='simulacro'){
+  const totalPreguntas = temas.reduce((a,t)=>a+t.preguntas,0);
+  let nota = null, fallos = null, blancos = null, aciertosTotal = null;
+  if(testFormResultadoModo==='DESGLOSE'){
+    const aciertos = parseInt(document.getElementById('tf-d-aciertos-input').value,10);
+    if(!Number.isFinite(aciertos) || totalPreguntas<=0){ showToast('Introduce los aciertos del desglose'); return; }
+    const fallosRaw = document.getElementById('tf-d-fallos-input').value.trim();
+    const blancosRaw = document.getElementById('tf-d-blancos-input').value.trim();
+    fallos = fallosRaw==='' ? null : Math.max(0, parseInt(fallosRaw,10)||0);
+    blancos = blancosRaw==='' ? null : Math.max(0, parseInt(blancosRaw,10)||0);
+    aciertosTotal = aciertos;
+    nota = notaOficial(aciertos, fallos||0, totalPreguntas);
+  } else {
     const notaRaw = document.getElementById('test-form-nota').value.trim().replace(',','.');
     nota = notaRaw==='' ? null : parseFloat(notaRaw);
   }
-  const totalPreguntas = temas.reduce((a,t)=>a+t.preguntas,0);
   const tests = getTests();
   if(testFormEditingId){
     const t = tests.find(x=>x.id===testFormEditingId);
-    if(t){ t.fecha=fecha; t.minutosTotal=minutosTotal; t.temas=temas; t.nota=nota; t.totalPreguntas=totalPreguntas; }
+    if(t){
+      t.fecha=fecha; t.minutosTotal=minutosTotal; t.temas=temas; t.nota=nota; t.totalPreguntas=totalPreguntas;
+      if(fallos!=null) t.fallos=fallos; else delete t.fallos;
+      if(blancos!=null) t.blancos=blancos; else delete t.blancos;
+      if(aciertosTotal!=null) t.aciertosTotal=aciertosTotal; else delete t.aciertosTotal;
+    }
   } else {
-    tests.push({id:uid(), tipo:testFormTipo, fecha, minutosTotal, temas, nota, totalPreguntas});
+    const nuevo = {id:uid(), tipo:testFormTipo, fecha, minutosTotal, temas, nota, totalPreguntas};
+    if(fallos!=null) nuevo.fallos=fallos;
+    if(blancos!=null) nuevo.blancos=blancos;
+    if(aciertosTotal!=null) nuevo.aciertosTotal=aciertosTotal;
+    tests.push(nuevo);
   }
   saveTests(tests);
   closeModal('test-form-modal');
