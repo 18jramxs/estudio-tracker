@@ -450,6 +450,14 @@ body::before {
 .chart-carousel-dots { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 2px 0 14px; }
 .chart-carousel-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--text4); transition: all 0.25s var(--ease-out-soft); }
 .chart-carousel-dot.active { width: 18px; background: var(--gold2); }
+/* El carrusel de RENDIMIENTO reusa las clases de arriba pero necesita altura
+   variable (insight + nota debajo del canvas, no solo un canvas) y bloquear
+   el gesto a horizontal — escopado por id para no afectar al carrusel fijo
+   de STATS (chart-carousel-track), que sigue con su altura fija de siempre. */
+#rend-carousel-track.chart-carousel-track { touch-action: pan-x; overscroll-behavior-x: contain; overscroll-behavior-y: none; }
+#rend-carousel-track .chart-carousel-slide { height: auto; display: flex; flex-direction: column; scroll-snap-stop: always; }
+.rend-canvas-wrap { height: 200px; position: relative; flex-shrink: 0; }
+.rend-canvas-wrap canvas { position: absolute; inset: 0; }
 
 .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
 .stat-pill { padding: 14px 6px; text-align: center; }
@@ -707,8 +715,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .rend-stat { text-align: center; padding: 14px 6px; }
 .rend-stat .v { font-family: var(--font-mono); font-weight: 600; font-size: 22px; color: var(--text); line-height: 1; font-variant-numeric: tabular-nums; }
 .rend-stat .l { font-size: 9.5px; color: var(--text3); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
-.rend-chart-insight { text-align: center; font-size: 12.5px; color: var(--text2); padding: 8px 4px 0; min-height: 16px; }
+.rend-chart-insight { text-align: center; font-size: 12.5px; line-height: 1.35; color: var(--text2); padding: 8px 4px 0; min-height: 34px; }
 .rend-chart-note { text-align: center; font-size: 10px; color: var(--text3); padding: 2px 4px 0; }
+/* Chips de filtro de RENDIMIENTO: con 5 ya no caben a flex:1 repartido como
+   el resto de .range-tabs del resto de la app — se hacen desplazables en
+   horizontal en vez de encogerse, y un chip sin tests se apaga. */
+.rend-filtro-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.rend-filtro-tabs::-webkit-scrollbar { display: none; }
+.rend-filtro-tabs .range-tab { flex: 0 0 auto; padding: 8px 16px; }
+.rend-filtro-tabs .range-tab:disabled { opacity: 0.32; pointer-events: none; }
 .rend-sort-row { display: flex; align-items: center; gap: 10px; padding: 10px 0 8px; font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); border-bottom: 1px solid var(--border); margin-bottom: 2px; }
 .rend-sort-row button { background: none; border: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 0; }
 .rend-sort-row button.active { color: var(--gold2); }
@@ -1839,8 +1854,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 9;
-const APP_BUILD_DATE = '21 oct 2026 15:47';
+const APP_VERSION = 10;
+const APP_BUILD_DATE = '01 nov 2026 18:18';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -3959,10 +3974,20 @@ function renderTestsView(){
 }
 
 // ========== RENDIMIENTO (Parte 2): gráficas de tests, solo datos reales ==========
-// Fuente: entradas de tema con subKey TEST/INNOTEST (la única con atribución
-// limpia a un tema + una nota + preguntas/aciertos/fallos/blancos). Nada aquí
-// se estima — todo sale de recorrer los registros tal cual se guardaron.
-function getRendTests(){
+// Dos fuentes: entradas de tema con subKey TEST/INNOTEST (atribución limpia a
+// UN tema), y los tests a la carta/simulacro de estudio_tests (getTests()),
+// que tocan VARIOS temas a la vez. Por eso hay dos listas, no una:
+//  - getRendTestsCompletos(): la unidad es "un test" (un simulacro cuenta como
+//    uno, no como diez) — para el contador, la nota media ponderada y las
+//    gráficas que no necesitan atribuir nada a un tema concreto.
+//  - getRendTestsPorTema(): la unidad es "la porción de un test que toca un
+//    tema" — para la tabla POR TEMA y la ficha de un tema. Nunca se mezclan
+//    en el mismo cómputo.
+// Para TEST/INNOTEST (ya de un único tema) ambas listas llevan el mismo
+// registro — ahí "el test completo" y "su porción de ese tema" son la misma
+// cosa. Nada se estima salvo lo explícitamente marcado: si un tema de un
+// test multitema no tiene aciertos, no entra en la tabla por tema.
+function getRendTestsCompletos(){
   const out = [];
   getDias().forEach(d=>{
     d.entradas.forEach(e=>{
@@ -3977,12 +4002,67 @@ function getRendTests(){
       }
     });
   });
+  getTests().forEach(t=>{
+    if(t.nota==null) return;
+    out.push({
+      id: t.id, fecha: t.fecha, temaId: null, origen: t.tipo==='simulacro' ? 'SIMULACRO' : 'CARTA',
+      minutos: t.minutosTotal, nota: t.nota,
+      preguntas: t.totalPreguntas!=null ? t.totalPreguntas : null,
+      aciertos: t.aciertosTotal!=null ? t.aciertosTotal : null,
+      fallos: t.fallos!=null ? t.fallos : null,
+      blancos: t.blancos!=null ? t.blancos : null,
+    });
+  });
   return out.sort((a,b)=>a.fecha.localeCompare(b.fecha));
 }
+// Fallos de la porción de un tema dentro de un test multitema: solo se
+// deducen (repartidos a proporción de preguntas) si el test tiene desglose
+// completo de fallos y blancos; si no, null — y esa porción se marca como
+// estimación (nota calculada sin penalización) en rendTestsPorTema().
+function rendFallosDelTema(test, temaEntry){
+  if(test.fallos==null || test.blancos==null || !(test.totalPreguntas>0)) return null;
+  return Math.round(test.fallos * temaEntry.preguntas / test.totalPreguntas);
+}
+function getRendTestsPorTema(){
+  const out = [];
+  getDias().forEach(d=>{
+    d.entradas.forEach(e=>{
+      if(e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST') && e.nota!=null){
+        out.push({
+          id: e.id, fecha: d.fecha, temaId: e.temaId, origen: e.subKey, minutos: e.minutos, nota: e.nota,
+          preguntas: e.preguntas!=null ? e.preguntas : null,
+          aciertos: e.aciertos!=null ? e.aciertos : null,
+          fallos: e.fallos!=null ? e.fallos : null,
+          blancos: e.blancos!=null ? e.blancos : null,
+          estimado: false,
+        });
+      }
+    });
+  });
+  getTests().forEach(t=>{
+    (t.temas||[]).forEach(te=>{
+      if(te.aciertos==null || !(te.preguntas>0)) return;
+      const fallosTema = rendFallosDelTema(t, te);
+      out.push({
+        id: t.id+'_'+te.temaId, fecha: t.fecha, temaId: te.temaId, origen: t.tipo==='simulacro' ? 'SIMULACRO' : 'CARTA',
+        minutos: te.minutos, nota: notaOficial(te.aciertos, fallosTema||0, te.preguntas),
+        preguntas: te.preguntas, aciertos: te.aciertos, fallos: fallosTema, blancos: null,
+        estimado: fallosTema==null,
+      });
+    });
+  });
+  return out.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+}
+const REND_FILTROS = ['TODOS','TEST','INNOTEST','CARTA','SIMULACRO'];
 let rendFiltro = 'TODOS';
-function rendTestsFiltrados(){
-  const all = getRendTests();
-  return rendFiltro==='TODOS' ? all : all.filter(t=>t.origen===rendFiltro);
+function rendFiltrar(list){ return rendFiltro==='TODOS' ? list : list.filter(t=>t.origen===rendFiltro); }
+function rendTestsFiltrados(){ return rendFiltrar(getRendTestsCompletos()); }
+function rendTestsPorTemaFiltrados(){ return rendFiltrar(getRendTestsPorTema()); }
+// Etiqueta de un registro de RENDIMIENTO para los readouts de click: un
+// registro multitema (temaId null) no tiene un tema que nombrar.
+function rendEtiqueta(t){
+  if(t.temaId) return temaNombre(t.temaId);
+  return t.origen==='SIMULACRO' ? 'Simulacro' : 'Test a la carta';
 }
 function rendPctAcierto(t){ return t.preguntas>0 ? (t.aciertos/t.preguntas)*100 : t.nota*10; }
 function notaMediaPonderada(tests){
@@ -4032,7 +4112,18 @@ let rendTemaDetailId = null;
 let rendSortBy = 'nota', rendSortDir = 'asc';
 let rendSlideLabels = [];
 
-function openRendimiento(){ rendView='resumen'; renderRendimiento(); openModal('rendimiento-modal'); }
+// El modal abre con una transición de opacidad/escala (ver openModal): si las
+// gráficas se dibujan antes de que termine, Chart.js mide un contenedor que
+// todavía no tiene su ancho final y pinta con ejes desplazados/escala vieja.
+// Abrir el modal primero y esperar doble rAF (un paint de margen) antes de
+// renderizar asegura que el layout ya está asentado.
+function openRendimiento(){
+  rendView='resumen';
+  openModal('rendimiento-modal');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    renderRendimiento();
+  }));
+}
 function rendBack(){ rendView='resumen'; renderRendimiento(); }
 function rendAbrirTema(temaId){ rendView='tema'; rendTemaDetailId=temaId; renderRendimiento(); }
 function setRendFiltro(f){ rendFiltro = f; renderRendimiento(); }
@@ -4052,12 +4143,12 @@ function renderRendimiento(){
 }
 
 function renderRendTemaDetailHtml(temaId){
-  const tests = rendTestsFiltrados().filter(t=>t.temaId===temaId).slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const tests = rendTestsPorTemaFiltrados().filter(t=>t.temaId===temaId).slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
   if(!tests.length) return '<div class="empty-sub">Sin tests de este tema en el filtro actual.</div>';
   return tests.map(t=>`<div class="rend-tema-row" style="cursor:default;">
       <div style="flex:1;min-width:0;">
         <div class="rend-tema-name">${formatDate(t.fecha)} · ${t.origen}</div>
-        <div class="rend-tema-meta">${t.preguntas!=null ? `${t.aciertos}/${t.preguntas} preguntas` : 'nota directa'}${t.minutos?` · ${formatHM(t.minutos)}`:''}</div>
+        <div class="rend-tema-meta">${t.preguntas!=null ? `${t.aciertos}/${t.preguntas} preguntas` : 'nota directa'}${t.minutos?` · ${formatHM(t.minutos)}`:''}${t.estimado?' · estimación':''}</div>
       </div>
       <span class="rend-tema-val" style="color:${colorNota(t.nota)}">${formatNota(t.nota)}</span>
     </div>`).join('');
@@ -4065,30 +4156,32 @@ function renderRendTemaDetailHtml(temaId){
 
 function renderRendResumenHtml(){
   const tests = rendTestsFiltrados();
-  const filtroHtml = ['TODOS','TEST','INNOTEST'].map(f=>
-    `<button class="range-tab tap${f===rendFiltro?' active':''}" onclick="setRendFiltro('${f}')">${f}</button>`
-  ).join('');
+  const allCompletos = getRendTestsCompletos();
+  const filtroHtml = REND_FILTROS.map(f=>{
+    const disponible = f==='TODOS' ? allCompletos.length>0 : allCompletos.some(t=>t.origen===f);
+    return `<button class="range-tab tap${f===rendFiltro?' active':''}" ${disponible?'':'disabled'} onclick="setRendFiltro('${f}')">${f}</button>`;
+  }).join('');
 
   if(!tests.length){
-    return `<div class="range-tabs">${filtroHtml}</div><div class="empty-sub">Todavía no hay tests de TEST o INNOTEST registrados.</div>`;
+    return `<div class="range-tabs rend-filtro-tabs">${filtroHtml}</div><div class="empty-sub">Todavía no hay tests registrados.</div>`;
   }
 
   const notaMedia = notaMediaPonderada(tests);
   const totalPreguntas = tests.reduce((a,t)=>a+(t.preguntas||0),0);
 
   const slides = [];
-  slides.push({ label:'Evolución de notas', html:`<canvas id="rend-chart-a"></canvas><div class="rend-chart-insight" id="rend-insight-a"></div><div class="rend-chart-note" id="rend-readout-a"></div>` });
-  slides.push({ label:'Nota según días sin tocar', html:`<canvas id="rend-chart-b"></canvas><div class="rend-chart-insight" id="rend-insight-b"></div><div class="rend-chart-note" id="rend-readout-b"></div>` });
+  slides.push({ label:'Evolución de notas', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-a"></canvas></div><div class="rend-chart-insight" id="rend-insight-a"></div><div class="rend-chart-note" id="rend-readout-a"></div>` });
+  slides.push({ label:'Nota según días sin tocar', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-b"></canvas></div><div class="rend-chart-insight" id="rend-insight-b"></div><div class="rend-chart-note" id="rend-readout-b"></div><div class="rend-chart-note">Solo tests de un tema</div>` });
   if(rendTieneDesglose(tests)){
-    slides.push({ label:'Aciertos, fallos y blancos', html:`<canvas id="rend-chart-c"></canvas><div class="rend-chart-insight" id="rend-insight-c"></div>` });
+    slides.push({ label:'Aciertos, fallos y blancos', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-c"></canvas></div><div class="rend-chart-insight" id="rend-insight-c"></div>` });
   }
-  slides.push({ label:'Ritmo', html:`<canvas id="rend-chart-d"></canvas><div class="rend-chart-insight" id="rend-insight-d"></div><div class="rend-chart-note" id="rend-readout-d"></div><div class="rend-chart-note">Solo comparable entre tests de formato parecido</div>` });
+  slides.push({ label:'Ritmo', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-d"></canvas></div><div class="rend-chart-insight" id="rend-insight-d"></div><div class="rend-chart-note" id="rend-readout-d"></div><div class="rend-chart-note">Solo comparable entre tests de formato parecido</div>` });
   rendSlideLabels = slides.map(s=>s.label);
 
   const slidesHtml = slides.map(s=>`<div class="chart-carousel-slide">${s.html}</div>`).join('');
   const dotsHtml = slides.map((s,i)=>`<span class="chart-carousel-dot tap${i===0?' active':''}" onclick="goRendSlide(${i})"></span>`).join('');
 
-  const porTema = rendAgregadoPorTema(tests);
+  const porTema = rendAgregadoPorTema(rendTestsPorTemaFiltrados());
   porTema.sort((a,b)=>{
     const dir = rendSortDir==='asc' ? 1 : -1;
     return (a[rendSortBy]-b[rendSortBy])*dir;
@@ -4110,7 +4203,7 @@ function renderRendResumenHtml(){
       <div class="rend-stat"><div class="v">${notaMedia==null?'—':formatNota(notaMedia)}</div><div class="l">Nota media</div></div>
       <div class="rend-stat"><div class="v">${totalPreguntas}</div><div class="l">Preguntas</div></div>
     </div>
-    <div class="range-tabs">${filtroHtml}</div>
+    <div class="range-tabs rend-filtro-tabs">${filtroHtml}</div>
     <div class="chart-carousel-card">
       <div class="chart-card-label" style="padding:16px 16px 0;" id="rend-carousel-title">${slides[0].label}</div>
       <div class="chart-carousel-track" id="rend-carousel-track" onscroll="onRendCarouselScroll()">${slidesHtml}</div>
@@ -4154,7 +4247,9 @@ function renderRendCharts(){
   const tests = rendTestsFiltrados();
   if(!tests.length) return;
   renderRendChartA(tests);
-  renderRendChartB(tests);
+  // Nota según días sin tocar: un test multitema (CARTA/SIMULACRO) no se
+  // puede atribuir al hueco de un tema concreto — solo TEST/INNOTEST entran.
+  renderRendChartB(tests.filter(t=>t.origen==='TEST' || t.origen==='INNOTEST'));
   if(document.getElementById('rend-chart-c')) renderRendChartC(tests.filter(t=>t.preguntas>0 && t.fallos!=null && t.blancos!=null));
   renderRendChartD(tests.filter(t=>t.preguntas>0 && t.minutos>0));
 }
@@ -4176,8 +4271,9 @@ function renderRendChartA(tests){
     tension:0.2, fill:false, order:1 });
   if(charts['rend-a']) charts['rend-a'].destroy();
   charts['rend-a'] = new Chart(canvas.getContext('2d'), { type:'line', data:{datasets}, options: rendChartOptions(fechaInicio, 0, 10, (p)=>{
-    const m = p.meta; mostrarRendClick('a', `${formatDate(m.fecha)} · ${temaNombre(m.temaId)} · nota ${formatNota(m.nota)}`);
+    const m = p.meta; mostrarRendClick('a', `${formatDate(m.fecha)} · ${rendEtiqueta(m)} · nota ${formatNota(m.nota)}`);
   })});
+  charts['rend-a'].resize();
   const insight = document.getElementById('rend-insight-a');
   if(reg){
     const porMes = reg.m*30;
@@ -4203,8 +4299,9 @@ function renderRendChartB(tests){
     pointRadius:puntos.map(p=>rendPointRadius(p.w)), pointHoverRadius:9, order:1 });
   if(charts['rend-b']) charts['rend-b'].destroy();
   charts['rend-b'] = new Chart(canvas.getContext('2d'), { type:'line', data:{datasets}, options: rendChartOptionsDias((p)=>{
-    const m = p.meta; mostrarRendClick('b', `${formatDate(m.fecha)} · ${temaNombre(m.temaId)} · ${Math.round(rendPctAcierto(m))}% · ${p.x} días sin tocar`);
+    const m = p.meta; mostrarRendClick('b', `${formatDate(m.fecha)} · ${rendEtiqueta(m)} · ${Math.round(rendPctAcierto(m))}% · ${p.x} días sin tocar`);
   })});
+  charts['rend-b'].resize();
   const insight = document.getElementById('rend-insight-b');
   if(puntos.length<8){ insight.textContent = `Pocos datos todavía (${puntos.length} test${puntos.length===1?'':'s'})`; insight.style.color='var(--text3)'; }
   else if(reg){ const y7 = (reg.m*7+reg.b)/10; insight.textContent = `A los 7 días sacas un ${formatNota(Math.max(0,Math.min(10,y7)))} de media`; insight.style.color='var(--text2)'; }
@@ -4234,6 +4331,7 @@ function renderRendChartC(tests){
       scales:{ x:{ticks:{color:'rgba(255,255,255,0.32)',font:{size:8},maxTicksLimit:6},grid:{display:false}},
                y:{stacked:true,min:0,max:100,ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}} } }
   });
+  charts['rend-c'].resize();
   const pesoTotal = tests.reduce((a,t)=>a+t.preguntas,0);
   const media = arr => tests.reduce((a,t,i)=>a+arr[i]*t.preguntas,0)/pesoTotal;
   document.getElementById('rend-insight-c').textContent =
@@ -4255,8 +4353,9 @@ function renderRendChartD(tests){
   if(charts['rend-d']) charts['rend-d'].destroy();
   const yMax = Math.max(2, ...puntos.map(p=>p.y))*1.15;
   charts['rend-d'] = new Chart(canvas.getContext('2d'), { type:'line', data:{datasets}, options: rendChartOptions(fechaInicio, 0, yMax, (p)=>{
-    const m = p.meta; mostrarRendClick('d', `${formatDate(m.fecha)} · ${temaNombre(m.temaId)} · ${p.y.toFixed(1)} preg/min`);
+    const m = p.meta; mostrarRendClick('d', `${formatDate(m.fecha)} · ${rendEtiqueta(m)} · ${p.y.toFixed(1)} preg/min`);
   })});
+  charts['rend-d'].resize();
   const pesoTotal = tests.reduce((a,t)=>a+t.preguntas,0);
   const mediaRitmo = tests.reduce((a,t)=>a+(t.preguntas/t.minutos)*t.preguntas,0)/pesoTotal;
   document.getElementById('rend-insight-d').textContent = `Ritmo medio: ${mediaRitmo.toFixed(1)} preg/min`;
