@@ -1002,6 +1002,15 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 
   <div class="settings-group">
+    <div class="settings-group-title">Inglés</div>
+    <div class="settings-row" onclick="openAjustesInglesModal()">
+      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--c-ingles)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+      <span>Objetivo Aptis</span>
+      <span id="ajustes-ingles-val" style="margin-left:auto;font-size:12px;color:var(--text3);font-weight:600;"></span>
+    </div>
+  </div>
+
+  <div class="settings-group">
     <div class="settings-group-title">Peligro</div>
     <div class="settings-row danger" onclick="clearAllData()">
       <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></div>
@@ -1065,6 +1074,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <div class="modal-actions">
       <button class="modal-btn secondary" onclick="closeModal('alternativas-modal')">Cancelar</button>
       <button class="modal-btn primary" onclick="saveAlternativasModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: objetivo del bloque INGLÉS (fecha/nivel objetivo, minutos diarios) -->
+<div class="modal-bg" id="ajustes-ingles-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('ajustes-ingles-modal')">‹</button>
+      <div class="lvl-header-title">Objetivo Aptis</div>
+      <button class="toggle-btn" onclick="closeModal('ajustes-ingles-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label">Fecha objetivo del examen</label>
+    <input type="date" class="modal-input" id="ingles-fecha-objetivo-input">
+    <label class="modal-label">Nivel objetivo</label>
+    <select class="modal-select" id="ingles-nivel-objetivo-input"></select>
+    <label class="modal-label">Minutos diarios de referencia</label>
+    <input type="number" class="modal-input" id="ingles-minutos-diarios-input" min="1" inputmode="numeric">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('ajustes-ingles-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveAjustesInglesModal()">Guardar</button>
     </div>
   </div>
 </div>
@@ -1377,6 +1407,17 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <span style="color:var(--text3);">›</span>
     </button>
   </div>
+  <div class="tools-zone">
+    <div class="tools-zone-label">Inglés</div>
+    <button class="curva-tool-btn tap" onclick="openAptis()">
+      <span class="t">APTIS</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+    <button class="curva-tool-btn tap" onclick="openNivelInglesModal()">
+      <span class="t">NIVEL DE INGLÉS</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
+  </div>
 </div>
 
 <!-- MODAL: Rendimiento (gráficas de tests — Parte 2) -->
@@ -1388,6 +1429,67 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <button class="toggle-btn" onclick="closeModal('rendimiento-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
     <div id="rend-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Aptis (cuenta atrás, reparto por destreza, evolución de nivel) -->
+<div class="modal-bg" id="aptis-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <div class="lvl-header-title">Aptis</div>
+      <button class="toggle-btn" onclick="closeModal('aptis-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div id="aptis-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Registrar nivel de inglés (Aptis: 5 destrezas puntuadas + global MCER) -->
+<div class="modal-bg" id="nivel-ingles-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <div class="lvl-header-title">Registrar nivel</div>
+      <button class="toggle-btn" onclick="closeModal('nivel-ingles-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label">Fecha</label>
+    <input type="date" class="modal-input" id="nivel-ing-fecha">
+    <label class="modal-label">Prueba</label>
+    <select class="modal-select" id="nivel-ing-prueba"></select>
+    <label class="modal-label" style="margin-top:4px;">Nivel por destreza <span style="text-transform:none;font-weight:500;opacity:0.7;">(opcional)</span></label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:90px;">
+        <label class="modal-label" style="font-size:10px;">Grammar</label>
+        <select class="modal-select" id="nivel-ing-grammar"></select>
+      </div>
+      <div style="flex:1;min-width:90px;">
+        <label class="modal-label" style="font-size:10px;">Listening</label>
+        <select class="modal-select" id="nivel-ing-listening"></select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:90px;">
+        <label class="modal-label" style="font-size:10px;">Reading</label>
+        <select class="modal-select" id="nivel-ing-reading"></select>
+      </div>
+      <div style="flex:1;min-width:90px;">
+        <label class="modal-label" style="font-size:10px;">Writing</label>
+        <select class="modal-select" id="nivel-ing-writing"></select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:90px;">
+        <label class="modal-label" style="font-size:10px;">Speaking</label>
+        <select class="modal-select" id="nivel-ing-speaking"></select>
+      </div>
+      <div style="flex:1;min-width:90px;"></div>
+    </div>
+    <label class="modal-label" style="margin-top:4px;">Nivel global</label>
+    <select class="modal-select" id="nivel-ing-global"></select>
+    <label class="modal-label">Notas</label>
+    <input type="text" class="modal-input" id="nivel-ing-notas" placeholder="opcional" style="font-family:var(--font-sans);">
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('nivel-ingles-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveNivelInglesModal()">Guardar</button>
+    </div>
   </div>
 </div>
 
@@ -1728,6 +1830,30 @@ function refreshAlternativasLabel(){
   const el = document.getElementById('ajustes-alternativas-val');
   if(el) el.textContent = getAlternativas();
 }
+function openAjustesInglesModal(){
+  const a = getAjustesIngles();
+  document.getElementById('ingles-fecha-objetivo-input').value = a.fechaObjetivo;
+  document.getElementById('ingles-nivel-objetivo-input').innerHTML = NIVELES_APTIS.map(n=>`<option value="${n}">${n}</option>`).join('');
+  document.getElementById('ingles-nivel-objetivo-input').value = a.nivelObjetivo;
+  document.getElementById('ingles-minutos-diarios-input').value = a.minutosDiarios;
+  openModal('ajustes-ingles-modal');
+}
+function saveAjustesInglesModal(){
+  const fecha = document.getElementById('ingles-fecha-objetivo-input').value;
+  if(!fecha){ showToast('Elige una fecha'); return; }
+  const nivel = document.getElementById('ingles-nivel-objetivo-input').value;
+  const mins = parseInt(document.getElementById('ingles-minutos-diarios-input').value,10);
+  saveAjustesIngles({ fechaObjetivo:fecha, nivelObjetivo:nivel, minutosDiarios:(mins>0?mins:AJUSTES_INGLES_DEFAULT.minutosDiarios) });
+  closeModal('ajustes-ingles-modal');
+  refreshAjustesInglesLabel();
+  showToast('Guardado ✓','green');
+}
+function refreshAjustesInglesLabel(){
+  const el = document.getElementById('ajustes-ingles-val');
+  if(!el) return;
+  const a = getAjustesIngles();
+  el.textContent = `${a.nivelObjetivo} · ${fmtMesAnio(a.fechaObjetivo)}`;
+}
 
 // ===== Registrar: TEST de un tema (TEST académico / INNOTEST — preguntas,
 // aciertos, fallos y blancos opcionales; REPASO TEST/REPASO INNOTEST usan el
@@ -1854,8 +1980,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 10;
-const APP_BUILD_DATE = '01 nov 2026 18:18';
+const APP_VERSION = 11;
+const APP_BUILD_DATE = '01 nov 2026 20:00';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2266,6 +2392,91 @@ function ensurePsicoDefaultSubcats(catId){
   const cat = getCategoria(catId);
   if(!cat || isInnotestCat(cat)) return;
   PSICO_DEFAULT_SUBCATS.forEach(nombre=>getOrCreateSubcategoria(catId, nombre));
+}
+
+// ---- INGLÉS: seis destrezas fijas del Aptis General (Core/Grammar se separa
+// en GRAMMAR+VOCABULARY para el tiempo, aunque el Aptis las puntúe juntas —
+// ver NIVELES_APTIS/registro de nivel, que sí usa solo 5 destrezas puntuadas).
+// No son categorías libres como psico: no se pueden borrar ni renombrar
+// (isCategoriaFijaIngles), y sus subcategorías son TEORÍA/PRÁCTICA/EXAMEN,
+// no las de psico (TEST/INNOTEST no significan nada aquí — se registra
+// tiempo, no notas). Colores dentro de la familia de --c-ingles (#2E8BFF),
+// de más oscuro a más claro. ----
+const INGLES_SKILLS = [
+  {id:'ing-grammar',    nombre:'GRAMMAR',    color:'#1B5FD9'},
+  {id:'ing-vocabulary', nombre:'VOCABULARY', color:'#2670E8'},
+  {id:'ing-listening',  nombre:'LISTENING',  color:'#2E8BFF'},
+  {id:'ing-reading',    nombre:'READING',    color:'#4C9CFF'},
+  {id:'ing-writing',    nombre:'WRITING',    color:'#6FB0FF'},
+  {id:'ing-speaking',   nombre:'SPEAKING',   color:'#93C3FF'},
+];
+const INGLES_DEFAULT_SUBCATS = ['TEORÍA','PRÁCTICA','EXAMEN'];
+function isCategoriaFijaIngles(cat){ return !!cat && INGLES_SKILLS.some(s=>s.id===cat.id); }
+// Comprobación por id (no por flag): segura de repetir, crea solo lo que falte.
+function ensureInglesCategoriasFijas(){
+  const cats = getCategorias();
+  let changed = false;
+  INGLES_SKILLS.forEach(s=>{
+    if(!cats.find(c=>c.id===s.id)){
+      cats.push({id:s.id, nombre:s.nombre, color:s.color, bloque:'ingles', subcategorias:[]});
+      changed = true;
+    }
+  });
+  if(changed) saveCategorias(cats);
+}
+function ensureInglesDefaultSubcats(catId){
+  const cat = getCategoria(catId);
+  if(!cat) return;
+  INGLES_DEFAULT_SUBCATS.forEach(nombre=>getOrCreateSubcategoria(catId, nombre));
+}
+// ---- INGLÉS: registro de nivel (Aptis da 5 destrezas puntuadas + un nivel
+// global MCER) y ajustes del bloque (objetivo de examen). ----
+const NIVELES_APTIS = ['A1','A2','B1','B2','C'];
+const INGLES_PRUEBAS = [
+  {id:'diagnostico', nombre:'Diagnóstico propio'},
+  {id:'online',      nombre:'Test online'},
+  {id:'simulacro',   nombre:'Simulacro Aptis'},
+  {id:'oficial',     nombre:'Aptis oficial'},
+];
+function getNivelesIngles(){ try{ return JSON.parse(localStorage.getItem('estudio_ingles_niveles')||'[]'); }catch{ return []; } }
+function saveNivelesIngles(arr){ localStorage.setItem('estudio_ingles_niveles', JSON.stringify(arr)); }
+function ultimoNivelIngles(){
+  const arr = getNivelesIngles().slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  return arr[0] || null;
+}
+const AJUSTES_INGLES_DEFAULT = {fechaObjetivo:'2027-03-01', nivelObjetivo:'B1', minutosDiarios:40};
+function getAjustesIngles(){
+  try{ return Object.assign({}, AJUSTES_INGLES_DEFAULT, JSON.parse(localStorage.getItem('estudio_ajustes_ingles')||'{}')); }
+  catch{ return Object.assign({}, AJUSTES_INGLES_DEFAULT); }
+}
+function saveAjustesIngles(a){ localStorage.setItem('estudio_ajustes_ingles', JSON.stringify(a)); }
+const MESES_LARGO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function fmtMesAnio(s){ if(!s) return ''; const [y,m] = s.split('-'); return `${MESES_LARGO[parseInt(m,10)-1]} ${y}`; }
+// Minutos de una categoría acotados a un rango de fechas [desde,hasta] — a
+// diferencia de sumMinutosCategoria() (total histórico), para el reparto de
+// "últimas 4 semanas".
+function sumMinutosCategoriaRango(catId, desde, hasta){
+  let total = 0;
+  getDias().forEach(d=>{
+    if(d.fecha<desde || d.fecha>hasta) return;
+    d.entradas.forEach(e=>{ if(e.tipo==='psico' && e.categoriaId===catId) total += e.minutos; });
+  });
+  return total;
+}
+// Última fecha (<=hoy) con algún registro en esta categoría, para "días sin
+// tocar" — null si nunca se ha tocado (se trata como Infinity al comparar).
+function ultimaFechaCategoria(catId){
+  let ultimo = null;
+  getDias().forEach(d=>{
+    if(d.entradas.some(e=>e.tipo==='psico' && e.categoriaId===catId)){
+      if(ultimo==null || d.fecha>ultimo) ultimo = d.fecha;
+    }
+  });
+  return ultimo;
+}
+function diasSinTocarCategoria(catId){
+  const u = ultimaFechaCategoria(catId);
+  return u==null ? Infinity : diasEntreFechas(u, todayStr());
 }
 function isTestTiempoSub(sub){ return !!sub && normNombre(sub.nombre)==='TEST TIEMPO'; }
 function isTestTiempoEntry(e){ return e.tipo==='psico' && e.preguntas!=null; }
@@ -2986,7 +3197,7 @@ function pickerGoCat(id){
     openTestTiempoForm({categoriaId:id, subcategoriaId:''});
     return;
   }
-  ensurePsicoDefaultSubcats(id);
+  if(catBloqueOf(cat)==='ingles') ensureInglesDefaultSubcats(id); else ensurePsicoDefaultSubcats(id);
   pickerPsicoCatId=id; pickerStep='cat-sub'; renderPicker();
 }
 function pickerSelectPsicoSub(subId){
@@ -3425,12 +3636,22 @@ function renderCategoriasList(){
     list.innerHTML = rows;
     return;
   }
-  // catLevel === 'psico' | 'ingles' — mismo CRUD, filtrado por bloque
-  getCategoriasBloque(catLevel).forEach(c=>{ if(!isInnotestCat(c)) ensurePsicoDefaultSubcats(c.id); });
+  // catLevel === 'psico' | 'ingles' — mismo CRUD, filtrado por bloque. El
+  // sembrado de subcategorías por defecto NO es el mismo: psico usa
+  // TEST/REPASO TEST/TEST TIEMPO/INNOTEST (tests puntuados); ingles usa
+  // TEORÍA/PRÁCTICA/EXAMEN (solo tiempo) — ensurePsicoDefaultSubcats() nunca
+  // se aplica al bloque inglés.
+  if(catLevel==='ingles'){
+    ensureInglesCategoriasFijas();
+    getCategoriasBloque('ingles').forEach(c=>ensureInglesDefaultSubcats(c.id));
+  } else {
+    getCategoriasBloque(catLevel).forEach(c=>{ if(!isInnotestCat(c)) ensurePsicoDefaultSubcats(c.id); });
+  }
   const cats = getCategoriasBloque(catLevel); // re-leído: ya incluye las subcategorías recién sembradas
   let html = statsBackRow("catLevel='root';renderCategoriasList();");
   if(!cats.length){ html += '<div class="empty-state" style="padding:24px 16px;">Aún no tienes categorías</div>'; list.innerHTML = html; return; }
   html += cats.map((c,i)=>{
+    const fija = catLevel==='ingles' && isCategoriaFijaIngles(c);
     const innotest = isInnotestCat(c);
     const subs = innotest ? [] : (c.subcategorias || []);
     const totalCat = sumMinutosCategoria(c.id);
@@ -3476,8 +3697,9 @@ function renderCategoriasList(){
           <div style="display:flex;gap:8px;margin-bottom:12px;">
             <button class="cat-reorder-btn" ${i===0?'disabled':''} onclick="moveCategory('${c.id}',-1)">↑</button>
             <button class="cat-reorder-btn" ${i===cats.length-1?'disabled':''} onclick="moveCategory('${c.id}',1)">↓</button>
+            ${fija ? '<span style="flex:1;text-align:center;font-size:11px;color:var(--text3);align-self:center;">Fija</span>' : `
             <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;" onclick="openEditCategoryModal('${c.id}')">Editar</button>
-            <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="openDeleteCategoryModal('${c.id}')">Borrar</button>
+            <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="openDeleteCategoryModal('${c.id}')">Borrar</button>`}
           </div>
           ${subRows || '<div class="empty-state" style="padding:12px 0;">Sin subcategorías</div>'}
           ${newSubBtn}
@@ -3485,6 +3707,9 @@ function renderCategoriasList(){
       </div>
     </div>`;
   }).join('');
+  if(catLevel==='ingles'){
+    html += `<button class="add-btn" style="margin-top:4px;" onclick="openNewCategoryModal('ingles')">+ Nueva categoría</button>`;
+  }
   list.innerHTML = html;
 }
 function toggleCatExpand(id){
@@ -3613,9 +3838,21 @@ function moveCategory(id,dir){
   saveCategorias(cats);
   renderCategoriasList();
 }
+// Crear categoría nueva (reintroducido solo para INGLÉS: psico sigue fijo,
+// sin creación libre — ver A3/comentario de bloque más arriba).
+function openNewCategoryModal(bloque){
+  editingCategoryId = null;
+  categoryModalBloque = bloque;
+  document.getElementById('category-modal-title').textContent = 'Nueva categoría';
+  document.getElementById('category-name-input').value = '';
+  categoryModalColor = PALETTE[0];
+  renderSwatches('category-colors', categoryModalColor, 'selectCategoryColor');
+  openModal('category-modal');
+}
 function openEditCategoryModal(id){
   const c = getCategoria(id);
   if(!c) return;
+  if(isCategoriaFijaIngles(c)){ showToast('Esta categoría es fija, no se puede editar'); return; }
   editingCategoryId = id;
   categoryModalBloque = catBloqueOf(c);
   document.getElementById('category-modal-title').textContent = 'Editar categoría';
@@ -3640,7 +3877,7 @@ function saveCategoryModal(){
     cats.push({id:newId, nombre, color:categoryModalColor, bloque:categoryModalBloque, subcategorias:[]});
   }
   saveCategorias(cats);
-  if(newId) ensurePsicoDefaultSubcats(newId);
+  if(newId){ if(categoryModalBloque==='ingles') ensureInglesDefaultSubcats(newId); else ensurePsicoDefaultSubcats(newId); }
   closeModal('category-modal');
   renderCategoriasList();
   showToast('Guardada ✓','green');
@@ -3648,6 +3885,7 @@ function saveCategoryModal(){
 function openDeleteCategoryModal(id){
   const c = getCategoria(id);
   if(!c) return;
+  if(isCategoriaFijaIngles(c)){ showToast('Esta categoría es fija, no se puede borrar'); return; }
   pendingDeleteCategoryId = id;
   const n = countEntradasCategoria(id);
   const mins = sumMinutosCategoria(id);
@@ -3669,6 +3907,7 @@ function openDeleteCategoryModal(id){
 function confirmDeleteCategory(){
   const id = pendingDeleteCategoryId;
   if(!id) return;
+  if(isCategoriaFijaIngles(getCategoria(id))) return;
   const reassignTo = document.getElementById('delete-cat-select').value || null;
   let dias = getDias();
   if(reassignTo){
@@ -4649,6 +4888,146 @@ function leyesTemaOptgroupsHtml(){
   +'</optgroup>').join('');
 }
 
+// showScreen() llama a renderHerramientasScreen() al entrar en la pestaña,
+// pero nunca estaba definida (ReferenceError silencioso en cada entrada) —
+// la pantalla es estática (botones a herramientas, sin estado propio que
+// repintar), así que el fix es declarar el no-op que debería haber estado.
+function renderHerramientasScreen(){}
+
+// ========== INGLÉS: registrar nivel (herramienta) ==========
+function nivelSelectOptionsHtml(incluirSinMedir){
+  return (incluirSinMedir?'<option value="">—</option>':'') + NIVELES_APTIS.map(n=>`<option value="${n}">${n}</option>`).join('');
+}
+function openNivelInglesModal(){
+  document.getElementById('nivel-ing-fecha').value = todayStr();
+  document.getElementById('nivel-ing-prueba').innerHTML = INGLES_PRUEBAS.map(p=>`<option value="${p.id}">${escapeHtml(p.nombre)}</option>`).join('');
+  ['grammar','listening','reading','writing','speaking'].forEach(k=>{
+    const sel = document.getElementById('nivel-ing-'+k);
+    sel.innerHTML = nivelSelectOptionsHtml(true);
+    sel.value = '';
+  });
+  document.getElementById('nivel-ing-global').innerHTML = `<option value="">Elige un nivel</option>` + nivelSelectOptionsHtml(false);
+  document.getElementById('nivel-ing-global').value = '';
+  document.getElementById('nivel-ing-notas').value = '';
+  openModal('nivel-ingles-modal');
+}
+// ========== INGLÉS: pantalla APTIS (cuenta atrás, reparto, evolución) ==========
+// Mismo motivo que en openRendimiento(): el modal todavía está a medio abrir
+// cuando se llamaría a render, así que Chart.js mediría un canvas sin su
+// ancho final. Abrir primero y renderizar tras doble rAF.
+function openAptis(){
+  openModal('aptis-modal');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    renderAptisScreen();
+  }));
+}
+function renderAptisScreen(){
+  document.getElementById('aptis-body').innerHTML = renderAptisBodyHtml();
+  renderAptisNivelChart();
+}
+function renderAptisBodyHtml(){
+  const ajustes = getAjustesIngles();
+  const hoy = todayStr();
+  const dias = Math.max(0, diasEntreFechas(hoy, ajustes.fechaObjetivo));
+  const totalMin = sumMinutosInglesTotal();
+  const horas = Math.round(totalMin/60);
+  // 200h por nivel (estándar del Consejo de Europa para subir un escalón del
+  // MCER) es una referencia fija, no escalada por cuántos escalones falten
+  // hasta el nivel objetivo — el objetivo solo se muestra como etiqueta.
+  const pct = Math.max(0, Math.min(100, Math.round(totalMin/60/200*100)));
+  const ultimo = ultimoNivelIngles();
+  return `
+    <div class="card" style="padding:18px 16px;margin-bottom:14px;">
+      <div class="chart-card-label" style="text-align:center;">Aptis</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 14px;">
+        <div class="rend-stat"><div class="v">${dias}</div><div class="l">Días</div></div>
+        <div class="rend-stat"><div class="v">${horas} h</div><div class="l">Acumuladas</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:6px;display:flex;justify-content:space-between;">
+        <span>Objetivo ${escapeHtml(ajustes.nivelObjetivo)} · ${fmtMesAnio(ajustes.fechaObjetivo)}</span><span>${pct}%</span>
+      </div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="transform:scaleX(${(pct/100).toFixed(4)});background:linear-gradient(90deg, var(--c-ingles)99, var(--c-ingles))"></div></div>
+      <div class="rend-chart-note" style="margin-top:10px;">${ultimo ? `Nivel actual ${escapeHtml(ultimo.nivelGlobal)} · ${formatDate(ultimo.fecha)}` : 'Sin nivel registrado todavía'}</div>
+    </div>
+    <div class="card" style="padding:16px;margin-bottom:14px;">
+      <div class="chart-card-label">Reparto · últimas 4 semanas</div>
+      ${renderAptisBreakdownHtml()}
+    </div>
+    <div class="card" style="padding:16px;">
+      <div class="chart-card-label">Evolución del nivel</div>
+      <div id="aptis-nivel-wrap" style="margin-top:8px;"></div>
+    </div>
+  `;
+}
+// Reparto de tiempo de las últimas 4 semanas (28 días, hoy incluido) entre
+// las seis destrezas fijas — nunca categorías propias, esto es "por
+// destreza", no "por categoría". El aviso señala la más desatendida en
+// TODO el histórico (no solo las 4 semanas): si la última vez que se tocó
+// cualquiera de las seis fue hace menos de 7 días, no hay nada que avisar.
+function renderAptisBreakdownHtml(){
+  const hoy = todayStr();
+  const desde = addDays(hoy, -27);
+  const rows = INGLES_SKILLS.map(s=>({nombre:s.nombre, color:s.color, total:sumMinutosCategoriaRango(s.id, desde, hoy)}));
+  rows.sort((a,b)=>b.total-a.total);
+  const max = Math.max(1, ...rows.map(r=>r.total));
+  const barsHtml = rows.map(r=>statBarRow(r.nombre, r.color, r.total, max, null)).join('');
+  const gaps = INGLES_SKILLS.map(s=>({nombre:s.nombre, dias:diasSinTocarCategoria(s.id)}));
+  const peor = gaps.reduce((a,b)=> b.dias>a.dias ? b : a);
+  let avisoHtml = '';
+  if(peor.dias>=7){
+    const txt = peor.dias===Infinity ? `Todavía no has tocado ${peor.nombre.toLowerCase()}` : `Llevas ${peor.dias} días sin tocar ${peor.nombre.toLowerCase()}`;
+    avisoHtml = `<div class="rend-chart-note" style="margin-top:10px;">${txt}</div>`;
+  }
+  return barsHtml + avisoHtml;
+}
+// Gráfica de escalones (A1→C) con un punto por prueba de nivel registrada.
+// Con menos de dos registros no hay evolución que dibujar — ver COMPROBACIONES.
+function renderAptisNivelChart(){
+  const wrap = document.getElementById('aptis-nivel-wrap');
+  if(!wrap) return;
+  const niveles = getNivelesIngles().slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  if(niveles.length<2){
+    wrap.innerHTML = '<div class="empty-sub">Aparecerá con la segunda medición de nivel.</div>';
+    return;
+  }
+  wrap.innerHTML = '<div class="rend-canvas-wrap"><canvas id="aptis-nivel-chart"></canvas></div>';
+  const fechaInicio = niveles[0].fecha;
+  const puntos = niveles.map(n=>({x:diasEntreFechas(fechaInicio,n.fecha), y:NIVELES_APTIS.indexOf(n.nivelGlobal), meta:n}));
+  const xMax = Math.max(1, puntos[puntos.length-1].x);
+  if(charts['aptis-nivel']) charts['aptis-nivel'].destroy();
+  charts['aptis-nivel'] = new Chart(document.getElementById('aptis-nivel-chart').getContext('2d'), {
+    type:'line',
+    data:{ datasets:[{ label:'Nivel', data:puntos, stepped:true, borderColor:cssVar('--c-ingles'), backgroundColor:cssVar('--c-ingles'),
+      pointBackgroundColor:cssVar('--c-ingles'), pointRadius:5, pointHoverRadius:7, fill:false }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ type:'linear', min:0, max:xMax, ticks:{ color:'rgba(255,255,255,0.32)', font:{size:8}, callback:v=>formatDate(addDays(fechaInicio,Math.round(v))).slice(0,5) }, grid:{display:false} },
+        y:{ min:0, max:NIVELES_APTIS.length-1, ticks:{ stepSize:1, color:'rgba(255,255,255,0.32)', font:{size:10}, callback:v=>NIVELES_APTIS[v]||'' }, grid:{color:'rgba(255,255,255,0.04)'} }
+      }
+    }
+  });
+  charts['aptis-nivel'].resize();
+}
+function saveNivelInglesModal(){
+  const fecha = document.getElementById('nivel-ing-fecha').value;
+  if(!fecha){ showToast('Elige una fecha'); return; }
+  const global = document.getElementById('nivel-ing-global').value;
+  if(!global){ showToast('Elige el nivel global'); return; }
+  const prueba = document.getElementById('nivel-ing-prueba').value;
+  const skills = {};
+  ['grammar','listening','reading','writing','speaking'].forEach(k=>{
+    const v = document.getElementById('nivel-ing-'+k).value;
+    skills[k] = v || null;
+  });
+  const notas = document.getElementById('nivel-ing-notas').value.trim();
+  const arr = getNivelesIngles();
+  arr.push({id:uid(), fecha, prueba, skills, nivelGlobal:global, notas});
+  saveNivelesIngles(arr);
+  closeModal('nivel-ingles-modal');
+  showToast('Nivel guardado ✓','green');
+}
+
 let leyesView = 'todo'; // 'todo' | 'bloque' | 'tema'
 let leyesBloqueSel = BLOQUES_TEMAS[0].id;
 let leyesTemaSel = 1;
@@ -5320,7 +5699,7 @@ function showScreen(name,btn){
   }
   if(name==='herramientas') renderHerramientasScreen();
   if(name==='categorias') renderCategoriasList();
-  if(name==='ajustes') refreshAlternativasLabel();
+  if(name==='ajustes'){ refreshAlternativasLabel(); refreshAjustesInglesLabel(); }
 }
 // Abrir/cerrar panel flotante (Parte 1.4 / 3.3): display:none→flex y el
 // arranque de la transición de opacidad se separan en dos pasos con un reflow
@@ -5408,6 +5787,8 @@ function clearAllData(){
   localStorage.removeItem('estudio_tests');
   localStorage.removeItem('estudio_migracion_v2_done');
   localStorage.removeItem('estudio_backup_pre_v2');
+  localStorage.removeItem('estudio_ingles_niveles');
+  localStorage.removeItem('estudio_ajustes_ingles');
   // Marca explícita para no ofrecer restaurar el backup justo después de un borrado intencional.
   localStorage.setItem('estudio_cleared_at', String(Date.now()));
   showToast('Datos borrados');
@@ -5418,6 +5799,7 @@ function clearAllData(){
 checkBackupRestoreOffer();
 migrateSubcategorias();
 migrateToV2();
+ensureInglesCategoriasFijas();
 currentHoyDate = todayStr();
 document.getElementById('hoy-date-input').value = currentHoyDate;
 renderHoy();

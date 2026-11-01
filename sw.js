@@ -1,4 +1,4 @@
-const APP_VERSION = 10;
+const APP_VERSION = 11;
 const CACHE_NAME = `estudio-v${APP_VERSION}`;
 const CORE_ASSETS = [
   './',
