@@ -316,6 +316,9 @@ body::before {
 .entry-name-sub { display: block; font-size: 11.5px; font-weight: 500; color: var(--text3); margin-top: 3px; overflow-wrap: anywhere; }
 .entry-row.clickable { cursor: pointer; margin: 0 -14px; padding: 13px 14px; border-radius: var(--r-xs); transition: background 0.15s, transform 0.12s var(--ease-pop); }
 .entry-row.clickable:active { background: rgba(56,189,248,0.07); transform: scale(0.99); }
+.entry-row.entry-row-sub { padding-top: 9px; padding-bottom: 9px; }
+.entry-row.entry-row-sub .entry-name { font-size: 13px; padding-left: 22px; color: var(--text2); font-weight: 500; }
+.entry-row.entry-row-sub .entry-time { font-size: 12.5px; }
 
 /* —— Botones de acción: mismo molde que .btn-glow/.btn-ghost del kit —— */
 .add-btn {
@@ -2039,8 +2042,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 13;
-const APP_BUILD_DATE = '04 nov 2026 15:56'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_VERSION = 14;
+const APP_BUILD_DATE = '04 nov 2026 16:19'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2727,6 +2730,79 @@ function maxVueltaConTiempo(temaId){
   return max;
 }
 
+// ========== HOY: agrupar entradas del mismo bloque cuando hay 3+ en el día ==========
+// INGLÉS/PSICOTÉCNICOS se agrupan enteros; TEMAS por tema (no se mezclan
+// entre sí). Los tests/simulacros/repasos (dayTestRows) nunca se agrupan.
+let hoyGroupOpen = {};
+function toggleHoyGroup(fecha, key){ hoyGroupOpen[fecha+'|'+key] = !hoyGroupOpen[fecha+'|'+key]; renderHoy(); }
+function entradaGroupKey(e){
+  if(e.tipo==='tema') return 'tema-'+e.temaId;
+  if(e.tipo==='psico') return 'bloque-'+catBloqueOf(getCategoria(e.categoriaId));
+  return null;
+}
+function entradaGroupMeta(key){
+  if(key.indexOf('tema-')===0){ const temaId = key.slice(5); return { label: temaNombre(temaId), color: temaColor(temaId) }; }
+  return key==='bloque-ingles' ? {label:'INGLÉS', color:COLOR_INGLES} : {label:'PSICOTÉCNICOS', color:COLOR_PSICO};
+}
+function renderEntradaRowHtml(e, fecha, sub){
+  const tt = isTestTiempoEntry(e);
+  let nameHtml;
+  if(tt){
+    const {title, detail} = testTiempoLines(e);
+    nameHtml = title
+      ? `${escapeHtml(title)}<span class="entry-name-sub">${escapeHtml(detail)}</span>`
+      : escapeHtml(detail);
+  } else {
+    nameHtml = escapeHtml(entradaLabel(e));
+  }
+  return `<div class="entry-row clickable${sub?' entry-row-sub':''}"
+    onpointerdown="entryPressStart('${fecha}','${e.id}')" onpointerup="entryPressEnd()" onpointerleave="entryPressEnd()" onpointercancel="entryPressEnd()" onpointermove="entryPressEnd()"
+    onclick="entryRowTap('${fecha}','${e.id}')">
+    ${sub ? '' : `<span class="entry-dot" style="background:${entradaColor(e)};color:${entradaColor(e)}"></span>`}
+    <span class="entry-name">${nameHtml}</span>
+    ${tt ? '' : `<span class="entry-time">${formatHM(e.minutos)}</span>`}
+    <span class="lvl-chevron">${ICON_CHEVRON}</span>
+  </div>`;
+}
+function renderHoyGroupHtml(fecha, key, members){
+  const meta = entradaGroupMeta(key);
+  const open = !!hoyGroupOpen[fecha+'|'+key];
+  const total = members.reduce((a,e)=>a+e.minutos,0);
+  const header = `<div class="entry-row clickable" onclick="toggleHoyGroup('${fecha}','${key}')">
+    <span class="entry-dot" style="background:${meta.color};color:${meta.color}"></span>
+    <span class="entry-name">${escapeHtml(meta.label)} <span class="entry-sub">· ${members.length} registros</span></span>
+    <span class="entry-time">${formatHM(total)}</span>
+    <span class="lvl-chevron" style="transform:rotate(${open?180:0}deg);transition:transform 0.25s var(--ease-out-soft);">${ICON_CHEVRON}</span>
+  </div>`;
+  const body = open ? members.map(e=>renderEntradaRowHtml(e, fecha, true)).join('') : '';
+  return header + body;
+}
+// Un grupo ocupa la posición de su registro más reciente: dia.entradas está
+// en orden de inserción (push), así que el último índice de cada grupo es el
+// más reciente — exactamente el mismo orden que ya se ve hoy.
+function renderEntradasAgrupadasHtml(entradas, fecha){
+  const porClave = {};
+  entradas.forEach((e,i)=>{
+    const key = entradaGroupKey(e);
+    if(key==null) return;
+    (porClave[key] = porClave[key] || []).push(i);
+  });
+  const emitido = new Set();
+  let html = '';
+  entradas.forEach((e,i)=>{
+    const key = entradaGroupKey(e);
+    const idxs = key!=null ? porClave[key] : null;
+    if(!idxs || idxs.length<3){
+      html += renderEntradaRowHtml(e, fecha, false);
+      return;
+    }
+    if(i===idxs[idxs.length-1] && !emitido.has(key)){
+      emitido.add(key);
+      html += renderHoyGroupHtml(fecha, key, idxs.map(j=>entradas[j]));
+    }
+  });
+  return html;
+}
 function entradaLabel(e){
   if(e.tipo==='tema'){
     let s = temaNombre(e.temaId)+' · '+subcatTemaNombre(e.subKey);
@@ -2903,26 +2979,7 @@ function renderHoy(){
     list.innerHTML = '<div class="empty-state">Sin registros este día</div>';
     return;
   }
-  let rows = entradas.map(e=>{
-    const tt = isTestTiempoEntry(e);
-    let nameHtml;
-    if(tt){
-      const {title, detail} = testTiempoLines(e);
-      nameHtml = title
-        ? `${escapeHtml(title)}<span class="entry-name-sub">${escapeHtml(detail)}</span>`
-        : escapeHtml(detail);
-    } else {
-      nameHtml = escapeHtml(entradaLabel(e));
-    }
-    return `<div class="entry-row clickable"
-      onpointerdown="entryPressStart('${currentHoyDate}','${e.id}')" onpointerup="entryPressEnd()" onpointerleave="entryPressEnd()" onpointercancel="entryPressEnd()" onpointermove="entryPressEnd()"
-      onclick="entryRowTap('${currentHoyDate}','${e.id}')">
-      <span class="entry-dot" style="background:${entradaColor(e)};color:${entradaColor(e)}"></span>
-      <span class="entry-name">${nameHtml}</span>
-      ${tt ? '' : `<span class="entry-time">${formatHM(e.minutos)}</span>`}
-      <span class="lvl-chevron">${ICON_CHEVRON}</span>
-    </div>`;
-  }).join('');
+  let rows = renderEntradasAgrupadasHtml(entradas, currentHoyDate);
   rows += tests.map(t=>{
     if(t.esRepaso){
       const nombreRep = t.origen==='carta'
