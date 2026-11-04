@@ -1313,6 +1313,9 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <div class="lvl-header-title" id="test-form-title">Test a la carta</div>
       <button class="toggle-btn" onclick="closeModal('test-form-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
+    <label class="modal-label" id="test-form-nombre-label">Nombre</label>
+    <input type="text" class="modal-input" id="test-form-nombre" placeholder="p.ej. Septiembre">
+    <div class="modal-note" id="test-form-simulacro-tag" style="display:none;"></div>
     <label class="modal-label">Fecha</label>
     <input type="date" class="modal-input" id="test-form-fecha">
     <label class="modal-label">Tiempo tardado</label>
@@ -1351,6 +1354,37 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
     <div id="test-form-temas-list"></div>
     <button class="add-btn" onclick="openTestTemaPicker()">+ Añadir tema</button>
     <button class="save-btn" style="margin-top:12px;" onclick="saveTestForm()">Guardar</button>
+  </div>
+</div>
+
+<!-- MODAL: añadir/editar repaso de un intento -->
+<div class="modal-bg" id="repaso-form-modal" style="z-index:1001;">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('repaso-form-modal')">‹</button>
+      <div class="lvl-header-title" id="repaso-form-title">Añadir repaso</div>
+      <button class="toggle-btn" onclick="closeModal('repaso-form-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label">Fecha</label>
+    <input type="date" class="modal-input" id="repaso-form-fecha">
+    <label class="modal-label">Tiempo</label>
+    <input type="text" class="modal-input" id="repaso-form-tiempo" placeholder="h:mm o minutos">
+    <button class="save-btn" style="margin-top:12px;" onclick="saveRepasoForm()">Guardar</button>
+    <button class="add-btn" id="repaso-form-delete-btn" style="margin-top:8px;color:var(--red);border-color:rgba(193,84,74,0.35);display:none;" onclick="deleteRepasoForm()">Borrar</button>
+  </div>
+</div>
+
+<!-- MODAL: nombre del simulacro -->
+<div class="modal-bg" id="simulacro-nombre-modal" style="z-index:1002;">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('simulacro-nombre-modal')">‹</button>
+      <div class="lvl-header-title">Nombre del simulacro</div>
+      <button class="toggle-btn" onclick="closeModal('simulacro-nombre-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label">Nombre</label>
+    <input type="text" class="modal-input" id="simulacro-nombre-input" placeholder="p.ej. Septiembre">
+    <button class="save-btn" style="margin-top:12px;" onclick="saveSimulacroNombre()">Guardar</button>
   </div>
 </div>
 
@@ -1980,8 +2014,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 11;
-const APP_BUILD_DATE = '01 nov 2026 20:00';
+const APP_VERSION = 12;
+const APP_BUILD_DATE = '04 nov 2026 18:30';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2202,6 +2236,11 @@ let testFormEditingId = null;
 let testFormTemas = [];
 let testFormResultadoModo = 'NOTA';
 let testPickerBloque = null;
+let testFormMode = null; // 'carta' | 'simulacro-new' | 'simulacro-intento'
+let testFormSimulacroId = null;
+let repasoFormSimulacroId = null, repasoFormIntentoId = null, repasoFormEditId = null;
+let simulacroNombreEditId = null;
+let testsViewOpenSimulacro = {};
 
 let testTiempoTarget = null; // {categoriaId, subcategoriaId}
 let testTiempoEditing = null; // {fecha, id} | null
@@ -2529,7 +2568,50 @@ function migrateSubcategorias(){
 
 // ========== AGREGACIÓN (temas / psico / tests) ==========
 function getDia(fecha){ return getDias().find(d=>d.fecha===fecha); }
-function totalTestsFecha(fecha){ return getTests().filter(t=>t.fecha===fecha).reduce((a,t)=>a+t.minutosTotal,0); }
+
+// Aplana tests en "unidades" comparables: cada test a la carta es una unidad,
+// cada intento de un simulacro es otra. Los intentos se numeran por fecha
+// ascendente (no por orden de inserción) — esRepeticion a partir del 2º.
+function testUnidades(){
+  const out = [];
+  getTests().forEach(t=>{
+    if(t.tipo==='simulacro'){
+      const intentosOrdenados = (t.intentos||[]).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+      intentosOrdenados.forEach((intento, idx)=>{
+        out.push(Object.assign({}, intento, {
+          tipo:'simulacro', simulacroId:t.id, simulacroNombre:t.nombre||'',
+          intentoNum: idx+1, esRepeticion: idx>0,
+        }));
+      });
+    } else {
+      out.push(Object.assign({tipo:'carta', esRepeticion:false, simulacroId:null, simulacroNombre:t.nombre||'', intentoNum:1}, t));
+    }
+  });
+  return out;
+}
+// Aplana los repasos de todos los intentos de todos los simulacros. El tiempo
+// de cada repaso se reparte entre los MISMOS temas que el intento (mismas
+// preguntas), reusando testTemaRound — un repaso nunca cuenta como test.
+function repasoUnidades(){
+  const out = [];
+  getTests().forEach(t=>{
+    if(t.tipo!=='simulacro') return;
+    (t.intentos||[]).forEach(intento=>{
+      (intento.repasos||[]).forEach(r=>{
+        const temasConPreguntas = (intento.temas||[]).map(tt=>({temaId:tt.temaId, preguntas:tt.preguntas}));
+        out.push({ id:r.id, fecha:r.fecha, minutos:r.minutos, temas: testTemaRound(r.minutos, temasConPreguntas),
+          simulacroId:t.id, simulacroNombre:t.nombre||'', intentoId:intento.id });
+      });
+    });
+  });
+  return out;
+}
+
+function totalTestsFecha(fecha){
+  let total = testUnidades().filter(t=>t.fecha===fecha).reduce((a,t)=>a+t.minutosTotal,0);
+  total += repasoUnidades().filter(r=>r.fecha===fecha).reduce((a,r)=>a+r.minutos,0);
+  return total;
+}
 function totalFecha(fecha){
   const dia = getDia(fecha);
   const entradasTotal = dia ? dia.entradas.reduce((a,e)=>a+e.minutos,0) : 0;
@@ -2539,20 +2621,23 @@ function totalDia(dia){ return dia ? totalFecha(dia.fecha) : 0; }
 function sumEnRango(desde,hasta){
   let total = 0;
   getDias().forEach(d=>{ if(d.fecha>=desde && d.fecha<=hasta) total += d.entradas.reduce((a,e)=>a+e.minutos,0); });
-  getTests().forEach(t=>{ if(t.fecha>=desde && t.fecha<=hasta) total += t.minutosTotal; });
+  testUnidades().forEach(t=>{ if(t.fecha>=desde && t.fecha<=hasta) total += t.minutosTotal; });
+  repasoUnidades().forEach(r=>{ if(r.fecha>=desde && r.fecha<=hasta) total += r.minutos; });
   return total;
 }
 function diasConDatos(){
   const set = new Set();
   getDias().forEach(d=>{ if(d.entradas.length>0) set.add(d.fecha); });
-  getTests().forEach(t=>set.add(t.fecha));
+  testUnidades().forEach(t=>set.add(t.fecha));
+  repasoUnidades().forEach(r=>set.add(r.fecha));
   return Array.from(set);
 }
 
 function sumMinutosTema(temaId){
   let total = 0;
   getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='tema' && e.temaId===temaId) total += e.minutos; }));
-  getTests().forEach(t=>{ (t.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
+  testUnidades().forEach(t=>{ (t.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
+  repasoUnidades().forEach(r=>{ (r.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
   return total;
 }
 function temaTieneTiempo(temaId){ return sumMinutosTema(temaId) > 0; }
@@ -2560,7 +2645,8 @@ function sumMinutosTemaSubcat(temaId, subKey){
   let total = 0;
   getDias().forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='tema' && e.temaId===temaId && e.subKey===subKey) total += e.minutos; }));
   if(subKey==='TEST'){
-    getTests().forEach(t=>{ (t.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
+    testUnidades().forEach(t=>{ (t.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
+    repasoUnidades().forEach(r=>{ (r.temas||[]).forEach(tt=>{ if(tt.temaId===temaId) total += tt.minutos; }); });
   }
   return total;
 }
@@ -2571,9 +2657,20 @@ function sumMinutosBloque(bloqueId){
   for(let n=b.desde;n<=b.hasta;n++) total += sumMinutosTema(temaIdFromNum(n));
   return total;
 }
-function sumMinutosTestsTotal(){ return getTests().reduce((a,t)=>a+t.minutosTotal,0); }
+function sumMinutosTestsTotal(){
+  return testUnidades().reduce((a,t)=>a+t.minutosTotal,0) + repasoUnidades().reduce((a,r)=>a+r.minutos,0);
+}
 function sumMinutosTestsSinDesglose(){
-  return getTests().filter(t=>!t.temas || t.temas.length===0).reduce((a,t)=>a+t.minutosTotal,0);
+  return testUnidades().filter(t=>!t.temas || t.temas.length===0).reduce((a,t)=>a+t.minutosTotal,0);
+}
+// Filas de tests/repasos de un día concreto, para Hoy e Historial: unidades
+// de test (carta o intento de simulacro) y repasos mezclados, cada uno
+// marcado con esRepaso para que el render sepa qué etiqueta/click aplicar.
+function dayTestRows(fecha){
+  const rows = [];
+  testUnidades().forEach(t=>{ if(t.fecha===fecha) rows.push(Object.assign({esRepaso:false}, t)); });
+  repasoUnidades().forEach(r=>{ if(r.fecha===fecha) rows.push(Object.assign({esRepaso:true}, r)); });
+  return rows;
 }
 function sumMinutosTemasTotal(){
   let total = 0;
@@ -2699,6 +2796,40 @@ function migrateToV2(){
   localStorage.setItem('estudio_migracion_v2_done','1');
 }
 
+// Migra simulacros planos (un registro = una ejecución) a contenedores con
+// intentos (un simulacro = material repetible, intentos = cada vez que se
+// hizo). Flag estudio_migracion_v3_done, idempotente, con el mismo patrón de
+// verificación de totales que migrateToV2: si no cuadra, aborta sin guardar.
+function migrateSimulacrosToIntentos(){
+  if(localStorage.getItem('estudio_migracion_v3_done')) return;
+  const tests = getTests();
+  const totalAntes = tests.reduce((a,t)=>a + (t.intentos ? t.intentos.reduce((x,i)=>x+i.minutosTotal,0) : (t.minutosTotal||0)), 0);
+
+  let changed = false;
+  tests.forEach(t=>{
+    if(t.tipo!=='simulacro' || t.intentos) return;
+    changed = true;
+    const intento = { id: uid(), fecha:t.fecha, minutosTotal:t.minutosTotal, temas:t.temas||[], nota:t.nota, totalPreguntas:t.totalPreguntas, repasos:[] };
+    if(t.aciertosTotal!=null) intento.aciertosTotal = t.aciertosTotal;
+    if(t.fallos!=null) intento.fallos = t.fallos;
+    if(t.blancos!=null) intento.blancos = t.blancos;
+    t.nombre = (t.fecha==='2026-11-03') ? 'Octubre' : (t.fecha.slice(5,7)==='09' ? 'Septiembre' : '');
+    t.intentos = [intento];
+    delete t.fecha; delete t.minutosTotal; delete t.temas; delete t.nota; delete t.totalPreguntas;
+    delete t.aciertosTotal; delete t.fallos; delete t.blancos;
+  });
+  if(!changed){ localStorage.setItem('estudio_migracion_v3_done','1'); return; }
+
+  const totalDespues = tests.reduce((a,t)=>a + (t.intentos ? t.intentos.reduce((x,i)=>x+i.minutosTotal,0) : (t.minutosTotal||0)), 0);
+  if(totalDespues !== totalAntes){
+    console.error('Migración v3 abortada: los totales no cuadran', {totalAntes, totalDespues});
+    showToast('Error en la migración de datos — revisa la consola','red');
+    return;
+  }
+  saveTests(tests);
+  localStorage.setItem('estudio_migracion_v3_done','1');
+}
+
 // ========== HOY ==========
 function onHoyDateChange(){
   currentHoyDate = document.getElementById('hoy-date-input').value || todayStr();
@@ -2720,7 +2851,7 @@ function renderHoy(){
 
   const dia = getDia(currentHoyDate);
   const entradas = dia ? dia.entradas.slice() : [];
-  const tests = getTests().filter(t=>t.fecha===currentHoyDate);
+  const tests = dayTestRows(currentHoyDate);
   document.getElementById('hoy-total').textContent = formatHM(totalFecha(currentHoyDate));
   document.getElementById('hoy-num-entradas').textContent = entradas.length + tests.length;
   const catSet = new Set(entradas.map(e=> e.tipo==='tema' ? e.temaId : 'psico-'+e.categoriaId));
@@ -2754,12 +2885,28 @@ function renderHoy(){
       <span class="lvl-chevron">${ICON_CHEVRON}</span>
     </div>`;
   }).join('');
-  rows += tests.map(t=>`<div class="entry-row clickable" onclick="openTestForm('${t.tipo}','${t.id}')">
+  rows += tests.map(t=>{
+    if(t.esRepaso){
+      return `<div class="entry-row clickable" onclick="openRepasoForm('${t.simulacroId}','${t.intentoId}','${t.id}')">
       <span class="entry-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS}"></span>
-      <span class="entry-name">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'}${t.nota!=null?` <span class="entry-sub">· Nota ${t.nota}</span>`:''}</span>
+      <span class="entry-name">REPASO SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())}</span>
+      <span class="entry-time">${formatHM(t.minutos)}</span>
+      <span class="lvl-chevron">${ICON_CHEVRON}</span>
+    </div>`;
+    }
+    const nombre = t.tipo==='simulacro'
+      ? `SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())} · INTENTO ${t.intentoNum}`
+      : `TEST A LA CARTA${t.nombre?' · '+escapeHtml(t.nombre):''}`;
+    const onclick = t.tipo==='simulacro'
+      ? `openSimulacroIntentoForm('${t.simulacroId}','${t.id}')`
+      : `openTestForm('carta','${t.id}')`;
+    return `<div class="entry-row clickable" onclick="${onclick}">
+      <span class="entry-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS}"></span>
+      <span class="entry-name">${nombre}${t.nota!=null?` <span class="entry-sub">· Nota ${t.nota}</span>`:''}</span>
       <span class="entry-time">${formatHM(t.minutosTotal)}</span>
       <span class="lvl-chevron">${ICON_CHEVRON}</span>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   list.innerHTML = '<div class="entry-list">' + rows + '</div>';
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -3272,7 +3419,7 @@ function renderHistorialEntradas(list){
   const fecha = historialDia;
   const dia = getDia(fecha);
   const entradas = dia ? dia.entradas.slice() : [];
-  const tests = getTests().filter(t=>t.fecha===fecha);
+  const tests = dayTestRows(fecha);
   let rows = entradas.map(e=>{
     const tt = isTestTiempoEntry(e);
     let nameHtml;
@@ -3291,13 +3438,22 @@ function renderHistorialEntradas(list){
     </div>`;
   }).join('');
   rows += tests.map(t=>{
+    if(t.esRepaso){
+      return `<div class="history-row">
+        <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${COLOR_TESTS};flex-shrink:0;margin-top:4px;"></span><span class="n">REPASO SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())}</span></span>
+        <span class="history-row-val">${formatHM(t.minutos)}</span>
+      </div>`;
+    }
     const open = !!historialOpenTest[t.id];
     const sub = (t.temas||[]).map(tt=>`<div class="history-row" style="padding-left:14px;">
         <span class="history-row-name"><span class="n">${escapeHtml(temaNombre(tt.temaId))} · ${tt.preguntas}p</span></span>
         <span class="history-row-val">${formatHM(tt.minutos)}</span>
       </div>`).join('');
+    const nombre = t.tipo==='simulacro'
+      ? `SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())} · intento ${t.intentoNum}`
+      : `TEST A LA CARTA${t.nombre?' · '+escapeHtml(t.nombre):''}`;
     return `<div class="history-row" style="flex-wrap:wrap;cursor:pointer;" onclick="toggleHistTest('${t.id}')">
-        <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${COLOR_TESTS};flex-shrink:0;margin-top:4px;"></span><span class="n">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'}${t.nota!=null?' · Nota '+t.nota:''}</span></span>
+        <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${COLOR_TESTS};flex-shrink:0;margin-top:4px;"></span><span class="n">${nombre}${t.nota!=null?' · Nota '+t.nota:''}</span></span>
         <span class="history-row-val">${formatHM(t.minutosTotal)}</span>
         ${open && sub ? `<div style="width:100%;margin-top:6px;">${sub}</div>` : ''}
       </div>`;
@@ -3617,7 +3773,7 @@ function renderCategoriasList(){
         <div class="t"><span class="lvl-dot" style="background:${b.color};color:${b.color};"></span>${b.nombre}</div><div class="s">Temas ${b.desde}–${b.hasta} · ${formatHM(sumMinutosBloque(b.id))}</div>
       </button>`).join('') +
       `<button class="lvl-block-btn" onclick="openTestsView();">
-        <div class="t"><span class="lvl-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS};"></span>TESTS</div><div class="s">${formatHM(sumMinutosTestsTotal())} · ${getTests().length} registro(s)</div>
+        <div class="t"><span class="lvl-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS};"></span>TESTS</div><div class="s">${formatHM(sumMinutosTestsTotal())} · ${testUnidades().length} registro(s)</div>
       </button>`;
     return;
   }
@@ -4004,13 +4160,24 @@ function testTemaRound(minutosTotal, temasConPreguntas){
   return rounded;
 }
 
+// tipo==='carta': alta/edición de un test a la carta (editId = id del test).
+// tipo==='simulacro' (sin editId): alta de un simulacro NUEVO — pide nombre.
+// Para añadir/editar un INTENTO de un simulacro ya existente, usa
+// openSimulacroIntentoForm() en vez de esta función.
 function openTestForm(tipo, editId){
+  testFormMode = tipo==='carta' ? 'carta' : 'simulacro-new';
   testFormTipo = tipo;
   testFormEditingId = editId || null;
+  testFormSimulacroId = null;
   testFormResultadoModo = 'NOTA';
   ['tf-d-aciertos-input','tf-d-fallos-input','tf-d-blancos-input'].forEach(id=>{ document.getElementById(id).value = ''; });
+  document.getElementById('test-form-simulacro-tag').style.display = 'none';
+  document.getElementById('test-form-nombre-label').style.display = '';
+  document.getElementById('test-form-nombre').style.display = '';
+  document.getElementById('test-form-nombre-label').textContent = tipo==='carta' ? 'Nombre (opcional)' : 'Nombre';
   if(editId){
     const t = getTests().find(x=>x.id===editId);
+    document.getElementById('test-form-nombre').value = t.nombre || '';
     document.getElementById('test-form-fecha').value = t.fecha;
     document.getElementById('test-form-tiempo').value = formatHM(t.minutosTotal);
     testFormTemas = (t.temas||[]).map(x=>({temaId:x.temaId, preguntas:x.preguntas, aciertos: x.aciertos!=null?x.aciertos:null}));
@@ -4022,12 +4189,56 @@ function openTestForm(tipo, editId){
       if(t.blancos!=null) document.getElementById('tf-d-blancos-input').value = t.blancos;
     }
   } else {
+    document.getElementById('test-form-nombre').value = '';
     document.getElementById('test-form-fecha').value = todayStr();
     document.getElementById('test-form-tiempo').value = '';
     testFormTemas = [];
     document.getElementById('test-form-nota').value = '';
   }
   document.getElementById('test-form-title').textContent = (editId?'Editar ':'') + (tipo==='simulacro'?'Simulacro':'Test a la carta');
+  renderTestFormResultadoModo();
+  renderTestFormTemas();
+  openModal('test-form-modal');
+}
+// Añade (sin intentoId) o edita (con intentoId) un intento de un simulacro ya
+// existente. El desglose por temas de un intento nuevo se precarga del
+// intento anterior más reciente — mismas preguntas, aciertos en blanco.
+function openSimulacroIntentoForm(simulacroId, intentoId){
+  const sim = getTests().find(x=>x.id===simulacroId);
+  if(!sim) return;
+  testFormMode = 'simulacro-intento';
+  testFormTipo = 'simulacro';
+  testFormSimulacroId = simulacroId;
+  testFormEditingId = intentoId || null;
+  testFormResultadoModo = 'NOTA';
+  ['tf-d-aciertos-input','tf-d-fallos-input','tf-d-blancos-input'].forEach(id=>{ document.getElementById(id).value = ''; });
+  document.getElementById('test-form-nombre-label').style.display = 'none';
+  document.getElementById('test-form-nombre').style.display = 'none';
+  const tagEl = document.getElementById('test-form-simulacro-tag');
+  tagEl.style.display = 'block';
+  tagEl.textContent = 'Simulacro: ' + (sim.nombre || '(sin nombre)');
+  const intentosOrdenados = (sim.intentos||[]).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const intento = intentoId ? sim.intentos.find(x=>x.id===intentoId) : null;
+  const numIntento = intentoId ? intentosOrdenados.findIndex(x=>x.id===intentoId)+1 : intentosOrdenados.length+1;
+  if(intento){
+    document.getElementById('test-form-fecha').value = intento.fecha;
+    document.getElementById('test-form-tiempo').value = formatHM(intento.minutosTotal);
+    testFormTemas = (intento.temas||[]).map(x=>({temaId:x.temaId, preguntas:x.preguntas, aciertos:x.aciertos!=null?x.aciertos:null}));
+    document.getElementById('test-form-nota').value = intento.nota!=null ? intento.nota : '';
+    if(intento.fallos!=null || intento.blancos!=null || intento.aciertosTotal!=null){
+      testFormResultadoModo = 'DESGLOSE';
+      if(intento.aciertosTotal!=null) document.getElementById('tf-d-aciertos-input').value = intento.aciertosTotal;
+      if(intento.fallos!=null) document.getElementById('tf-d-fallos-input').value = intento.fallos;
+      if(intento.blancos!=null) document.getElementById('tf-d-blancos-input').value = intento.blancos;
+    }
+  } else {
+    document.getElementById('test-form-fecha').value = todayStr();
+    document.getElementById('test-form-tiempo').value = '';
+    document.getElementById('test-form-nota').value = '';
+    const ultimo = intentosOrdenados[intentosOrdenados.length-1];
+    testFormTemas = ultimo ? ultimo.temas.map(x=>({temaId:x.temaId, preguntas:x.preguntas, aciertos:null})) : [];
+  }
+  document.getElementById('test-form-title').textContent = (intentoId?'Editar intento ':'Nuevo intento ')+numIntento;
   renderTestFormResultadoModo();
   renderTestFormTemas();
   openModal('test-form-modal');
@@ -4129,13 +4340,16 @@ function pickTestFormTema(temaId){
   renderTestFormTemas();
 }
 
-function saveTestForm(){
+// Lee y valida los campos comunes del formulario (fecha/tiempo/temas/
+// resultado) y devuelve el objeto "intento" resultante, o null si la
+// validación falla (y ya mostró el toast correspondiente).
+function readTestFormIntento(){
   const fecha = document.getElementById('test-form-fecha').value;
   const minutosTotal = parseTiempo(document.getElementById('test-form-tiempo').value.trim());
-  if(!fecha){ showToast('Elige una fecha'); return; }
-  if(minutosTotal==null || minutosTotal<=0){ showToast('Introduce un tiempo válido'); return; }
+  if(!fecha){ showToast('Elige una fecha'); return null; }
+  if(minutosTotal==null || minutosTotal<=0){ showToast('Introduce un tiempo válido'); return null; }
   const validTemas = testFormTemas.filter(t=>t.preguntas>0);
-  if(!validTemas.length){ showToast('Añade al menos un tema con preguntas'); return; }
+  if(!validTemas.length){ showToast('Añade al menos un tema con preguntas'); return null; }
   const temas = testTemaRound(minutosTotal, validTemas).map(t=>{
     const orig = validTemas.find(v=>v.temaId===t.temaId);
     return Object.assign({}, t, { aciertos: orig && orig.aciertos!=null ? orig.aciertos : null });
@@ -4144,7 +4358,7 @@ function saveTestForm(){
   let nota = null, fallos = null, blancos = null, aciertosTotal = null;
   if(testFormResultadoModo==='DESGLOSE'){
     const aciertos = parseInt(document.getElementById('tf-d-aciertos-input').value,10);
-    if(!Number.isFinite(aciertos) || totalPreguntas<=0){ showToast('Introduce los aciertos del desglose'); return; }
+    if(!Number.isFinite(aciertos) || totalPreguntas<=0){ showToast('Introduce los aciertos del desglose'); return null; }
     const fallosRaw = document.getElementById('tf-d-fallos-input').value.trim();
     const blancosRaw = document.getElementById('tf-d-blancos-input').value.trim();
     fallos = fallosRaw==='' ? null : Math.max(0, parseInt(fallosRaw,10)||0);
@@ -4155,28 +4369,74 @@ function saveTestForm(){
     const notaRaw = document.getElementById('test-form-nota').value.trim().replace(',','.');
     nota = notaRaw==='' ? null : parseFloat(notaRaw);
   }
-  const tests = getTests();
-  if(testFormEditingId){
-    const t = tests.find(x=>x.id===testFormEditingId);
-    if(t){
-      t.fecha=fecha; t.minutosTotal=minutosTotal; t.temas=temas; t.nota=nota; t.totalPreguntas=totalPreguntas;
-      if(fallos!=null) t.fallos=fallos; else delete t.fallos;
-      if(blancos!=null) t.blancos=blancos; else delete t.blancos;
-      if(aciertosTotal!=null) t.aciertosTotal=aciertosTotal; else delete t.aciertosTotal;
-    }
-  } else {
-    const nuevo = {id:uid(), tipo:testFormTipo, fecha, minutosTotal, temas, nota, totalPreguntas};
-    if(fallos!=null) nuevo.fallos=fallos;
-    if(blancos!=null) nuevo.blancos=blancos;
-    if(aciertosTotal!=null) nuevo.aciertosTotal=aciertosTotal;
-    tests.push(nuevo);
-  }
-  saveTests(tests);
+  const out = { fecha, minutosTotal, temas, nota, totalPreguntas };
+  if(fallos!=null) out.fallos=fallos;
+  if(blancos!=null) out.blancos=blancos;
+  if(aciertosTotal!=null) out.aciertosTotal=aciertosTotal;
+  return out;
+}
+function finishTestFormSave(){
   closeModal('test-form-modal');
   showToast('Guardado ✓','green');
   renderHoy(); renderHistorial(); renderEstadisticas();
   const testsModal = document.getElementById('tests-view-modal');
   if(testsModal.classList.contains('open')) renderTestsView();
+}
+function saveTestForm(){
+  if(testFormMode==='carta'){
+    const campos = readTestFormIntento();
+    if(!campos) return;
+    const nombre = document.getElementById('test-form-nombre').value.trim();
+    const tests = getTests();
+    if(testFormEditingId){
+      const t = tests.find(x=>x.id===testFormEditingId);
+      if(t){
+        Object.assign(t, campos);
+        if(nombre) t.nombre=nombre; else delete t.nombre;
+        ['fallos','blancos','aciertosTotal'].forEach(k=>{ if(campos[k]==null) delete t[k]; });
+      }
+    } else {
+      const nuevo = Object.assign({id:uid(), tipo:'carta'}, campos);
+      if(nombre) nuevo.nombre=nombre;
+      tests.push(nuevo);
+    }
+    saveTests(tests);
+    finishTestFormSave();
+    return;
+  }
+  if(testFormMode==='simulacro-new'){
+    const nombre = document.getElementById('test-form-nombre').value.trim();
+    if(!nombre){ showToast('Pon un nombre al simulacro'); return; }
+    const campos = readTestFormIntento();
+    if(!campos) return;
+    const intento = Object.assign({id:uid(), repasos:[]}, campos);
+    const tests = getTests();
+    tests.push({id:uid(), tipo:'simulacro', nombre, intentos:[intento]});
+    saveTests(tests);
+    finishTestFormSave();
+    return;
+  }
+  if(testFormMode==='simulacro-intento'){
+    const campos = readTestFormIntento();
+    if(!campos) return;
+    const tests = getTests();
+    const sim = tests.find(x=>x.id===testFormSimulacroId);
+    if(!sim) return;
+    if(testFormEditingId){
+      const intento = sim.intentos.find(x=>x.id===testFormEditingId);
+      if(intento){
+        const repasos = intento.repasos;
+        Object.assign(intento, campos);
+        ['fallos','blancos','aciertosTotal'].forEach(k=>{ if(campos[k]==null) delete intento[k]; });
+        intento.repasos = repasos;
+      }
+    } else {
+      sim.intentos.push(Object.assign({id:uid(), repasos:[]}, campos));
+    }
+    saveTests(tests);
+    finishTestFormSave();
+    return;
+  }
 }
 function deleteTest(id){
   if(!confirm('¿Borrar este registro?')) return;
@@ -4184,32 +4444,196 @@ function deleteTest(id){
   showToast('Borrado');
   renderTestsView(); renderHistorial(); renderEstadisticas(); renderHoy();
 }
+function deleteSimulacroIntento(simulacroId, intentoId){
+  if(!confirm('¿Borrar este intento?')) return;
+  const tests = getTests();
+  const sim = tests.find(x=>x.id===simulacroId);
+  if(sim) sim.intentos = (sim.intentos||[]).filter(i=>i.id!==intentoId);
+  saveTests(tests);
+  showToast('Borrado');
+  renderTestsView(); renderHistorial(); renderEstadisticas(); renderHoy();
+}
+function deleteSimulacro(simulacroId){
+  if(!confirm('¿Borrar este simulacro y todos sus intentos y repasos?')) return;
+  saveTests(getTests().filter(t=>t.id!==simulacroId));
+  showToast('Borrado');
+  renderTestsView(); renderHistorial(); renderEstadisticas(); renderHoy();
+}
 
-function openTestsView(){ renderTestsView(); openModal('tests-view-modal'); }
+function openRepasoForm(simulacroId, intentoId, repasoId){
+  repasoFormSimulacroId=simulacroId; repasoFormIntentoId=intentoId; repasoFormEditId=repasoId||null;
+  const sim = getTests().find(x=>x.id===simulacroId);
+  const intento = sim && sim.intentos.find(x=>x.id===intentoId);
+  const repaso = repasoId && intento ? intento.repasos.find(r=>r.id===repasoId) : null;
+  document.getElementById('repaso-form-title').textContent = repasoId?'Editar repaso':'Añadir repaso';
+  document.getElementById('repaso-form-fecha').value = repaso ? repaso.fecha : todayStr();
+  document.getElementById('repaso-form-tiempo').value = repaso ? formatHM(repaso.minutos) : '';
+  document.getElementById('repaso-form-delete-btn').style.display = repasoId ? 'block' : 'none';
+  openModal('repaso-form-modal');
+}
+function saveRepasoForm(){
+  const fecha = document.getElementById('repaso-form-fecha').value;
+  const minutos = parseTiempo(document.getElementById('repaso-form-tiempo').value.trim());
+  if(!fecha){ showToast('Elige una fecha'); return; }
+  if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
+  const tests = getTests();
+  const sim = tests.find(x=>x.id===repasoFormSimulacroId);
+  if(!sim) return;
+  const intento = sim.intentos.find(x=>x.id===repasoFormIntentoId);
+  if(!intento) return;
+  if(!intento.repasos) intento.repasos=[];
+  if(repasoFormEditId){
+    const r = intento.repasos.find(x=>x.id===repasoFormEditId);
+    if(r){ r.fecha=fecha; r.minutos=minutos; }
+  } else {
+    intento.repasos.push({id:uid(), fecha, minutos});
+  }
+  saveTests(tests);
+  closeModal('repaso-form-modal');
+  showToast('Guardado ✓','green');
+  renderHoy(); renderHistorial(); renderEstadisticas();
+  if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
+}
+function deleteRepasoForm(){
+  if(!confirm('¿Borrar este repaso?')) return;
+  const tests = getTests();
+  const sim = tests.find(x=>x.id===repasoFormSimulacroId);
+  const intento = sim && sim.intentos.find(x=>x.id===repasoFormIntentoId);
+  if(intento) intento.repasos = (intento.repasos||[]).filter(r=>r.id!==repasoFormEditId);
+  saveTests(tests);
+  closeModal('repaso-form-modal');
+  showToast('Borrado');
+  renderHoy(); renderHistorial(); renderEstadisticas();
+  if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
+}
+
+function openSimulacroNombreModal(simulacroId){
+  simulacroNombreEditId = simulacroId;
+  const sim = getTests().find(x=>x.id===simulacroId);
+  document.getElementById('simulacro-nombre-input').value = sim ? (sim.nombre||'') : '';
+  openModal('simulacro-nombre-modal');
+}
+function saveSimulacroNombre(){
+  const nombre = document.getElementById('simulacro-nombre-input').value.trim();
+  if(!nombre){ showToast('Pon un nombre'); return; }
+  const tests = getTests();
+  const sim = tests.find(x=>x.id===simulacroNombreEditId);
+  if(sim) sim.nombre = nombre;
+  saveTests(tests);
+  closeModal('simulacro-nombre-modal');
+  showToast('Guardado ✓','green');
+  if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
+}
+
+function toggleTestsViewSimulacro(id){
+  testsViewOpenSimulacro[id] = !testsViewOpenSimulacro[id];
+  renderTestsView();
+}
+// Fecha de "actividad más reciente" de un test del listado: para un
+// simulacro es la del último intento; para un test a la carta, la suya.
+function testActividadFecha(t){
+  if(t.tipo==='simulacro') return (t.intentos||[]).reduce((a,i)=>i.fecha>a?i.fecha:a, '0000-00-00');
+  return t.fecha;
+}
+function diffNotaHtml(nota, notaAnterior){
+  if(nota==null || notaAnterior==null) return '';
+  const diff = Math.round((nota-notaAnterior)*100)/100;
+  if(diff===0) return ` <span style="font-size:11px;color:var(--text3);">· =</span>`;
+  const up = diff>0;
+  return ` <span style="font-size:11px;font-weight:700;color:${up?'var(--col-fr-verde)':'var(--col-fr-rojo)'};">${up?'↑':'↓'} ${formatNota(Math.abs(diff))}</span>`;
+}
+function renderIntentoCardHtml(sim, intento, idx, intentosOrdenados){
+  const anterior = idx>0 ? intentosOrdenados[idx-1] : null;
+  const repasos = intento.repasos || [];
+  const minRepasos = repasos.reduce((a,r)=>a+r.minutos,0);
+  const desglose = (intento.aciertosTotal!=null)
+    ? `${intento.totalPreguntas||0} preguntas · ${intento.aciertosTotal} ac · ${intento.fallos!=null?intento.fallos:'—'} fa · ${intento.blancos!=null?intento.blancos:'—'} bl`
+    : `${intento.totalPreguntas||0} preguntas`;
+  const repetTag = idx>0 ? `<span style="font-size:10px;color:var(--text3);border:1px solid var(--text3);border-radius:4px;padding:1px 5px;margin-left:6px;">REPETICIÓN</span>` : '';
+  const repasosHtml = repasos.map(r=>`<div class="history-row" style="padding-left:14px;">
+      <span class="history-row-name"><span class="n">Repaso · ${formatDate(r.fecha)}</span></span>
+      <span class="history-row-val">${formatHM(r.minutos)}</span>
+      <button class="edit-date-btn" onclick="openRepasoForm('${sim.id}','${intento.id}','${r.id}')">${ICON_EDIT}</button>
+    </div>`).join('');
+  return `<div class="history-row" style="flex-wrap:wrap;">
+      <span class="history-row-name"><span class="n">INTENTO ${idx+1} · ${formatDate(intento.fecha)}${repetTag}</span></span>
+      <span class="history-row-val">${intento.nota!=null?formatNota(intento.nota):'—'}${diffNotaHtml(intento.nota, anterior?anterior.nota:null)}</span>
+      <div style="width:100%;margin-top:4px;font-size:11.5px;color:var(--text2);">${desglose}</div>
+      <div style="width:100%;font-size:11.5px;color:var(--text2);">${formatHM(intento.minutosTotal)}${minRepasos>0?` · repasado ${formatHM(minRepasos)}`:''}</div>
+      ${repasosHtml ? `<div style="width:100%;margin-top:4px;">${repasosHtml}</div>` : ''}
+      <div style="width:100%;display:flex;gap:8px;margin-top:6px;">
+        <button class="add-btn" style="flex:1;margin:0;padding:7px;font-size:11.5px;" onclick="openRepasoForm('${sim.id}','${intento.id}')">+ Repaso</button>
+        <button class="add-btn" style="flex:1;margin:0;padding:7px;font-size:11.5px;" onclick="closeModal('tests-view-modal');openSimulacroIntentoForm('${sim.id}','${intento.id}')">Editar</button>
+        <button class="add-btn" style="flex:1;margin:0;padding:7px;font-size:11.5px;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteSimulacroIntento('${sim.id}','${intento.id}')">Borrar</button>
+      </div>
+    </div>`;
+}
+function renderSimulacroCardHtml(sim){
+  const intentosOrdenados = (sim.intentos||[]).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const conNota = intentosOrdenados.filter(i=>i.nota!=null);
+  const ultimo = conNota.length ? conNota[conNota.length-1] : null;
+  const open = !!testsViewOpenSimulacro[sim.id];
+  const nombreHtml = sim.nombre ? escapeHtml(sim.nombre.toUpperCase()) : '<span style="color:var(--orange);">SIN NOMBRE</span>';
+  const intentosHtml = intentosOrdenados.map((it,idx)=>renderIntentoCardHtml(sim, it, idx, intentosOrdenados)).join('');
+  return `<div class="history-session">
+    <div class="history-session-header" style="cursor:pointer;" onclick="toggleTestsViewSimulacro('${sim.id}')">
+      <div style="flex:1;min-width:0;">
+        <div class="history-session-title">${nombreHtml} <span style="font-weight:500;color:var(--text2);">· ${intentosOrdenados.length} intento${intentosOrdenados.length===1?'':'s'}</span></div>
+        ${ultimo ? `<div class="history-session-sub">último ${formatNota(ultimo.nota)} · ${formatDate(ultimo.fecha)}</div>` : ''}
+      </div>
+      <button class="toggle-btn ${open?'open':''}" id="tv-arr-${sim.id}">${ICON_CHEVRON}</button>
+    </div>
+    <div class="history-session-body ${open?'open':''}" id="tv-body-${sim.id}">
+      <div class="body-inner">
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;" onclick="openSimulacroNombreModal('${sim.id}')">Renombrar</button>
+          <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteSimulacro('${sim.id}')">Borrar simulacro</button>
+        </div>
+        ${intentosHtml}
+        <button class="add-btn" onclick="closeModal('tests-view-modal');openSimulacroIntentoForm('${sim.id}')">+ INTENTO</button>
+      </div>
+    </div>
+  </div>`;
+}
+function openTestsView(){
+  renderTestsView();
+  openModal('tests-view-modal');
+  const sinNombre = getTests().find(t=>t.tipo==='simulacro' && !t.nombre);
+  if(sinNombre) openSimulacroNombreModal(sinNombre.id);
+}
 function renderTestsView(){
-  const tests = getTests().slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  const simulacros = tests.filter(t=>t.tipo==='simulacro' && t.nota!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const unidadesSim = testUnidades().filter(t=>t.tipo==='simulacro' && t.nota!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
   const chartWrap = document.getElementById('tests-nota-chart-wrap');
-  if(simulacros.length>=2){
+  if(unidadesSim.length>=2){
     chartWrap.style.display = 'block';
     const ctx = document.getElementById('tests-nota-chart').getContext('2d');
     if(charts['tests-nota']) charts['tests-nota'].destroy();
     charts['tests-nota'] = new Chart(ctx, {
       type: 'line',
-      data: { labels: simulacros.map(s=>formatDate(s.fecha)), datasets: [{ data: simulacros.map(s=>s.nota), borderColor:'#38bdf8', backgroundColor:'rgba(56,189,248,0.15)', tension:0.3, fill:true, pointRadius:3 }] },
+      data: { labels: unidadesSim.map(s=>formatDate(s.fecha)), datasets: [{ data: unidadesSim.map(s=>s.nota),
+        borderColor:'#38bdf8', backgroundColor:'rgba(56,189,248,0.15)', tension:0.3, fill:true,
+        pointRadius:unidadesSim.map(()=>4),
+        pointBackgroundColor: unidadesSim.map(s=>s.esRepeticion?'transparent':'#38bdf8'),
+        pointBorderColor: '#38bdf8',
+        pointBorderWidth: unidadesSim.map(s=>s.esRepeticion?2:0),
+      }] },
       options: { responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'rgba(255,255,255,0.32)',font:{size:9}},grid:{display:false}}, y:{ticks:{color:'rgba(255,255,255,0.32)',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}} } }
     });
   } else {
     chartWrap.style.display = 'none';
   }
   const list = document.getElementById('tests-view-list');
+  const tests = getTests().slice().sort((a,b)=>testActividadFecha(b).localeCompare(testActividadFecha(a)));
   if(!tests.length){ list.innerHTML = '<div class="empty-state">Sin tests aún</div>'; return; }
-  list.innerHTML = tests.map(t=>`<div class="history-row" style="align-items:center;">
-      <span class="history-row-name"><span class="n">${t.tipo==='simulacro'?'SIMULACRO':'TEST A LA CARTA'} · ${formatDate(t.fecha)}${t.nota!=null?' · Nota '+t.nota:''}</span></span>
+  list.innerHTML = tests.map(t=>{
+    if(t.tipo==='simulacro') return renderSimulacroCardHtml(t);
+    return `<div class="history-row" style="align-items:center;">
+      <span class="history-row-name"><span class="n">TEST A LA CARTA${t.nombre?' · '+escapeHtml(t.nombre):''} · ${formatDate(t.fecha)}${t.nota!=null?' · Nota '+t.nota:''}</span></span>
       <span class="history-row-val">${formatHM(t.minutosTotal)}</span>
-      <button class="edit-date-btn" onclick="closeModal('tests-view-modal');openTestForm('${t.tipo}','${t.id}')">${ICON_EDIT}</button>
+      <button class="edit-date-btn" onclick="closeModal('tests-view-modal');openTestForm('carta','${t.id}')">${ICON_EDIT}</button>
       <button class="edit-date-btn" style="color:var(--red);" onclick="deleteTest('${t.id}')">${ICON_CLOSE}</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ========== RENDIMIENTO (Parte 2): gráficas de tests, solo datos reales ==========
@@ -4241,7 +4665,7 @@ function getRendTestsCompletos(){
       }
     });
   });
-  getTests().forEach(t=>{
+  testUnidades().forEach(t=>{
     if(t.nota==null) return;
     out.push({
       id: t.id, fecha: t.fecha, temaId: null, origen: t.tipo==='simulacro' ? 'SIMULACRO' : 'CARTA',
@@ -4250,6 +4674,7 @@ function getRendTestsCompletos(){
       aciertos: t.aciertosTotal!=null ? t.aciertosTotal : null,
       fallos: t.fallos!=null ? t.fallos : null,
       blancos: t.blancos!=null ? t.blancos : null,
+      esRepeticion: t.esRepeticion, simulacroNombre: t.simulacroNombre, intentoNum: t.intentoNum,
     });
   });
   return out.sort((a,b)=>a.fecha.localeCompare(b.fecha));
@@ -4278,7 +4703,7 @@ function getRendTestsPorTema(){
       }
     });
   });
-  getTests().forEach(t=>{
+  testUnidades().forEach(t=>{
     (t.temas||[]).forEach(te=>{
       if(te.aciertos==null || !(te.preguntas>0)) return;
       const fallosTema = rendFallosDelTema(t, te);
@@ -4287,6 +4712,7 @@ function getRendTestsPorTema(){
         minutos: te.minutos, nota: notaOficial(te.aciertos, fallosTema||0, te.preguntas),
         preguntas: te.preguntas, aciertos: te.aciertos, fallos: fallosTema, blancos: null,
         estimado: fallosTema==null,
+        esRepeticion: t.esRepeticion, simulacroNombre: t.simulacroNombre, intentoNum: t.intentoNum,
       });
     });
   });
@@ -4294,14 +4720,21 @@ function getRendTestsPorTema(){
 }
 const REND_FILTROS = ['TODOS','TEST','INNOTEST','CARTA','SIMULACRO'];
 let rendFiltro = 'TODOS';
-function rendFiltrar(list){ return rendFiltro==='TODOS' ? list : list.filter(t=>t.origen===rendFiltro); }
+let rendExcluirRepeticiones = false;
+function rendFiltrar(list){
+  let out = rendFiltro==='TODOS' ? list : list.filter(t=>t.origen===rendFiltro);
+  if(rendExcluirRepeticiones) out = out.filter(t=>!t.esRepeticion);
+  return out;
+}
+function toggleRendExcluirRepeticiones(){ rendExcluirRepeticiones = !rendExcluirRepeticiones; renderRendimiento(); }
 function rendTestsFiltrados(){ return rendFiltrar(getRendTestsCompletos()); }
 function rendTestsPorTemaFiltrados(){ return rendFiltrar(getRendTestsPorTema()); }
 // Etiqueta de un registro de RENDIMIENTO para los readouts de click: un
 // registro multitema (temaId null) no tiene un tema que nombrar.
 function rendEtiqueta(t){
   if(t.temaId) return temaNombre(t.temaId);
-  return t.origen==='SIMULACRO' ? 'Simulacro' : 'Test a la carta';
+  if(t.origen==='SIMULACRO') return (t.simulacroNombre||'Simulacro') + (t.intentoNum?(' · intento '+t.intentoNum):'');
+  return 'Test a la carta';
 }
 function rendPctAcierto(t){ return t.preguntas>0 ? (t.aciertos/t.preguntas)*100 : t.nota*10; }
 function notaMediaPonderada(tests){
@@ -4401,15 +4834,17 @@ function renderRendResumenHtml(){
     return `<button class="range-tab tap${f===rendFiltro?' active':''}" ${disponible?'':'disabled'} onclick="setRendFiltro('${f}')">${f}</button>`;
   }).join('');
 
+  const excluirBtn = `<div class="range-tabs rend-filtro-tabs"><button class="range-tab tap${rendExcluirRepeticiones?' active':''}" onclick="toggleRendExcluirRepeticiones()">Excluir repeticiones</button></div>`;
+
   if(!tests.length){
-    return `<div class="range-tabs rend-filtro-tabs">${filtroHtml}</div><div class="empty-sub">Todavía no hay tests registrados.</div>`;
+    return `<div class="range-tabs rend-filtro-tabs">${filtroHtml}</div>${excluirBtn}<div class="empty-sub">Todavía no hay tests registrados.</div>`;
   }
 
   const notaMedia = notaMediaPonderada(tests);
   const totalPreguntas = tests.reduce((a,t)=>a+(t.preguntas||0),0);
 
   const slides = [];
-  slides.push({ label:'Evolución de notas', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-a"></canvas></div><div class="rend-chart-insight" id="rend-insight-a"></div><div class="rend-chart-note" id="rend-readout-a"></div>` });
+  slides.push({ label:'Evolución de notas', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-a"></canvas></div><div class="rend-chart-insight" id="rend-insight-a"></div><div class="rend-chart-note" id="rend-readout-a"></div><div class="rend-chart-note" id="rend-note-a"></div>` });
   slides.push({ label:'Nota según días sin tocar', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-b"></canvas></div><div class="rend-chart-insight" id="rend-insight-b"></div><div class="rend-chart-note" id="rend-readout-b"></div><div class="rend-chart-note">Solo tests de un tema</div>` });
   if(rendTieneDesglose(tests)){
     slides.push({ label:'Aciertos, fallos y blancos', html:`<div class="rend-canvas-wrap"><canvas id="rend-chart-c"></canvas></div><div class="rend-chart-insight" id="rend-insight-c"></div>` });
@@ -4443,6 +4878,7 @@ function renderRendResumenHtml(){
       <div class="rend-stat"><div class="v">${totalPreguntas}</div><div class="l">Preguntas</div></div>
     </div>
     <div class="range-tabs rend-filtro-tabs">${filtroHtml}</div>
+    ${excluirBtn}
     <div class="chart-carousel-card">
       <div class="chart-card-label" style="padding:16px 16px 0;" id="rend-carousel-title">${slides[0].label}</div>
       <div class="chart-carousel-track" id="rend-carousel-track" onscroll="onRendCarouselScroll()">${slidesHtml}</div>
@@ -4506,7 +4942,9 @@ function renderRendChartA(tests){
   const datasets = [];
   if(reg) datasets.push(rendTrendDataset(x=>reg.m*x+reg.b, 0, xMax));
   datasets.push({ label:'Nota', data:puntos, borderColor:cssVar('--gold'), backgroundColor:cssVar('--gold'),
-    pointBackgroundColor:cssVar('--gold'), pointRadius:puntos.map(p=>rendPointRadius(p.w)), pointHoverRadius:9,
+    pointBackgroundColor:puntos.map(p=>p.meta.esRepeticion?'transparent':cssVar('--gold')),
+    pointBorderColor:cssVar('--gold'), pointBorderWidth:puntos.map(p=>p.meta.esRepeticion?2:0),
+    pointRadius:puntos.map(p=>rendPointRadius(p.w)), pointHoverRadius:9,
     tension:0.2, fill:false, order:1 });
   if(charts['rend-a']) charts['rend-a'].destroy();
   charts['rend-a'] = new Chart(canvas.getContext('2d'), { type:'line', data:{datasets}, options: rendChartOptions(fechaInicio, 0, 10, (p)=>{
@@ -4520,6 +4958,9 @@ function renderRendChartA(tests){
     else if(porMes>0){ insight.textContent = `Subiendo ${formatNota(Math.abs(porMes))} puntos al mes`; insight.style.color = 'var(--col-fr-verde)'; }
     else { insight.textContent = `Bajando ${formatNota(Math.abs(porMes))} puntos al mes`; insight.style.color = 'var(--col-fr-rojo)'; }
   } else { insight.textContent = ''; }
+  const nRep = tests.filter(t=>t.esRepeticion).length;
+  const noteEl = document.getElementById('rend-note-a');
+  if(noteEl) noteEl.textContent = nRep>0 ? `incluye ${nRep} repetición${nRep===1?'':'es'} de simulacros ya hechos` : '';
 }
 function renderRendChartB(tests){
   const canvas = document.getElementById('rend-chart-b');
@@ -5772,8 +6213,14 @@ function exportCSV(){
       rows.push([d.fecha, e.tipo, entradaLabelCat(e), entradaLabelSub(e), e.minutos, formatHM(e.minutos)]);
     });
   });
-  getTests().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(t=>{
-    rows.push([t.fecha, t.tipo, 'TESTS', t.tipo==='simulacro'?('Nota '+(t.nota!=null?t.nota:'')):'', t.minutosTotal, formatHM(t.minutosTotal)]);
+  testUnidades().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(t=>{
+    const sub = t.tipo==='simulacro'
+      ? (t.simulacroNombre||'')+' · intento '+t.intentoNum+(t.nota!=null?(' · Nota '+t.nota):'')
+      : (t.nota!=null?('Nota '+t.nota):'');
+    rows.push([t.fecha, t.tipo, 'TESTS', sub, t.minutosTotal, formatHM(t.minutosTotal)]);
+  });
+  repasoUnidades().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(r=>{
+    rows.push([r.fecha, 'repaso', 'TESTS', (r.simulacroNombre||'')+' · repaso', r.minutos, formatHM(r.minutos)]);
   });
   const blob = new Blob([rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n')], {type:'text/csv'});
   const a = document.createElement('a');
@@ -5787,6 +6234,7 @@ function clearAllData(){
   localStorage.removeItem('estudio_tests');
   localStorage.removeItem('estudio_migracion_v2_done');
   localStorage.removeItem('estudio_backup_pre_v2');
+  localStorage.removeItem('estudio_migracion_v3_done');
   localStorage.removeItem('estudio_ingles_niveles');
   localStorage.removeItem('estudio_ajustes_ingles');
   // Marca explícita para no ofrecer restaurar el backup justo después de un borrado intencional.
@@ -5799,6 +6247,7 @@ function clearAllData(){
 checkBackupRestoreOffer();
 migrateSubcategorias();
 migrateToV2();
+migrateSimulacrosToIntentos();
 ensureInglesCategoriasFijas();
 currentHoyDate = todayStr();
 document.getElementById('hoy-date-input').value = currentHoyDate;
