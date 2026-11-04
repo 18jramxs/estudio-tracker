@@ -423,6 +423,11 @@ body::before {
 .history-row-name > span:first-child { margin-top: 4px; flex-shrink: 0; }
 .history-row-name span.n { overflow-wrap: anywhere; line-height: 1.4; }
 .history-row-val { color: var(--text); font-weight: 500; text-align: right; font-family: var(--font-mono); font-size: 12.5px; flex-shrink: 0; font-variant-numeric: tabular-nums; padding-top: 1px; }
+.test-carta-row { display: grid; grid-template-columns: 1fr 52px 52px 26px 26px; align-items: center; column-gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.test-carta-row:last-child { border-bottom: none; }
+.test-carta-row .tcr-fecha { color: var(--text2); overflow-wrap: anywhere; min-width: 0; }
+.test-carta-row .tcr-nota, .test-carta-row .tcr-tiempo { font-family: var(--font-mono); font-size: 12.5px; text-align: right; color: var(--text); font-variant-numeric: tabular-nums; font-weight: 500; }
+.test-carta-row .edit-date-btn { padding: 4px; justify-self: center; }
 .hist-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
 .hist-chip { font-size: 11px; color: var(--text2); background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--r-xs); padding: 3px 9px; font-family: var(--font-mono); display: flex; align-items: center; gap: 5px; }
 .hist-chip .d { width: 6px; height: 6px; border-radius: 1px; }
@@ -1365,12 +1370,35 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <div class="lvl-header-title" id="repaso-form-title">Añadir repaso</div>
       <button class="toggle-btn" onclick="closeModal('repaso-form-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
+    <label class="modal-label" id="repaso-form-sim-label" style="display:none;">Simulacro</label>
+    <select class="modal-select" id="repaso-form-sim-select" style="display:none;" onchange="onRepasoFormSimChange()"></select>
+    <label class="modal-label" id="repaso-form-intento-label" style="display:none;">Intento</label>
+    <select class="modal-select" id="repaso-form-intento-select" style="display:none;"></select>
     <label class="modal-label">Fecha</label>
     <input type="date" class="modal-input" id="repaso-form-fecha">
     <label class="modal-label">Tiempo</label>
     <input type="text" class="modal-input" id="repaso-form-tiempo" placeholder="h:mm o minutos">
     <button class="save-btn" style="margin-top:12px;" onclick="saveRepasoForm()">Guardar</button>
     <button class="add-btn" id="repaso-form-delete-btn" style="margin-top:8px;color:var(--red);border-color:rgba(193,84,74,0.35);display:none;" onclick="deleteRepasoForm()">Borrar</button>
+  </div>
+</div>
+
+<!-- MODAL: añadir/editar repaso de un test a la carta -->
+<div class="modal-bg" id="repaso-carta-form-modal" style="z-index:1001;">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('repaso-carta-form-modal')">‹</button>
+      <div class="lvl-header-title" id="repaso-carta-form-title">Añadir repaso</div>
+      <button class="toggle-btn" onclick="closeModal('repaso-carta-form-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label" id="repaso-carta-test-label">Test</label>
+    <select class="modal-select" id="repaso-carta-test-select"></select>
+    <label class="modal-label">Fecha</label>
+    <input type="date" class="modal-input" id="repaso-carta-form-fecha">
+    <label class="modal-label">Tiempo</label>
+    <input type="text" class="modal-input" id="repaso-carta-form-tiempo" placeholder="h:mm o minutos">
+    <button class="save-btn" style="margin-top:12px;" onclick="saveRepasoCartaForm()">Guardar</button>
+    <button class="add-btn" id="repaso-carta-form-delete-btn" style="margin-top:8px;color:var(--red);border-color:rgba(193,84,74,0.35);display:none;" onclick="deleteRepasoCartaForm()">Borrar</button>
   </div>
 </div>
 
@@ -1393,13 +1421,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   <div class="modal">
     <div class="lvl-header">
       <button class="lvl-back" onclick="closeModal('tests-view-modal')">‹</button>
-      <div class="lvl-header-title">Tests</div>
+      <div class="lvl-header-title">Tests y simulacros</div>
       <button class="toggle-btn" onclick="closeModal('tests-view-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <button class="add-btn" style="margin:0;" onclick="closeModal('tests-view-modal');openTestForm('carta')">+ Test a la carta</button>
-      <button class="add-btn" style="margin:0;" onclick="closeModal('tests-view-modal');openTestForm('simulacro')">+ Simulacro</button>
-    </div>
+    <input type="text" class="modal-input mnemo-search" id="tests-view-search-input" placeholder="Buscar…" oninput="testsViewSearch=this.value;renderTestsView();">
     <div id="tests-nota-chart-wrap" class="card" style="padding:16px;display:none;">
       <div class="chart-card-label">Evolución de la nota</div>
       <canvas id="tests-nota-chart" height="160"></canvas>
@@ -2014,8 +2039,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 12;
-const APP_BUILD_DATE = '04 nov 2026 18:30';
+const APP_VERSION = 13;
+const APP_BUILD_DATE = '04 nov 2026 19:45';
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2239,8 +2264,11 @@ let testPickerBloque = null;
 let testFormMode = null; // 'carta' | 'simulacro-new' | 'simulacro-intento'
 let testFormSimulacroId = null;
 let repasoFormSimulacroId = null, repasoFormIntentoId = null, repasoFormEditId = null;
+let repasoFormPickMode = false;
+let repasoCartaFormTestId = null, repasoCartaFormEditId = null;
 let simulacroNombreEditId = null;
 let testsViewOpenSimulacro = {};
+let testsViewSearch = '';
 
 let testTiempoTarget = null; // {categoriaId, subcategoriaId}
 let testTiempoEditing = null; // {fecha, id} | null
@@ -2589,20 +2617,30 @@ function testUnidades(){
   });
   return out;
 }
-// Aplana los repasos de todos los intentos de todos los simulacros. El tiempo
-// de cada repaso se reparte entre los MISMOS temas que el intento (mismas
-// preguntas), reusando testTemaRound — un repaso nunca cuenta como test.
+// Aplana los repasos de todos los intentos de simulacro y de todos los tests
+// a la carta. El tiempo de cada repaso se reparte entre los MISMOS temas que
+// el test/intento al que pertenece (mismas preguntas), reusando
+// testTemaRound — un repaso nunca cuenta como test.
 function repasoUnidades(){
   const out = [];
   getTests().forEach(t=>{
-    if(t.tipo!=='simulacro') return;
-    (t.intentos||[]).forEach(intento=>{
-      (intento.repasos||[]).forEach(r=>{
-        const temasConPreguntas = (intento.temas||[]).map(tt=>({temaId:tt.temaId, preguntas:tt.preguntas}));
-        out.push({ id:r.id, fecha:r.fecha, minutos:r.minutos, temas: testTemaRound(r.minutos, temasConPreguntas),
-          simulacroId:t.id, simulacroNombre:t.nombre||'', intentoId:intento.id });
+    if(t.tipo==='simulacro'){
+      (t.intentos||[]).forEach(intento=>{
+        (intento.repasos||[]).forEach(r=>{
+          const temasConPreguntas = (intento.temas||[]).map(tt=>({temaId:tt.temaId, preguntas:tt.preguntas}));
+          out.push({ id:r.id, fecha:r.fecha, minutos:r.minutos, temas: testTemaRound(r.minutos, temasConPreguntas),
+            origen:'simulacro', simulacroId:t.id, simulacroNombre:t.nombre||'', intentoId:intento.id,
+            testId:null, testNombre:null, testFecha:null });
+        });
       });
-    });
+    } else {
+      (t.repasos||[]).forEach(r=>{
+        const temasConPreguntas = (t.temas||[]).map(tt=>({temaId:tt.temaId, preguntas:tt.preguntas}));
+        out.push({ id:r.id, fecha:r.fecha, minutos:r.minutos, temas: testTemaRound(r.minutos, temasConPreguntas),
+          origen:'carta', simulacroId:null, simulacroNombre:null, intentoId:null,
+          testId:t.id, testNombre:t.nombre||'', testFecha:t.fecha });
+      });
+    }
   });
   return out;
 }
@@ -2887,9 +2925,15 @@ function renderHoy(){
   }).join('');
   rows += tests.map(t=>{
     if(t.esRepaso){
-      return `<div class="entry-row clickable" onclick="openRepasoForm('${t.simulacroId}','${t.intentoId}','${t.id}')">
+      const nombreRep = t.origen==='carta'
+        ? `REPASO TEST A LA CARTA${t.testNombre?' · '+escapeHtml(t.testNombre):''} · ${formatDate(t.testFecha)}`
+        : `REPASO SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())}`;
+      const onclickRep = t.origen==='carta'
+        ? `openRepasoCartaForm('${t.testId}','${t.id}')`
+        : `openRepasoForm('${t.simulacroId}','${t.intentoId}','${t.id}')`;
+      return `<div class="entry-row clickable" onclick="${onclickRep}">
       <span class="entry-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS}"></span>
-      <span class="entry-name">REPASO SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())}</span>
+      <span class="entry-name">${nombreRep}</span>
       <span class="entry-time">${formatHM(t.minutos)}</span>
       <span class="lvl-chevron">${ICON_CHEVRON}</span>
     </div>`;
@@ -3288,9 +3332,13 @@ function renderPicker(){
   if(pickerStep==='tests-choice'){
     title.textContent = 'Tests';
     body.innerHTML = `
+      <div class="tools-zone-label" style="margin-top:4px;">Registrar</div>
       <div class="lvl-row" onclick="closeModal('picker-modal');openTestForm('carta')"><span class="lvl-name">+ Test a la carta</span></div>
       <div class="lvl-row" onclick="closeModal('picker-modal');openTestForm('simulacro')"><span class="lvl-name">+ Simulacro</span></div>
-      <div class="lvl-row" onclick="closeModal('picker-modal');openTestsView()"><span class="lvl-name">Ver tests y simulacros</span></div>`;
+      <div class="tools-zone-label" style="margin-top:18px;">Repaso</div>
+      <div class="lvl-row" onclick="closeModal('picker-modal');openRepasoCartaMenu()"><span class="lvl-name">+ Repaso de test a la carta</span></div>
+      <div class="lvl-row" onclick="closeModal('picker-modal');openRepasoSimulacroMenu()"><span class="lvl-name">+ Repaso de simulacro</span></div>
+      <div class="lvl-row" style="margin-top:14px;" onclick="closeModal('picker-modal');openTestsView()"><span class="lvl-name">Ver tests y simulacros</span></div>`;
     return;
   }
   if(pickerStep==='cat-lista'){
@@ -3439,8 +3487,11 @@ function renderHistorialEntradas(list){
   }).join('');
   rows += tests.map(t=>{
     if(t.esRepaso){
+      const nombreRep = t.origen==='carta'
+        ? `REPASO TEST A LA CARTA${t.testNombre?' · '+escapeHtml(t.testNombre):''} · ${formatDate(t.testFecha)}`
+        : `REPASO SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())}`;
       return `<div class="history-row">
-        <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${COLOR_TESTS};flex-shrink:0;margin-top:4px;"></span><span class="n">REPASO SIMULACRO ${escapeHtml((t.simulacroNombre||'SIN NOMBRE').toUpperCase())}</span></span>
+        <span class="history-row-name"><span style="width:8px;height:8px;border-radius:50%;background:${COLOR_TESTS};flex-shrink:0;margin-top:4px;"></span><span class="n">${nombreRep}</span></span>
         <span class="history-row-val">${formatHM(t.minutos)}</span>
       </div>`;
     }
@@ -4461,6 +4512,11 @@ function deleteSimulacro(simulacroId){
 }
 
 function openRepasoForm(simulacroId, intentoId, repasoId){
+  repasoFormPickMode = false;
+  document.getElementById('repaso-form-sim-label').style.display = 'none';
+  document.getElementById('repaso-form-sim-select').style.display = 'none';
+  document.getElementById('repaso-form-intento-label').style.display = 'none';
+  document.getElementById('repaso-form-intento-select').style.display = 'none';
   repasoFormSimulacroId=simulacroId; repasoFormIntentoId=intentoId; repasoFormEditId=repasoId||null;
   const sim = getTests().find(x=>x.id===simulacroId);
   const intento = sim && sim.intentos.find(x=>x.id===intentoId);
@@ -4470,6 +4526,42 @@ function openRepasoForm(simulacroId, intentoId, repasoId){
   document.getElementById('repaso-form-tiempo').value = repaso ? formatHM(repaso.minutos) : '';
   document.getElementById('repaso-form-delete-btn').style.display = repasoId ? 'block' : 'none';
   openModal('repaso-form-modal');
+}
+// Entrada desde el menú TESTS: aquí no se sabe de antemano qué simulacro ni
+// qué intento — el usuario los elige con los selects (por nombre, no fecha).
+function openRepasoSimulacroMenu(){
+  const sims = getTests().filter(t=>t.tipo==='simulacro');
+  if(!sims.length){ showToast('Todavía no hay simulacros'); return; }
+  repasoFormPickMode = true;
+  repasoFormEditId = null;
+  document.getElementById('repaso-form-title').textContent = 'Repaso de simulacro';
+  document.getElementById('repaso-form-delete-btn').style.display = 'none';
+  document.getElementById('repaso-form-sim-label').style.display = '';
+  document.getElementById('repaso-form-sim-select').style.display = '';
+  const sorted = sims.slice().sort((a,b)=>testActividadFecha(b).localeCompare(testActividadFecha(a)));
+  document.getElementById('repaso-form-sim-select').innerHTML = sorted.map(s=>`<option value="${s.id}">${escapeHtml(s.nombre||'SIN NOMBRE')}</option>`).join('');
+  onRepasoFormSimChange();
+  document.getElementById('repaso-form-fecha').value = todayStr();
+  document.getElementById('repaso-form-tiempo').value = '';
+  openModal('repaso-form-modal');
+}
+function onRepasoFormSimChange(){
+  const simId = document.getElementById('repaso-form-sim-select').value;
+  repasoFormSimulacroId = simId;
+  const sim = getTests().find(x=>x.id===simId);
+  const intentos = sim ? (sim.intentos||[]).slice().sort((a,b)=>a.fecha.localeCompare(b.fecha)) : [];
+  const intLabel = document.getElementById('repaso-form-intento-label');
+  const intSelect = document.getElementById('repaso-form-intento-select');
+  if(intentos.length<=1){
+    intLabel.style.display='none'; intSelect.style.display='none';
+    repasoFormIntentoId = intentos[0] ? intentos[0].id : null;
+  } else {
+    intLabel.style.display=''; intSelect.style.display='';
+    intSelect.innerHTML = intentos.map((it,i)=>`<option value="${it.id}">Intento ${i+1} · ${formatDate(it.fecha)}</option>`).join('');
+    intSelect.value = intentos[intentos.length-1].id;
+    repasoFormIntentoId = intSelect.value;
+    intSelect.onchange = ()=>{ repasoFormIntentoId = intSelect.value; };
+  }
 }
 function saveRepasoForm(){
   const fecha = document.getElementById('repaso-form-fecha').value;
@@ -4489,6 +4581,7 @@ function saveRepasoForm(){
     intento.repasos.push({id:uid(), fecha, minutos});
   }
   saveTests(tests);
+  repasoFormPickMode = false;
   closeModal('repaso-form-modal');
   showToast('Guardado ✓','green');
   renderHoy(); renderHistorial(); renderEstadisticas();
@@ -4501,7 +4594,74 @@ function deleteRepasoForm(){
   const intento = sim && sim.intentos.find(x=>x.id===repasoFormIntentoId);
   if(intento) intento.repasos = (intento.repasos||[]).filter(r=>r.id!==repasoFormEditId);
   saveTests(tests);
+  repasoFormPickMode = false;
   closeModal('repaso-form-modal');
+  showToast('Borrado');
+  renderHoy(); renderHistorial(); renderEstadisticas();
+  if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
+}
+
+// Repaso de un test a la carta: mismo patrón que el de simulacro, pero sin
+// intentos — un selector opcional de QUÉ test (los 10 más recientes) cuando
+// se entra desde el menú, oculto cuando se edita uno ya existente.
+function openRepasoCartaForm(testId, repasoId){
+  document.getElementById('repaso-carta-test-label').style.display = 'none';
+  document.getElementById('repaso-carta-test-select').style.display = 'none';
+  repasoCartaFormTestId=testId; repasoCartaFormEditId=repasoId||null;
+  const t = getTests().find(x=>x.id===testId);
+  const repaso = repasoId && t ? (t.repasos||[]).find(r=>r.id===repasoId) : null;
+  document.getElementById('repaso-carta-form-title').textContent = repasoId?'Editar repaso':'Añadir repaso';
+  document.getElementById('repaso-carta-form-fecha').value = repaso ? repaso.fecha : todayStr();
+  document.getElementById('repaso-carta-form-tiempo').value = repaso ? formatHM(repaso.minutos) : '';
+  document.getElementById('repaso-carta-form-delete-btn').style.display = repasoId ? 'block' : 'none';
+  openModal('repaso-carta-form-modal');
+}
+function openRepasoCartaMenu(){
+  const cartas = getTests().filter(t=>t.tipo==='carta').sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,10);
+  if(!cartas.length){ showToast('Todavía no hay tests a la carta'); return; }
+  const label = document.getElementById('repaso-carta-test-label');
+  const sel = document.getElementById('repaso-carta-test-select');
+  label.style.display = '';
+  sel.style.display = '';
+  sel.innerHTML = cartas.map(t=>`<option value="${t.id}">${formatDate(t.fecha).toUpperCase()}${t.nota!=null?' · Nota '+formatNota(t.nota):''}</option>`).join('');
+  repasoCartaFormTestId = cartas[0].id;
+  sel.value = cartas[0].id;
+  sel.onchange = ()=>{ repasoCartaFormTestId = sel.value; };
+  repasoCartaFormEditId = null;
+  document.getElementById('repaso-carta-form-title').textContent = 'Repaso de test a la carta';
+  document.getElementById('repaso-carta-form-fecha').value = todayStr();
+  document.getElementById('repaso-carta-form-tiempo').value = '';
+  document.getElementById('repaso-carta-form-delete-btn').style.display = 'none';
+  openModal('repaso-carta-form-modal');
+}
+function saveRepasoCartaForm(){
+  const fecha = document.getElementById('repaso-carta-form-fecha').value;
+  const minutos = parseTiempo(document.getElementById('repaso-carta-form-tiempo').value.trim());
+  if(!fecha){ showToast('Elige una fecha'); return; }
+  if(minutos==null || minutos<=0){ showToast('Introduce un tiempo válido'); return; }
+  const tests = getTests();
+  const t = tests.find(x=>x.id===repasoCartaFormTestId);
+  if(!t) return;
+  if(!t.repasos) t.repasos=[];
+  if(repasoCartaFormEditId){
+    const r = t.repasos.find(x=>x.id===repasoCartaFormEditId);
+    if(r){ r.fecha=fecha; r.minutos=minutos; }
+  } else {
+    t.repasos.push({id:uid(), fecha, minutos});
+  }
+  saveTests(tests);
+  closeModal('repaso-carta-form-modal');
+  showToast('Guardado ✓','green');
+  renderHoy(); renderHistorial(); renderEstadisticas();
+  if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
+}
+function deleteRepasoCartaForm(){
+  if(!confirm('¿Borrar este repaso?')) return;
+  const tests = getTests();
+  const t = tests.find(x=>x.id===repasoCartaFormTestId);
+  if(t) t.repasos = (t.repasos||[]).filter(r=>r.id!==repasoCartaFormEditId);
+  saveTests(tests);
+  closeModal('repaso-carta-form-modal');
   showToast('Borrado');
   renderHoy(); renderHistorial(); renderEstadisticas();
   if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
@@ -4586,7 +4746,7 @@ function renderSimulacroCardHtml(sim){
     <div class="history-session-body ${open?'open':''}" id="tv-body-${sim.id}">
       <div class="body-inner">
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;" onclick="openSimulacroNombreModal('${sim.id}')">Renombrar</button>
+          <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;" onclick="openSimulacroNombreModal('${sim.id}')">${sim.nombre?'Renombrar':'Poner nombre'}</button>
           <button class="add-btn" style="flex:1;margin:0;padding:9px;font-size:12px;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteSimulacro('${sim.id}')">Borrar simulacro</button>
         </div>
         ${intentosHtml}
@@ -4596,10 +4756,19 @@ function renderSimulacroCardHtml(sim){
   </div>`;
 }
 function openTestsView(){
+  testsViewSearch = '';
+  document.getElementById('tests-view-search-input').value = '';
   renderTestsView();
   openModal('tests-view-modal');
-  const sinNombre = getTests().find(t=>t.tipo==='simulacro' && !t.nombre);
-  if(sinNombre) openSimulacroNombreModal(sinNombre.id);
+}
+function renderCartaRowHtml(t){
+  return `<div class="test-carta-row">
+      <span class="tcr-fecha">${formatDate(t.fecha).toUpperCase()}${t.nombre?' · '+escapeHtml(t.nombre):''}</span>
+      <span class="tcr-nota">${t.nota!=null?formatNota(t.nota):'—'}</span>
+      <span class="tcr-tiempo">${formatHM(t.minutosTotal)}</span>
+      <button class="edit-date-btn" onclick="closeModal('tests-view-modal');openTestForm('carta','${t.id}')">${ICON_EDIT}</button>
+      <button class="edit-date-btn" style="color:var(--red);" onclick="deleteTest('${t.id}')">${ICON_CLOSE}</button>
+    </div>`;
 }
 function renderTestsView(){
   const unidadesSim = testUnidades().filter(t=>t.tipo==='simulacro' && t.nota!=null).sort((a,b)=>a.fecha.localeCompare(b.fecha));
@@ -4623,17 +4792,22 @@ function renderTestsView(){
     chartWrap.style.display = 'none';
   }
   const list = document.getElementById('tests-view-list');
-  const tests = getTests().slice().sort((a,b)=>testActividadFecha(b).localeCompare(testActividadFecha(a)));
-  if(!tests.length){ list.innerHTML = '<div class="empty-state">Sin tests aún</div>'; return; }
-  list.innerHTML = tests.map(t=>{
-    if(t.tipo==='simulacro') return renderSimulacroCardHtml(t);
-    return `<div class="history-row" style="align-items:center;">
-      <span class="history-row-name"><span class="n">TEST A LA CARTA${t.nombre?' · '+escapeHtml(t.nombre):''} · ${formatDate(t.fecha)}${t.nota!=null?' · Nota '+t.nota:''}</span></span>
-      <span class="history-row-val">${formatHM(t.minutosTotal)}</span>
-      <button class="edit-date-btn" onclick="closeModal('tests-view-modal');openTestForm('carta','${t.id}')">${ICON_EDIT}</button>
-      <button class="edit-date-btn" style="color:var(--red);" onclick="deleteTest('${t.id}')">${ICON_CLOSE}</button>
-    </div>`;
-  }).join('');
+  if(!getTests().length){ list.innerHTML = '<div class="empty-state">Sin tests aún</div>'; return; }
+  const q = normalizaTexto(testsViewSearch.trim());
+  const simulacros = getTests().filter(t=>t.tipo==='simulacro')
+    .filter(t=> !q || normalizaTexto(t.nombre||'SIN NOMBRE').includes(q) || (t.intentos||[]).some(i=>normalizaTexto(formatDate(i.fecha)).includes(q)))
+    .sort((a,b)=>testActividadFecha(b).localeCompare(testActividadFecha(a)));
+  const cartas = getTests().filter(t=>t.tipo==='carta')
+    .filter(t=> !q || normalizaTexto(t.nombre||'').includes(q) || normalizaTexto(formatDate(t.fecha)).includes(q))
+    .sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  let html = '';
+  if(simulacros.length){
+    html += `<div class="tools-zone-label">Simulacros</div>` + simulacros.map(renderSimulacroCardHtml).join('');
+  }
+  if(cartas.length){
+    html += `<div class="tools-zone-label" style="margin-top:18px;">Tests a la carta</div><div class="card" style="padding:4px 16px;">${cartas.map(renderCartaRowHtml).join('')}</div>`;
+  }
+  list.innerHTML = html || '<div class="empty-state">Sin resultados</div>';
 }
 
 // ========== RENDIMIENTO (Parte 2): gráficas de tests, solo datos reales ==========
