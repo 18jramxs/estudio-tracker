@@ -1213,6 +1213,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
+<!-- MODAL: subcategoría propia de TEMAS (crear/editar, restringible a temas) -->
+<div class="modal-bg" id="tema-subcat-modal">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('tema-subcat-modal')">‹</button>
+      <div class="lvl-header-title" id="tema-subcat-modal-title">Nueva subcategoría</div>
+      <button class="toggle-btn" onclick="closeModal('tema-subcat-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label">Nombre</label>
+    <input type="text" class="modal-input" id="tema-subcat-name-input" placeholder="p.ej. ORGANIGRAMA" style="font-family:var(--font-sans);">
+    <label class="modal-label" style="margin-top:4px;">Solo en estos temas</label>
+    <div class="modal-note" style="margin-top:-4px;margin-bottom:8px;">Vacío = disponible en todos los temas</div>
+    <div id="tema-subcat-temas-list" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-xs);padding:6px 10px;margin-bottom:10px;"></div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeModal('tema-subcat-modal')">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveTemaSubcatModal()">Guardar</button>
+    </div>
+    <button class="modal-btn secondary" id="tema-subcat-delete-btn" style="width:100%;margin-top:8px;display:none;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteTemaSubcat()">Borrar</button>
+  </div>
+</div>
+
 <!-- MODAL: test con tiempo (psico TEST TIEMPO / INNOTEST) -->
 <div class="modal-bg" id="test-tiempo-modal">
   <div class="modal">
@@ -1849,10 +1870,30 @@ const SUBCATS_TEMA = [
 const SUBCAT_LIBRO = {key:'LIBRO_RESUMEN', nombre:'LIBRO RESUMEN'};
 const SUBCATS_TEMA_ALL = SUBCATS_TEMA.concat([SUBCAT_LIBRO]);
 
+// Subcategorías de TEMAS creadas por el usuario, opcionalmente restringidas a
+// uno o varios temas ({id, nombre, temas:[temaId,...]}, temas vacío = todos).
+// Conviven con las fijas de SUBCATS_TEMA; su id hace de subKey igual que las
+// fijas, así todo el resto del motor (sumas, entradas, historial) no necesita
+// distinguirlas.
+function getSubcatsTemaCustom(){ try{ return JSON.parse(localStorage.getItem('estudio_subcats_tema_custom')||'[]'); }catch{ return []; } }
+function saveSubcatsTemaCustom(l){ localStorage.setItem('estudio_subcats_tema_custom', JSON.stringify(l)); }
+function subcatsTemaParaTema(temaId){
+  const custom = getSubcatsTemaCustom().filter(s=>!s.temas || !s.temas.length || s.temas.includes(temaId));
+  return SUBCATS_TEMA.concat(custom.map(s=>({key:s.id, nombre:s.nombre})));
+}
+function ensureOrganigramaSeed(){
+  const list = getSubcatsTemaCustom();
+  if(list.some(s=>s.nombre.trim().toUpperCase()==='ORGANIGRAMA')) return;
+  list.push({id:'custom-organigrama', nombre:'ORGANIGRAMA', temas:[temaIdFromNum(7)]});
+  saveSubcatsTemaCustom(list);
+}
+
 function subcatTemaNombre(key){
   if(key==='OTROS') return 'Otros';
   const s = SUBCATS_TEMA_ALL.find(s=>s.key===key);
-  return s ? s.nombre : key;
+  if(s) return s.nombre;
+  const c = getSubcatsTemaCustom().find(s=>s.id===key);
+  return c ? c.nombre : key;
 }
 function temaNumero(temaId){ return parseInt(String(temaId).replace('tema-',''),10); }
 function temaIdFromNum(n){ return 'tema-'+n; }
@@ -2042,8 +2083,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 14;
-const APP_BUILD_DATE = '04 nov 2026 16:19'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_VERSION = 15;
+const APP_BUILD_DATE = '06 nov 2026 16:15'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -3371,7 +3412,7 @@ function renderPicker(){
   }
   if(pickerStep==='temas-sub'){
     title.textContent = temaNombre(pickerTemaId);
-    let rows = SUBCATS_TEMA.map(s=>{
+    let rows = subcatsTemaParaTema(pickerTemaId).map(s=>{
       const mins = sumMinutosTemaSubcat(pickerTemaId, s.key);
       return `<div class="lvl-row" onclick="pickerSelectTemaSub('${s.key}')">
         <span class="lvl-name">${s.nombre}</span>
@@ -3667,7 +3708,7 @@ function renderStatsCatBreakdown(){
 function renderStatsSubBreakdown(){
   const el = document.getElementById('est-subcat-breakdown');
   if(statsSubLevel==='root'){
-    const keys = SUBCATS_TEMA_ALL.map(s=>s.key).concat(['OTROS']);
+    const keys = SUBCATS_TEMA_ALL.map(s=>s.key).concat(getSubcatsTemaCustom().map(s=>s.id)).concat(['OTROS']);
     const rows = keys.map(k=>({key:k, nombre:subcatTemaNombre(k), total:sumMinutosSubcatGlobal(k)})).filter(r=>r.total>0);
     if(!rows.length){ el.innerHTML = '<div class="empty-state">Sin subcategorías aún</div>'; return; }
     const max = Math.max(1, ...rows.map(r=>r.total));
@@ -3882,7 +3923,32 @@ function renderCategoriasList(){
       </button>`).join('') +
       `<button class="lvl-block-btn" onclick="openTestsView();">
         <div class="t"><span class="lvl-dot" style="background:${COLOR_TESTS};color:${COLOR_TESTS};"></span>TESTS</div><div class="s">${formatHM(sumMinutosTestsTotal())} · ${testUnidades().length} registro(s)</div>
+      </button>` +
+      `<button class="lvl-block-btn" onclick="catLevel='temas-subcats';renderCategoriasList();">
+        <div class="t"><span class="lvl-dot" style="background:var(--gold);color:var(--gold);"></span>SUBCATEGORÍAS</div><div class="s">${SUBCATS_TEMA.length} fijas · ${getSubcatsTemaCustom().length} propia(s)</div>
       </button>`;
+    return;
+  }
+  if(catLevel==='temas-subcats'){
+    const customs = getSubcatsTemaCustom();
+    let html = statsBackRow("catLevel='temas-bloques';renderCategoriasList();");
+    html += SUBCATS_TEMA.map(s=>`
+      <div class="cat-row subcat-row">
+        <span class="entry-dot" style="width:8px;height:8px;background:var(--gold);color:var(--gold);box-shadow:none;opacity:.4;margin-top:3px;"></span>
+        <span class="cat-row-name">${escapeHtml(s.nombre)}<div style="font-size:11px;color:var(--text3);font-weight:400;margin-top:2px;">Todos los temas · fija</div></span>
+        <span class="cat-row-count">${formatHM(sumMinutosSubcatGlobal(s.key))}</span>
+      </div>`).join('');
+    html += customs.map(s=>{
+      const restringida = s.temas && s.temas.length;
+      const temasTxt = restringida ? s.temas.map(t=>'TEMA '+temaNumero(t)).join(', ') : 'Todos los temas';
+      return `<div class="cat-row subcat-row" style="cursor:pointer;" onclick="openEditTemaSubcatModal('${s.id}')">
+        <span class="entry-dot" style="width:8px;height:8px;background:var(--gold);color:var(--gold);box-shadow:none;opacity:.75;margin-top:3px;"></span>
+        <span class="cat-row-name">${escapeHtml(s.nombre)}<div style="font-size:11px;color:var(--text3);font-weight:400;margin-top:2px;">${escapeHtml(temasTxt)}</div></span>
+        <span class="cat-row-count">${formatHM(sumMinutosSubcatGlobal(s.id))}</span>
+      </div>`;
+    }).join('');
+    html += `<button class="add-btn" style="margin-top:4px;" onclick="openNewTemaSubcatModal()">+ Nueva subcategoría</button>`;
+    list.innerHTML = html;
     return;
   }
   if(catLevel==='temas-lista'){
@@ -4089,6 +4155,84 @@ function deleteSubcategoryFromDetail(){
   closeModal('subcat-detail-modal');
   deleteSubcategory(subcatDetailCatId, subcatDetailSubId);
 }
+
+// ========== SUBCATEGORÍAS PROPIAS DE TEMAS ==========
+let editingTemaSubcatId = null;
+let tempSubcatTemas = [];
+function renderTemaSubcatTemasList(){
+  const el = document.getElementById('tema-subcat-temas-list');
+  el.innerHTML = BLOQUES_TEMAS.map(b=>{
+    const items = Array.from({length:b.hasta-b.desde+1},(_,i)=>b.desde+i).map(n=>{
+      const tid = temaIdFromNum(n);
+      const checked = tempSubcatTemas.includes(tid);
+      return `<label style="display:flex;align-items:center;gap:8px;padding:5px 2px;font-size:13px;">
+        <input type="checkbox" style="accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;" ${checked?'checked':''} onchange="toggleTempSubcatTema('${tid}',this.checked)">
+        TEMA ${n}
+      </label>`;
+    }).join('');
+    return `<div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin:10px 0 2px;">${escapeHtml(b.corto)}</div>${items}`;
+  }).join('');
+}
+function toggleTempSubcatTema(temaId, on){
+  if(on){ if(!tempSubcatTemas.includes(temaId)) tempSubcatTemas.push(temaId); }
+  else { tempSubcatTemas = tempSubcatTemas.filter(t=>t!==temaId); }
+}
+function openNewTemaSubcatModal(){
+  editingTemaSubcatId = null;
+  tempSubcatTemas = [];
+  document.getElementById('tema-subcat-modal-title').textContent = 'Nueva subcategoría';
+  document.getElementById('tema-subcat-name-input').value = '';
+  document.getElementById('tema-subcat-delete-btn').style.display = 'none';
+  renderTemaSubcatTemasList();
+  openModal('tema-subcat-modal');
+}
+function openEditTemaSubcatModal(id){
+  const s = getSubcatsTemaCustom().find(x=>x.id===id);
+  if(!s) return;
+  editingTemaSubcatId = id;
+  tempSubcatTemas = (s.temas||[]).slice();
+  document.getElementById('tema-subcat-modal-title').textContent = 'Editar subcategoría';
+  document.getElementById('tema-subcat-name-input').value = s.nombre;
+  document.getElementById('tema-subcat-delete-btn').style.display = 'block';
+  renderTemaSubcatTemasList();
+  openModal('tema-subcat-modal');
+}
+function saveTemaSubcatModal(){
+  const nombre = document.getElementById('tema-subcat-name-input').value.trim();
+  if(!nombre){ showToast('Ponle un nombre a la subcategoría'); return; }
+  const nombreNorm = nombre.toLowerCase();
+  const list = getSubcatsTemaCustom();
+  const dup = SUBCATS_TEMA_ALL.some(s=>s.nombre.toLowerCase()===nombreNorm) ||
+    list.some(s=>s.nombre.toLowerCase()===nombreNorm && s.id!==editingTemaSubcatId);
+  if(dup){ showToast('Ya existe una subcategoría con ese nombre'); return; }
+  if(editingTemaSubcatId){
+    const s = list.find(x=>x.id===editingTemaSubcatId);
+    if(s){ s.nombre = nombre; s.temas = tempSubcatTemas.slice(); }
+  } else {
+    list.push({id:'custom-'+uid(), nombre, temas:tempSubcatTemas.slice()});
+  }
+  saveSubcatsTemaCustom(list);
+  closeModal('tema-subcat-modal');
+  renderCategoriasList();
+  showToast('Guardada ✓','green');
+}
+function deleteTemaSubcat(){
+  if(!editingTemaSubcatId) return;
+  const total = sumMinutosSubcatGlobal(editingTemaSubcatId);
+  const msg = total>0
+    ? `Esta subcategoría tiene ${formatHM(total)} registrados. Si la borras se pierde ese histórico: los registros pasarán a contar como OTROS. ¿Borrarla?`
+    : '¿Borrar esta subcategoría?';
+  if(!confirm(msg)) return;
+  if(total>0){
+    const dias = getDias();
+    dias.forEach(d=>d.entradas.forEach(e=>{ if(e.tipo==='tema' && e.subKey===editingTemaSubcatId) e.subKey='OTROS'; }));
+    saveDias(dias);
+  }
+  saveSubcatsTemaCustom(getSubcatsTemaCustom().filter(x=>x.id!==editingTemaSubcatId));
+  closeModal('tema-subcat-modal');
+  renderCategoriasList();
+  showToast('Borrada');
+}
 function moveCategory(id,dir){
   const cats = getCategorias();
   const bloque = catBloqueOf(cats.find(c=>c.id===id));
@@ -4207,7 +4351,7 @@ function renderTemaDetail(){
   back.style.display = temaDetailView==='subcats' ? 'none' : 'flex';
 
   if(temaDetailView==='subcats'){
-    let rows = SUBCATS_TEMA.map(s=>{
+    let rows = subcatsTemaParaTema(temaDetailId).map(s=>{
       const t = sumMinutosTemaSubcat(temaDetailId, s.key);
       if(t<=0) return '';
       return `<div class="lvl-row"><span class="lvl-name">${s.nombre}</span><span class="lvl-val">${formatHM(t)}</span></div>`;
@@ -5840,7 +5984,7 @@ function rcSubcatsOrigenCandidatas(bloque, grupoId, fecha){
   const dia = getDias().find(d=>d.fecha===fecha);
   if(!dia) return out;
   if(bloque==='temas'){
-    SUBCATS_TEMA.forEach(s=>{
+    subcatsTemaParaTema(grupoId).forEach(s=>{
       const mins = dia.entradas.filter(e=>e.tipo==='tema' && e.temaId===grupoId && e.subKey===s.key && e.nota==null).reduce((a,e)=>a+e.minutos,0);
       if(mins>0) out.push({key:s.key, nombre:s.nombre, minutos:mins});
     });
@@ -5857,7 +6001,7 @@ function rcSubcatsOrigenCandidatas(bloque, grupoId, fecha){
 }
 function rcSubcatsDestinoCandidatas(bloque, grupoId){
   if(!grupoId) return [];
-  if(bloque==='temas') return SUBCATS_TEMA.map(s=>({key:s.key, nombre:s.nombre}));
+  if(bloque==='temas') return subcatsTemaParaTema(grupoId);
   const cat = getCategoria(grupoId);
   if(!cat) return [];
   return [{key:'', nombre:'Sin subcategoría'}].concat((cat.subcategorias||[]).map(s=>({key:s.id, nombre:s.nombre})));
@@ -6477,6 +6621,7 @@ function clearAllData(){
 // ========== INIT ==========
 checkBackupRestoreOffer();
 migrateSubcategorias();
+ensureOrganigramaSeed();
 migrateToV2();
 migrateSimulacrosToIntentos();
 ensureInglesCategoriasFijas();
