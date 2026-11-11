@@ -671,6 +671,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .lvl-meta { font-size: 11px; color: var(--text3); flex-shrink: 0; }
 .lvl-val { font-family: var(--font-mono); font-size: 12.5px; color: var(--text2); flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .lvl-chevron { color: var(--text3); flex-shrink: 0; display: flex; transform: rotate(-90deg); }
+.tema-titulo-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 2px; margin-bottom: 4px; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 13.5px; }
+.tema-titulo-row span { overflow-wrap: anywhere; }
+.tema-titulo-row span.empty { color: var(--text3); font-style: italic; }
+.tema-titulo-row svg { flex-shrink: 0; color: var(--text3); }
 .lvl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .lvl-header-title { font-family: var(--font-disp); font-size: 17px; letter-spacing: 0.3px; text-transform: uppercase; flex: 1; color: var(--text); }
 .lvl-back { background: none; border: 1px solid var(--border); color: var(--text2); width: 44px; height: 44px; box-sizing: border-box; border-radius: var(--r-xs); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: inherit; }
@@ -754,24 +758,32 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .arr-date { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; margin-bottom: 14px; }
 .arr-section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin: 0 0 8px; }
 .arr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-.arr-chip { display: flex; align-items: center; gap: 7px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 11px 12px; font-size: 13px; font-weight: 600; color: var(--text); }
+.arr-chip { display: flex; flex-direction: column; gap: 3px; min-width: 0; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; }
+.arr-chip-top { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--text); }
 .arr-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold2); flex-shrink: 0; }
+.arr-chip-titulo { font-size: 10.5px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 14px; }
+.arr-hoy-hecho { font-size: 12.5px; color: var(--text2); margin-bottom: 8px; }
+.arr-hoy-botones { display: flex; gap: 8px; }
 .arr-meta { font-size: 12px; color: var(--text2); margin-bottom: 16px; }
 .arr-suggest { font-size: 12px; color: var(--orange); margin-top: 12px; line-height: 1.5; }
 .arr-suggest span.tap { text-decoration: underline; font-weight: 700; }
 .arr-footer-row { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
 .arr-racha { font-size: 12.5px; color: var(--text2); font-weight: 600; }
 .arr-form-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.arr-form-row .arr-form-tema { flex: 1; font-size: 12.5px; font-weight: 600; color: var(--text); min-width: 0; }
+.arr-form-tema-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.arr-form-tema { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.arr-form-titulo { font-size: 10px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .arr-form-row input { width: 64px; flex-shrink: 0; margin-bottom: 0; text-align: center; }
 .arr-form-row-3 input { width: 50px; }
 .arr-total-row { font-size: 12px; font-weight: 600; color: var(--text2); margin: 4px 0 12px; }
 .arr-nota-preview { font-size: 13px; font-weight: 700; color: var(--gold2); margin: 2px 0 4px; min-height: 18px; }
 .arr-aviso { font-size: 11.5px; color: var(--orange); margin: 0 0 10px; min-height: 14px; }
-.arr-cal-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.arr-cal-row { padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
 .arr-cal-row:last-child { border-bottom: none; }
+.arr-cal-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .arr-cal-fecha { font-family: var(--font-mono); font-size: 11.5px; color: var(--text3); flex-shrink: 0; letter-spacing: 0.04em; }
 .arr-cal-temas { color: var(--text2); text-align: right; overflow-wrap: anywhere; }
+.arr-cal-titulos { font-size: 10.5px; color: var(--text3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .arr-row { display: flex; align-items: center; gap: 10px; padding: 11px 4px; border-top: 1px solid var(--border); background: var(--bg); touch-action: none; }
 .arr-row:first-child { border-top: none; }
 .arr-row.dragging { opacity: 0.5; }
@@ -781,6 +793,9 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .arr-add-row { display: flex; gap: 8px; margin-top: 14px; align-items: center; }
 .arr-add-row select { flex: 1; margin-bottom: 0; }
 .arr-add-row button { flex-shrink: 0; margin: 0; padding: 10px 14px; font-size: 12.5px; }
+.arr-puntero-temas { font-family: var(--font-mono); font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+.arr-puntero-botones { display: flex; gap: 8px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.arr-puntero-botones button { font-size: 12.5px; padding: 9px; }
 /* —— HERRAMIENTAS: Mnemotécnicas —— */
 .mnemo-search { margin-bottom: 12px; font-family: var(--font-sans); }
 .mnemo-tema-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--border); }
@@ -1467,6 +1482,20 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
 </div>
 
+<!-- MODAL: título de tema (catálogo editable, estudio_titulos_temas) -->
+<div class="modal-bg" id="tema-titulo-modal" style="z-index:1002;">
+  <div class="modal">
+    <div class="lvl-header">
+      <button class="lvl-back" onclick="closeModal('tema-titulo-modal')">‹</button>
+      <div class="lvl-header-title" id="tema-titulo-modal-title">Título</div>
+      <button class="toggle-btn" onclick="closeModal('tema-titulo-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <label class="modal-label">Título</label>
+    <input type="text" class="modal-input" id="tema-titulo-input" placeholder="p.ej. La Constitución Española (I)" style="font-family:var(--font-sans);">
+    <button class="save-btn" style="margin-top:12px;" onclick="saveTemaTitulo()">Guardar</button>
+  </div>
+</div>
+
 <!-- MODAL: vista de tests y simulacros -->
 <div class="modal-bg" id="tests-view-modal">
   <div class="modal">
@@ -1899,6 +1928,78 @@ const BLOQUES_TEMAS = [
 ];
 const TOTAL_TEMAS = 45;
 
+// Catálogo de títulos por tema — editable, con este valor por defecto.
+// temaNombre() se queda en "TEMA n" (lo usan veinte sitios); temaTitulo()
+// es el complemento opcional para los sitios que sí necesitan saber de qué
+// va cada tema.
+const TITULOS_TEMAS = {
+  1:'El Derecho, la persona y la nacionalidad',
+  2:'La Constitución Española (I)',
+  3:'La Constitución Española (II)',
+  4:'La Unión Europea',
+  5:'La Administración General del Estado y el Gobierno',
+  6:'Los funcionarios públicos',
+  7:'El Ministerio del Interior y la Secretaría de Estado de Seguridad',
+  8:'La Dirección General de la Policía y la Policía Nacional',
+  9:'LO 2/1986, de Fuerzas y Cuerpos de Seguridad',
+  10:'Extranjería',
+  11:'Infracciones en materia de extranjería',
+  12:'La protección internacional',
+  13:'La seguridad privada',
+  14:'LO 4/2015, de protección de la seguridad ciudadana',
+  15:'Infraestructuras críticas y ciberseguridad',
+  16:'Derecho penal, parte general',
+  17:'Derecho penal especial: vida, integridad y libertad',
+  18:'Delitos contra el patrimonio',
+  19:'Delitos contra el orden público',
+  20:'Delitos informáticos y prueba digital',
+  21:'Derecho procesal penal y la detención',
+  22:'El Estatuto de la víctima del delito',
+  23:'Igualdad, violencia de género, discapacidad y dependencia',
+  24:'Introducción a la prevención de riesgos laborales',
+  25:'Marco normativo de la prevención de riesgos laborales',
+  26:'La protección de datos personales',
+  27:'Los derechos humanos',
+  28:'Globalización y antiglobalización',
+  29:'Actitudes y valores sociales',
+  30:'Principios éticos de la sociedad actual',
+  31:'Inmigración',
+  32:'Geografía humana',
+  33:'La seguridad y la delincuencia',
+  34:'Drogodependencias',
+  35:'El desarrollo sostenible',
+  36:'Gramática de la lengua española',
+  37:'Ortografía de la lengua española',
+  38:'Fundamentos de sistemas operativos',
+  39:'Redes informáticas',
+  40:'Inteligencia',
+  41:'Ciberdelincuencia y agentes de la amenaza',
+  42:'Las armas de fuego',
+  43:'El vehículo prioritario',
+  44:'Seguridad activa y pasiva en vehículos prioritarios',
+  45:'Prevención de riesgos laborales en seguridad vial',
+};
+function getTitulosTemas(){
+  try{
+    const raw = localStorage.getItem('estudio_titulos_temas');
+    if(raw) return JSON.parse(raw);
+  }catch{}
+  localStorage.setItem('estudio_titulos_temas', JSON.stringify(TITULOS_TEMAS));
+  return Object.assign({}, TITULOS_TEMAS);
+}
+function saveTitulosTemas(t){ localStorage.setItem('estudio_titulos_temas', JSON.stringify(t)); }
+function temaTitulo(numOrId){
+  const n = typeof numOrId==='string' ? temaNumero(numOrId) : numOrId;
+  const t = getTitulosTemas()[n];
+  return t || '';
+}
+function setTemaTitulo(numOrId, titulo){
+  const n = typeof numOrId==='string' ? temaNumero(numOrId) : numOrId;
+  const t = getTitulosTemas();
+  if(titulo) t[n] = titulo; else delete t[n];
+  saveTitulosTemas(t);
+}
+
 const SUBCATS_TEMA = [
   {key:'ESTUDIO', nombre:'ESTUDIO'},
   {key:'CLASE', nombre:'CLASE'},
@@ -2127,7 +2228,7 @@ function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.s
 
 // ========== VERSIÓN Y BACKUPS ==========
 const APP_VERSION = 15;
-const APP_BUILD_DATE = '11 Nov 2026 13:20'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_BUILD_DATE = '11 Nov 2026 16:28'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2354,15 +2455,17 @@ let repasoFormSimulacroId = null, repasoFormIntentoId = null, repasoFormEditId =
 let repasoFormPickMode = false;
 let repasoCartaFormTestId = null, repasoCartaFormEditId = null;
 let simulacroNombreEditId = null;
+let temaTituloEditId = null;
 let testsViewOpenSimulacro = {};
 let testsViewSearch = '';
 
 let testTiempoTarget = null; // {categoriaId, subcategoriaId}
 let testTiempoEditing = null; // {fecha, id} | null
 
-let arrView = 'home'; // 'home' | 'form' | 'calendario' | 'gestion'
+let arrView = 'home'; // 'home' | 'form' | 'calendario' | 'gestion' | 'ver'
 let arrFormTemas = [];
 let arrDragState = null;
+let arrVerId = null;
 
 // ========== STORAGE ==========
 function getCategorias(){ try{ return JSON.parse(localStorage.getItem('estudio_categorias')||'[]'); }catch{ return []; } }
@@ -4392,6 +4495,11 @@ function renderTemaDetail(){
   back.style.display = temaDetailView==='subcats' ? 'none' : 'flex';
 
   if(temaDetailView==='subcats'){
+    const titulo = temaTitulo(temaDetailId);
+    const tituloHtml = `<div class="tema-titulo-row tap" onclick="openTemaTituloModal('${temaDetailId}')">
+      <span class="${titulo?'':'empty'}">${titulo ? escapeHtml(titulo) : 'Añadir título'}</span>
+      ${ICON_EDIT}
+    </div>`;
     let rows = subcatsTemaParaTema(temaDetailId).map(s=>{
       const t = sumMinutosTemaSubcat(temaDetailId, s.key);
       if(t<=0) return '';
@@ -4399,7 +4507,7 @@ function renderTemaDetail(){
     }).join('');
     const libroTotal = sumMinutosTemaSubcat(temaDetailId,'LIBRO_RESUMEN');
     rows += `<div class="lvl-row" onclick="temaDetailView='vueltas';renderTemaDetail();"><span class="lvl-name">LIBRO RESUMEN</span>${libroTotal>0?`<span class="lvl-val">${formatHM(libroTotal)}</span>`:''}</div>`;
-    body.innerHTML = rows || '<div class="empty-sub">Sin tiempo registrado todavía</div>';
+    body.innerHTML = tituloHtml + (rows || '<div class="empty-sub">Sin tiempo registrado todavía</div>');
     return;
   }
   if(temaDetailView==='vueltas'){
@@ -4733,9 +4841,13 @@ function saveTestForm(){
 }
 function deleteTest(id){
   if(!confirm('¿Borrar este registro?')) return;
-  saveTests(getTests().filter(t=>t.id!==id));
+  const t = getTests().find(x=>x.id===id);
+  const esArrastre = !!t && t.origen==='ARRASTRE';
+  saveTests(getTests().filter(x=>x.id!==id));
+  if(esArrastre && confirm('¿Retroceder también el puntero del arrastre cuatro posiciones?')) arrMoverPuntero(-4);
   showToast('Borrado');
   renderTestsView(); renderHistorial(); renderEstadisticas(); renderHoy();
+  if(document.getElementById('arrastre-modal').classList.contains('open')){ arrView='home'; renderArrastre(); }
 }
 function deleteSimulacroIntento(simulacroId, intentoId){
   if(!confirm('¿Borrar este intento?')) return;
@@ -4957,18 +5069,40 @@ function arrAvanzarPuntero(){
   const a = getArrastre();
   const n = a.temas.length;
   a.puntero = n ? (a.puntero+4)%n : 0;
+  // ultimaSesion queda como dato informativo (p.ej. para depurar), pero ya
+  // no manda sobre el estado de la tarjeta ni del calendario — ver
+  // arrastreDeHoy() y arrRacha(), que miran los registros reales. Si se
+  // mueve un test de día desde el histórico, esto evita que el candado se
+  // quede pegado a una fecha que ya no es cierta.
   a.ultimaSesion = todayStr();
   saveArrastre(a);
 }
+// Mueve el puntero a mano, en bloques de 4 (positivo = adelante, negativo =
+// atrás) — la salida de emergencia de Gestionar rotación, y lo que usa
+// deleteTest() para deshacer el avance al borrar un arrastre.
+function arrMoverPuntero(delta){
+  const a = getArrastre();
+  const n = a.temas.length;
+  if(!n) return;
+  a.puntero = ((a.puntero+delta)%n+n)%n;
+  saveArrastre(a);
+}
+// La verdad de "¿hay arrastre hoy?" está en los registros, no en un
+// contador paralelo — así que si se edita la fecha de un test desde el
+// histórico, el estado de la tarjeta se corrige solo.
+function arrastreDeHoy(){
+  const hoy = todayStr();
+  return getTests().find(t=>t.tipo==='carta' && t.origen==='ARRASTRE' && t.fecha===hoy) || null;
+}
 // Próximos N días lectivos con sus cuatro temas, a partir de la primera
-// tanda todavía pendiente (hoy, si no se ha hecho; el siguiente día lectivo
-// si ya se hizo hoy).
+// tanda todavía pendiente (hoy, si no hay arrastre hoy; el siguiente día
+// lectivo si ya hay uno).
 function arrCalendario(dias){
   const a = getArrastre();
   const n = a.temas.length;
   const out = [];
   if(!n) return out;
-  let fecha = a.ultimaSesion===todayStr() ? arrSiguienteLectivo(todayStr()) : todayStr();
+  let fecha = arrastreDeHoy() ? arrSiguienteLectivo(todayStr()) : todayStr();
   if(!arrEsLectivo(fecha)) fecha = arrSiguienteLectivo(fecha);
   let puntero = a.puntero;
   for(let i=0;i<dias;i++){
@@ -4981,15 +5115,15 @@ function arrCalendario(dias){
   return out;
 }
 // Racha de días lectivos consecutivos con sesión, terminando en la más
-// reciente — solo cuenta como "viva" si esa más reciente es hoy o el último
-// día lectivo antes de hoy; si no, la racha está rota y vale 0.
+// reciente — cuenta como "viva" si esa más reciente es hoy o el último día
+// lectivo antes de hoy (así no cae a 0 por la mañana antes de hacerla).
 function arrRacha(){
   const fechas = Array.from(new Set(getTests().filter(t=>t.tipo==='carta' && t.origen==='ARRASTRE').map(t=>t.fecha))).sort().reverse();
   if(!fechas.length) return 0;
   const hoy = todayStr();
-  const limite = arrEsLectivo(hoy) ? hoy : arrAnteriorLectivo(hoy);
+  const ayerLectivo = arrAnteriorLectivo(hoy);
   let cursor = fechas[0];
-  if(cursor!==hoy && cursor!==limite) return 0;
+  if(cursor!==hoy && cursor!==ayerLectivo) return 0;
   let racha = 1;
   for(let i=1;i<fechas.length;i++){
     const anterior = arrAnteriorLectivo(cursor);
@@ -5033,13 +5167,24 @@ function openArrastre(){
 function arrBack(){ arrView='home'; renderArrastre(); }
 function renderArrastre(){
   document.getElementById('arr-back-btn').style.display = arrView==='home' ? 'none' : 'flex';
-  const titulos = {home:'Test de arrastre', form:'Registrar arrastre', calendario:'Calendario', gestion:'Gestionar rotación'};
+  const titulos = {home:'Test de arrastre', form:'Registrar arrastre', calendario:'Calendario', gestion:'Gestionar rotación', ver:'Registro de hoy'};
   document.getElementById('arr-header-title').textContent = titulos[arrView];
   const body = document.getElementById('arr-body');
   if(arrView==='home') body.innerHTML = renderArrHomeHtml();
   else if(arrView==='form'){ body.innerHTML = renderArrFormHtml(); renderArrNotaPreview(); }
   else if(arrView==='calendario') body.innerHTML = renderArrCalendarioHtml();
   else if(arrView==='gestion'){ body.innerHTML = renderArrGestionHtml(); arrSetupDrag(); }
+  else if(arrView==='ver') body.innerHTML = renderArrVerHtml();
+}
+// Chip de un tema del arrastre: número + título (si lo hay) en gris debajo,
+// cortado con puntos suspensivos en una sola línea — la tarjeta no puede
+// hacer scroll, así que el título nunca puede forzar una segunda línea.
+function arrChipHtml(n){
+  const titulo = temaTitulo(n);
+  return `<div class="arr-chip">
+    <div class="arr-chip-top"><span class="dot"></span>TEMA ${n}</div>
+    ${titulo ? `<div class="arr-chip-titulo">${escapeHtml(titulo)}</div>` : ''}
+  </div>`;
 }
 
 function renderArrHomeHtml(){
@@ -5048,24 +5193,51 @@ function renderArrHomeHtml(){
     return '<div class="empty-sub">Todavía no hay temas en el arrastre.</div><button class="add-btn tap" style="margin-top:10px;" onclick="arrView=\'gestion\';renderArrastre();">Gestionar rotación</button>';
   }
   const hoyTemas = arrHoyTemas();
-  const hechoHoy = a.ultimaSesion===todayStr();
-  const chipsHtml = hoyTemas.map(n=>`<div class="arr-chip"><span class="dot"></span>TEMA ${n}</div>`).join('');
+  const hoyTest = arrastreDeHoy();
+  const chipsHtml = hoyTemas.map(arrChipHtml).join('');
   const sug = arrSugerenciaTema();
   const racha = arrRacha();
+  // El botón de empezar/registrar nunca desaparece: si ya hay un arrastre
+  // hoy se informa, pero la acción sigue activa (puede haber más de uno).
+  const accionHtml = hoyTest
+    ? `<div class="arr-hoy-hecho">Hoy ya hay uno registrado · ${hoyTest.aciertosTotal!=null?hoyTest.aciertosTotal:'—'}/${hoyTest.totalPreguntas||0}</div>
+       <div class="arr-hoy-botones">
+         <button class="add-btn tap" style="flex:1;margin:0;" onclick="arrVerHoy('${hoyTest.id}')">VER</button>
+         <button class="save-btn" style="flex:1;margin:0;" onclick="arrAbrirForm()">REGISTRAR OTRO</button>
+       </div>`
+    : `<button class="save-btn" onclick="arrAbrirForm()">EMPEZAR</button>`;
   return `
     <div class="arr-date">${arrFechaLabel(todayStr())}</div>
     <div class="arr-section-label">HOY TE TOCAN</div>
     <div class="arr-grid">${chipsHtml}</div>
-    <div class="arr-meta">5 preguntas de cada uno · 20 en total</div>
-    ${hechoHoy
-      ? `<div class="empty-sub" style="padding:14px 0;">Ya registrado hoy ✓</div>`
-      : `<button class="save-btn" onclick="arrAbrirForm()">EMPEZAR</button>`}
+    <div class="arr-meta">20 preguntas repartidas entre los 4</div>
+    ${accionHtml}
     ${sug ? `<div class="arr-suggest">El tema ${sug.n} lleva ${Math.round(sug.horas)} h y no está en el arrastre · <span class="tap" onclick="arrAddTema(${sug.n});renderArrastre();">añadir</span></div>` : ''}
     <div class="arr-footer-row">
       <span class="arr-racha">Racha: ${racha} día${racha===1?'':'s'}</span>
       <span class="tap" style="color:var(--text2);font-size:12.5px;font-weight:600;" onclick="arrView='calendario';renderArrastre();">VER CALENDARIO</span>
     </div>
     <button class="add-btn tap" style="margin-top:14px;" onclick="arrView='gestion';renderArrastre();">Gestionar rotación</button>
+  `;
+}
+function arrVerHoy(testId){ arrVerId = testId; arrView = 'ver'; renderArrastre(); }
+function renderArrVerHtml(){
+  const t = getTests().find(x=>x.id===arrVerId);
+  if(!t) return '<div class="empty-sub">Este registro ya no existe.</div>';
+  const temasHtml = (t.temas||[]).map(te=>{
+    const n = temaNumero(te.temaId);
+    const titulo = temaTitulo(n);
+    return `<div class="history-row"><span class="history-row-name"><span class="n">TEMA ${n}${titulo?' · '+escapeHtml(titulo):''}</span></span><span class="history-row-val">${te.aciertos}/${te.preguntas}${te.fallos?' · '+te.fallos+' fa':''}</span></div>`;
+  }).join('');
+  return `
+    <div class="arr-date">${arrFechaLabel(t.fecha)}</div>
+    <div class="arr-section-label">RESULTADO</div>
+    ${temasHtml}
+    <div class="arr-total-row">Nota ${formatNota(t.nota)} · ${t.aciertosTotal!=null?t.aciertosTotal:'—'}/${t.totalPreguntas||0} · ${formatHM(t.minutosTotal)}</div>
+    <div class="arr-hoy-botones" style="margin-top:14px;">
+      <button class="add-btn tap" style="flex:1;margin:0;" onclick="closeModal('arrastre-modal');openTestForm('carta','${t.id}')">Editar</button>
+      <button class="add-btn tap" style="flex:1;margin:0;color:var(--red);border-color:rgba(193,84,74,0.35);" onclick="deleteTest('${t.id}')">Borrar</button>
+    </div>
   `;
 }
 
@@ -5078,13 +5250,19 @@ function arrAbrirForm(){
 // las preguntas de cada tema las mete el usuario a mano (un tema puede
 // llevar 0 si el test no lo tocó, y entonces no cuenta en nada).
 function renderArrFormHtml(){
-  const rows = arrFormTemas.map(n=>`
+  const rows = arrFormTemas.map(n=>{
+    const titulo = temaTitulo(n);
+    return `
     <div class="arr-form-row arr-form-row-3">
-      <span class="arr-form-tema">TEMA ${n}</span>
+      <span class="arr-form-tema-wrap">
+        <span class="arr-form-tema">TEMA ${n}</span>
+        ${titulo ? `<span class="arr-form-titulo">${escapeHtml(titulo)}</span>` : ''}
+      </span>
       <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-pr-${n}" placeholder="preg." oninput="renderArrNotaPreview()">
       <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-ac-${n}" placeholder="acier." oninput="renderArrNotaPreview()">
       <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-fa-${n}" placeholder="fallos" oninput="renderArrNotaPreview()">
-    </div>`).join('');
+    </div>`;
+  }).join('');
   return `
     <div class="arr-date">REGISTRAR ARRASTRE · ${arrFechaLabel(todayStr())}</div>
     <div class="arr-section-label">PREG. · ACIERTOS · FALLOS</div>
@@ -5165,11 +5343,33 @@ function arrGuardarSesion(){
 function renderArrCalendarioHtml(){
   const dias = arrCalendario(15);
   if(!dias.length) return '<div class="empty-sub">Añade temas al arrastre primero.</div>';
-  return `<div>${dias.map(d=>`<div class="arr-cal-row"><span class="arr-cal-fecha">${arrFechaLabel(d.fecha)}</span><span class="arr-cal-temas">${d.temas.join(' · ')}</span></div>`).join('')}</div>`;
+  return `<div>${dias.map(d=>{
+    const titulos = d.temas.map(temaTitulo).filter(Boolean);
+    return `<div class="arr-cal-row">
+      <div class="arr-cal-top"><span class="arr-cal-fecha">${arrFechaLabel(d.fecha)}</span><span class="arr-cal-temas">${d.temas.join(' · ')}</span></div>
+      ${titulos.length ? `<div class="arr-cal-titulos">${titulos.map(escapeHtml).join(' · ')}</div>` : ''}
+    </div>`;
+  }).join('')}</div>`;
 }
 
+// Salida de emergencia cuando el puntero se descuadra (p.ej. tras mover a
+// mano la fecha de un arrastre desde el histórico): mueve el puntero de 4
+// en 4 sin pasar por una sesión completa.
+function renderArrPunteroHtml(){
+  const a = getArrastre();
+  if(!a.temas.length) return '';
+  return `
+    <div class="arr-section-label">PUNTERO</div>
+    <div class="arr-puntero-temas">${arrHoyTemas().join(' · ')}</div>
+    <div class="arr-puntero-botones">
+      <button class="add-btn tap" style="flex:1;margin:0;" onclick="arrMoverPuntero(-4);renderArrastre();">◀ atrás</button>
+      <button class="add-btn tap" style="flex:1;margin:0;" onclick="arrMoverPuntero(4);renderArrastre();">adelante ▶</button>
+    </div>
+  `;
+}
 function renderArrGestionHtml(){
   return `
+    ${renderArrPunteroHtml()}
     <div class="arr-section-label">ROTACIÓN ACTUAL</div>
     <div id="arr-gestion-list">${arrGestionRowsHtml()}</div>
     <div class="arr-add-row">
@@ -5262,6 +5462,22 @@ function saveSimulacroNombre(){
   closeModal('simulacro-nombre-modal');
   showToast('Guardado ✓','green');
   if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
+}
+
+function openTemaTituloModal(temaId){
+  temaTituloEditId = temaId;
+  document.getElementById('tema-titulo-modal-title').textContent = temaNombre(temaId);
+  document.getElementById('tema-titulo-input').value = temaTitulo(temaId);
+  openModal('tema-titulo-modal');
+}
+function saveTemaTitulo(){
+  const titulo = document.getElementById('tema-titulo-input').value.trim();
+  setTemaTitulo(temaTituloEditId, titulo);
+  closeModal('tema-titulo-modal');
+  showToast('Guardado ✓','green');
+  if(document.getElementById('tema-detail-modal').classList.contains('open')) renderTemaDetail();
+  if(document.getElementById('arrastre-modal').classList.contains('open')) renderArrastre();
+  if(document.getElementById('rendimiento-modal').classList.contains('open')) renderRendimiento();
 }
 
 function toggleTestsViewSimulacro(id){
@@ -5563,7 +5779,7 @@ function rendOrdenar(campo){
 
 function renderRendimiento(){
   document.getElementById('rend-back-btn').style.display = rendView==='resumen' ? 'none' : 'flex';
-  document.getElementById('rend-header-title').textContent = rendView==='resumen' ? 'Rendimiento' : temaNombre(rendTemaDetailId);
+  document.getElementById('rend-header-title').textContent = rendView==='resumen' ? 'Rendimiento' : temaNombre(rendTemaDetailId) + (temaTitulo(rendTemaDetailId) ? ' · '+temaTitulo(rendTemaDetailId) : '');
   const body = document.getElementById('rend-body');
   if(rendView==='tema'){ body.innerHTML = renderRendTemaDetailHtml(rendTemaDetailId); return; }
   body.innerHTML = renderRendResumenHtml();
