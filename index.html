@@ -750,6 +750,35 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .leyes-tema-label { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; color: var(--text3); margin: 10px 0 6px; }
 .leyes-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 8px; font-size: 13.5px; color: var(--text); line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
 .leyes-card:active { border-color: var(--border-3); }
+/* —— HERRAMIENTAS: Test de arrastre —— */
+.arr-date { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; margin-bottom: 14px; }
+.arr-section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin: 0 0 8px; }
+.arr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.arr-chip { display: flex; align-items: center; gap: 7px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 11px 12px; font-size: 13px; font-weight: 600; color: var(--text); }
+.arr-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold2); flex-shrink: 0; }
+.arr-meta { font-size: 12px; color: var(--text2); margin-bottom: 16px; }
+.arr-suggest { font-size: 12px; color: var(--orange); margin-top: 12px; line-height: 1.5; }
+.arr-suggest span.tap { text-decoration: underline; font-weight: 700; }
+.arr-footer-row { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+.arr-racha { font-size: 12.5px; color: var(--text2); font-weight: 600; }
+.arr-form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.arr-form-row .arr-form-tema { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
+.arr-form-row input { width: 64px; flex-shrink: 0; margin-bottom: 0; text-align: center; }
+.arr-form-row .arr-form-of { font-size: 12px; color: var(--text3); flex-shrink: 0; }
+.arr-nota-preview { font-size: 13px; font-weight: 700; color: var(--gold2); margin: 2px 0 14px; min-height: 18px; }
+.arr-cal-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.arr-cal-row:last-child { border-bottom: none; }
+.arr-cal-fecha { font-family: var(--font-mono); font-size: 11.5px; color: var(--text3); flex-shrink: 0; letter-spacing: 0.04em; }
+.arr-cal-temas { color: var(--text2); text-align: right; overflow-wrap: anywhere; }
+.arr-row { display: flex; align-items: center; gap: 10px; padding: 11px 4px; border-top: 1px solid var(--border); background: var(--bg); touch-action: none; }
+.arr-row:first-child { border-top: none; }
+.arr-row.dragging { opacity: 0.5; }
+.arr-handle { color: var(--text3); font-size: 15px; cursor: grab; padding: 4px 6px; flex-shrink: 0; }
+.arr-row-name { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--text); }
+.arr-row .rm { background: none; border: none; color: var(--red); cursor: pointer; padding: 4px; flex-shrink: 0; }
+.arr-add-row { display: flex; gap: 8px; margin-top: 14px; align-items: center; }
+.arr-add-row select { flex: 1; margin-bottom: 0; }
+.arr-add-row button { flex-shrink: 0; margin: 0; padding: 10px 14px; font-size: 12.5px; }
 /* —— HERRAMIENTAS: Mnemotécnicas —— */
 .mnemo-search { margin-bottom: 12px; font-family: var(--font-sans); }
 .mnemo-tema-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--border); }
@@ -1477,6 +1506,10 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   </div>
   <div class="tools-zone">
     <div class="tools-zone-label">Estudio</div>
+    <button class="curva-tool-btn tap" onclick="openArrastre()">
+      <span class="t">TEST DE ARRASTRE</span>
+      <span style="color:var(--text3);">›</span>
+    </button>
     <button class="curva-tool-btn tap" onclick="openLeyes()">
       <span class="t">LEYES</span>
       <span style="color:var(--text3);">›</span>
@@ -1512,6 +1545,18 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <button class="toggle-btn" onclick="closeModal('rendimiento-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
     </div>
     <div id="rend-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Test de arrastre (rotación diaria de mantenimiento) -->
+<div class="modal-bg" id="arrastre-modal">
+  <div class="modal" style="max-height:88vh;">
+    <div class="lvl-header">
+      <button class="lvl-back" id="arr-back-btn" style="display:none;" onclick="arrBack()">‹</button>
+      <div class="lvl-header-title" id="arr-header-title">Test de arrastre</div>
+      <button class="toggle-btn" onclick="closeModal('arrastre-modal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+    </div>
+    <div id="arr-body"></div>
   </div>
 </div>
 
@@ -2084,7 +2129,7 @@ function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.s
 
 // ========== VERSIÓN Y BACKUPS ==========
 const APP_VERSION = 15;
-const APP_BUILD_DATE = '06 nov 2026 16:15'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_BUILD_DATE = '11 Nov 2026 12:12'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2316,6 +2361,10 @@ let testsViewSearch = '';
 
 let testTiempoTarget = null; // {categoriaId, subcategoriaId}
 let testTiempoEditing = null; // {fecha, id} | null
+
+let arrView = 'home'; // 'home' | 'form' | 'calendario' | 'gestion'
+let arrFormTemas = [];
+let arrDragState = null;
 
 // ========== STORAGE ==========
 function getCategorias(){ try{ return JSON.parse(localStorage.getItem('estudio_categorias')||'[]'); }catch{ return []; } }
@@ -4868,6 +4917,323 @@ function deleteRepasoCartaForm(){
   if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
 }
 
+// ========== TEST DE ARRASTRE ==========
+// Rotación de temas en mantenimiento: cada sesión completada consume los
+// cuatro siguientes del array en círculo y avanza el puntero cuatro
+// posiciones. El puntero avanza con la sesión, no con el calendario — si se
+// salta un día lectivo, al siguiente salen los temas que tocaban, nada se
+// pierde. Se guarda como test a la carta normal (origen:'ARRASTRE') para
+// que todo el motor de RENDIMIENTO lo trate igual que cualquier otro test.
+function getArrastre(){
+  try{
+    const raw = localStorage.getItem('estudio_arrastre');
+    if(raw) return JSON.parse(raw);
+  }catch{}
+  const seed = { temas:[24,25,9,14,38,39,16,2,27,3,7], puntero:0, ultimaSesion:null };
+  localStorage.setItem('estudio_arrastre', JSON.stringify(seed));
+  return seed;
+}
+function saveArrastre(a){ localStorage.setItem('estudio_arrastre', JSON.stringify(a)); }
+
+function arrEsLectivo(fecha){ const dow = new Date(fecha+'T12:00:00').getDay(); return dow>=1 && dow<=5; }
+function arrSiguienteLectivo(fecha){
+  let d = new Date(fecha+'T12:00:00');
+  do{ d.setDate(d.getDate()+1); } while(d.getDay()===0 || d.getDay()===6);
+  return toLocalISO(d);
+}
+function arrAnteriorLectivo(fecha){
+  let d = new Date(fecha+'T12:00:00');
+  do{ d.setDate(d.getDate()-1); } while(d.getDay()===0 || d.getDay()===6);
+  return toLocalISO(d);
+}
+const ARR_DOW = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+const ARR_MES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+function arrFechaLabel(fecha){
+  const d = new Date(fecha+'T12:00:00');
+  return `${ARR_DOW[d.getDay()]} ${d.getDate()} ${ARR_MES[d.getMonth()]}`;
+}
+
+function arrHoyTemas(){
+  const a = getArrastre();
+  const n = a.temas.length;
+  if(!n) return [];
+  const out = [];
+  for(let i=0;i<4;i++) out.push(a.temas[(a.puntero+i)%n]);
+  return out;
+}
+function arrAvanzarPuntero(){
+  const a = getArrastre();
+  const n = a.temas.length;
+  a.puntero = n ? (a.puntero+4)%n : 0;
+  a.ultimaSesion = todayStr();
+  saveArrastre(a);
+}
+// Próximos N días lectivos con sus cuatro temas, a partir de la primera
+// tanda todavía pendiente (hoy, si no se ha hecho; el siguiente día lectivo
+// si ya se hizo hoy).
+function arrCalendario(dias){
+  const a = getArrastre();
+  const n = a.temas.length;
+  const out = [];
+  if(!n) return out;
+  let fecha = a.ultimaSesion===todayStr() ? arrSiguienteLectivo(todayStr()) : todayStr();
+  if(!arrEsLectivo(fecha)) fecha = arrSiguienteLectivo(fecha);
+  let puntero = a.puntero;
+  for(let i=0;i<dias;i++){
+    const temas = [];
+    for(let j=0;j<4;j++) temas.push(a.temas[(puntero+j)%n]);
+    out.push({fecha, temas});
+    puntero = (puntero+4)%n;
+    fecha = arrSiguienteLectivo(fecha);
+  }
+  return out;
+}
+// Racha de días lectivos consecutivos con sesión, terminando en la más
+// reciente — solo cuenta como "viva" si esa más reciente es hoy o el último
+// día lectivo antes de hoy; si no, la racha está rota y vale 0.
+function arrRacha(){
+  const fechas = Array.from(new Set(getTests().filter(t=>t.tipo==='carta' && t.origen==='ARRASTRE').map(t=>t.fecha))).sort().reverse();
+  if(!fechas.length) return 0;
+  const hoy = todayStr();
+  const limite = arrEsLectivo(hoy) ? hoy : arrAnteriorLectivo(hoy);
+  let cursor = fechas[0];
+  if(cursor!==hoy && cursor!==limite) return 0;
+  let racha = 1;
+  for(let i=1;i<fechas.length;i++){
+    const anterior = arrAnteriorLectivo(cursor);
+    if(fechas[i]===anterior){ racha++; cursor=anterior; } else break;
+  }
+  return racha;
+}
+// Sugiere añadir el tema con más horas de estudio (>8h) que todavía no esté
+// en el arrastre — el candidato más evidente a que se esté olvidando.
+function arrSugerenciaTema(){
+  const a = getArrastre();
+  const enLista = new Set(a.temas);
+  let mejor = null;
+  for(let n=1;n<=TOTAL_TEMAS;n++){
+    if(enLista.has(n)) continue;
+    const horas = sumMinutosTema(temaIdFromNum(n))/60;
+    if(horas>8 && (!mejor || horas>mejor.horas)) mejor = {n, horas};
+  }
+  return mejor;
+}
+function arrAddTema(n){
+  const a = getArrastre();
+  if(a.temas.includes(n)) return;
+  a.temas.unshift(n);
+  saveArrastre(a);
+}
+function arrRemoveTema(n){
+  const a = getArrastre();
+  const idx = a.temas.indexOf(n);
+  if(idx<0) return;
+  a.temas.splice(idx,1);
+  a.puntero = a.temas.length ? a.puntero % a.temas.length : 0;
+  saveArrastre(a);
+}
+
+function openArrastre(){
+  arrView = 'home';
+  renderArrastre();
+  openModal('arrastre-modal');
+}
+function arrBack(){ arrView='home'; renderArrastre(); }
+function renderArrastre(){
+  document.getElementById('arr-back-btn').style.display = arrView==='home' ? 'none' : 'flex';
+  const titulos = {home:'Test de arrastre', form:'Registrar arrastre', calendario:'Calendario', gestion:'Gestionar rotación'};
+  document.getElementById('arr-header-title').textContent = titulos[arrView];
+  const body = document.getElementById('arr-body');
+  if(arrView==='home') body.innerHTML = renderArrHomeHtml();
+  else if(arrView==='form'){ body.innerHTML = renderArrFormHtml(); renderArrNotaPreview(); }
+  else if(arrView==='calendario') body.innerHTML = renderArrCalendarioHtml();
+  else if(arrView==='gestion'){ body.innerHTML = renderArrGestionHtml(); arrSetupDrag(); }
+}
+
+function renderArrHomeHtml(){
+  const a = getArrastre();
+  if(!a.temas.length){
+    return '<div class="empty-sub">Todavía no hay temas en el arrastre.</div><button class="add-btn tap" style="margin-top:10px;" onclick="arrView=\'gestion\';renderArrastre();">Gestionar rotación</button>';
+  }
+  const hoyTemas = arrHoyTemas();
+  const hechoHoy = a.ultimaSesion===todayStr();
+  const chipsHtml = hoyTemas.map(n=>`<div class="arr-chip"><span class="dot"></span>TEMA ${n}</div>`).join('');
+  const sug = arrSugerenciaTema();
+  const racha = arrRacha();
+  return `
+    <div class="arr-date">${arrFechaLabel(todayStr())}</div>
+    <div class="arr-section-label">HOY TE TOCAN</div>
+    <div class="arr-grid">${chipsHtml}</div>
+    <div class="arr-meta">5 preguntas de cada uno · 20 en total</div>
+    ${hechoHoy
+      ? `<div class="empty-sub" style="padding:14px 0;">Ya registrado hoy ✓</div>`
+      : `<button class="save-btn" onclick="arrAbrirForm()">EMPEZAR</button>`}
+    ${sug ? `<div class="arr-suggest">El tema ${sug.n} lleva ${Math.round(sug.horas)} h y no está en el arrastre · <span class="tap" onclick="arrAddTema(${sug.n});renderArrastre();">añadir</span></div>` : ''}
+    <div class="arr-footer-row">
+      <span class="arr-racha">Racha: ${racha} día${racha===1?'':'s'}</span>
+      <span class="tap" style="color:var(--text2);font-size:12.5px;font-weight:600;" onclick="arrView='calendario';renderArrastre();">VER CALENDARIO</span>
+    </div>
+    <button class="add-btn tap" style="margin-top:14px;" onclick="arrView='gestion';renderArrastre();">Gestionar rotación</button>
+  `;
+}
+
+function arrAbrirForm(){
+  arrFormTemas = arrHoyTemas();
+  arrView = 'form';
+  renderArrastre();
+}
+function renderArrFormHtml(){
+  const rows = arrFormTemas.map(n=>`
+    <div class="arr-form-row">
+      <span class="arr-form-tema">TEMA ${n}</span>
+      <input type="number" class="modal-input" min="0" max="5" inputmode="numeric" id="arr-ac-${n}" placeholder="acier." oninput="renderArrNotaPreview()">
+      <span class="arr-form-of">/ 5</span>
+    </div>`).join('');
+  return `
+    <div class="arr-date">${arrFechaLabel(todayStr())}</div>
+    <div class="arr-section-label">ACIERTOS</div>
+    ${rows}
+    <label class="modal-label" style="margin-top:6px;">Tiempo test (min)</label>
+    <input type="number" class="modal-input" id="arr-tiempo-test" value="10" min="1" inputmode="numeric" oninput="renderArrNotaPreview()">
+    <label class="modal-label">Tiempo corrección (min)</label>
+    <input type="number" class="modal-input" id="arr-tiempo-correccion" value="10" min="1" inputmode="numeric">
+    <div class="arr-nota-preview" id="arr-nota-preview"></div>
+    <button class="save-btn" onclick="arrGuardarSesion()">Guardar</button>
+  `;
+}
+function arrLeerAciertos(){
+  return arrFormTemas.map(n=>{
+    const el = document.getElementById('arr-ac-'+n);
+    const raw = el ? el.value.trim() : '';
+    const v = raw==='' ? null : Math.max(0, Math.min(5, parseInt(raw,10)||0));
+    return {n, aciertos:v};
+  });
+}
+function renderArrNotaPreview(){
+  const el = document.getElementById('arr-nota-preview');
+  if(!el) return;
+  const datos = arrLeerAciertos();
+  if(!datos.length || datos.some(d=>d.aciertos==null)){ el.textContent = ''; return; }
+  const totalAciertos = datos.reduce((a,d)=>a+d.aciertos,0);
+  const totalPreguntas = datos.length*5;
+  el.textContent = `Nota ${formatNota(notaOficial(totalAciertos,0,totalPreguntas))} · ${totalAciertos}/${totalPreguntas}`;
+}
+function arrGuardarSesion(){
+  const datos = arrLeerAciertos();
+  if(!datos.length || datos.some(d=>d.aciertos==null)){ showToast('Rellena los aciertos de los cuatro temas'); return; }
+  const tiempoTest = parseInt(document.getElementById('arr-tiempo-test').value,10);
+  const tiempoCorreccion = parseInt(document.getElementById('arr-tiempo-correccion').value,10);
+  if(!tiempoTest || tiempoTest<=0){ showToast('Introduce un tiempo de test válido'); return; }
+  if(!tiempoCorreccion || tiempoCorreccion<=0){ showToast('Introduce un tiempo de corrección válido'); return; }
+  const fecha = todayStr();
+  const temasConPreguntas = datos.map(d=>({temaId:temaIdFromNum(d.n), preguntas:5}));
+  const temas = testTemaRound(tiempoTest, temasConPreguntas).map(t=>{
+    const d = datos.find(x=>temaIdFromNum(x.n)===t.temaId);
+    return Object.assign({}, t, {aciertos:d.aciertos});
+  });
+  const totalPreguntas = temas.reduce((a,t)=>a+t.preguntas,0);
+  const totalAciertos = datos.reduce((a,d)=>a+d.aciertos,0);
+  const nota = notaOficial(totalAciertos, 0, totalPreguntas);
+  const nuevo = {
+    id: uid(), tipo:'carta', origen:'ARRASTRE', fecha, minutosTotal: tiempoTest,
+    temas, nota, totalPreguntas, aciertosTotal: totalAciertos,
+    repasos: [{id:uid(), fecha, minutos: tiempoCorreccion}],
+  };
+  const tests = getTests();
+  tests.push(nuevo);
+  saveTests(tests);
+  arrAvanzarPuntero();
+  closeModal('arrastre-modal');
+  showToast('Guardado ✓','green');
+  renderHoy(); renderHistorial(); renderEstadisticas();
+  if(document.getElementById('rendimiento-modal').classList.contains('open')) renderRendimiento();
+  if(document.getElementById('tests-view-modal').classList.contains('open')) renderTestsView();
+}
+
+function renderArrCalendarioHtml(){
+  const dias = arrCalendario(15);
+  if(!dias.length) return '<div class="empty-sub">Añade temas al arrastre primero.</div>';
+  return `<div>${dias.map(d=>`<div class="arr-cal-row"><span class="arr-cal-fecha">${arrFechaLabel(d.fecha)}</span><span class="arr-cal-temas">${d.temas.join(' · ')}</span></div>`).join('')}</div>`;
+}
+
+function renderArrGestionHtml(){
+  return `
+    <div class="arr-section-label">ROTACIÓN ACTUAL</div>
+    <div id="arr-gestion-list">${arrGestionRowsHtml()}</div>
+    <div class="arr-add-row">
+      <select class="modal-select" id="arr-add-select">${arrAddSelectOptionsHtml()}</select>
+      <button class="add-btn tap" onclick="arrAddDesdeSelect()">+ Añadir</button>
+    </div>
+  `;
+}
+function arrGestionRowsHtml(){
+  const a = getArrastre();
+  if(!a.temas.length) return '<div class="empty-sub">Sin temas en el arrastre</div>';
+  return a.temas.map(n=>`
+    <div class="arr-row" data-n="${n}">
+      <span class="arr-handle">⠿</span>
+      <span class="arr-row-name">TEMA ${n}</span>
+      <button class="rm" onclick="arrRemoveTema(${n});renderArrastre();">${ICON_CLOSE}</button>
+    </div>`).join('');
+}
+function arrAddSelectOptionsHtml(){
+  const a = getArrastre();
+  const enLista = new Set(a.temas);
+  let opts = '';
+  for(let n=1;n<=TOTAL_TEMAS;n++){ if(!enLista.has(n)) opts += `<option value="${n}">TEMA ${n}</option>`; }
+  return opts || '<option value="">(todos añadidos)</option>';
+}
+function arrAddDesdeSelect(){
+  const v = document.getElementById('arr-add-select').value;
+  if(!v) return;
+  arrAddTema(parseInt(v,10));
+  renderArrastre();
+}
+// Arrastre vertical táctil de las filas de ROTACIÓN ACTUAL: el reordenado se
+// confirma en cada cruce de fila (no en el soltar), así el array siempre
+// refleja lo que se ve en pantalla.
+function arrSetupDrag(){
+  document.querySelectorAll('#arr-gestion-list .arr-row').forEach(row=>{
+    const handle = row.querySelector('.arr-handle');
+    if(!handle) return;
+    handle.onpointerdown = e=>{
+      e.preventDefault();
+      const list = document.getElementById('arr-gestion-list');
+      arrDragState = { row };
+      row.classList.add('dragging');
+      const move = ev=>{
+        if(!arrDragState) return;
+        const rowsNow = Array.from(list.children);
+        const overEl = rowsNow.find(r=>{
+          const rect = r.getBoundingClientRect();
+          return ev.clientY>=rect.top && ev.clientY<=rect.bottom;
+        });
+        if(overEl && overEl!==arrDragState.row){
+          const fromIdx = rowsNow.indexOf(arrDragState.row);
+          const overIdx = rowsNow.indexOf(overEl);
+          const a = getArrastre();
+          const [item] = a.temas.splice(fromIdx,1);
+          a.temas.splice(overIdx,0,item);
+          saveArrastre(a);
+          document.getElementById('arr-gestion-list').innerHTML = arrGestionRowsHtml();
+          const refreshed = document.querySelectorAll('#arr-gestion-list .arr-row')[overIdx];
+          arrDragState.row = refreshed;
+          refreshed.classList.add('dragging');
+          arrSetupDrag();
+        }
+      };
+      const up = ()=>{
+        if(arrDragState) arrDragState.row.classList.remove('dragging');
+        arrDragState = null;
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', up);
+      };
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', up);
+    };
+  });
+}
+
 function openSimulacroNombreModal(simulacroId){
   simulacroNombreEditId = simulacroId;
   const sim = getTests().find(x=>x.id===simulacroId);
@@ -5043,7 +5409,7 @@ function getRendTestsCompletos(){
   testUnidades().forEach(t=>{
     if(t.nota==null) return;
     out.push({
-      id: t.id, fecha: t.fecha, temaId: null, origen: t.tipo==='simulacro' ? 'SIMULACRO' : 'CARTA',
+      id: t.id, fecha: t.fecha, temaId: null, origen: t.origen==='ARRASTRE' ? 'ARRASTRE' : (t.tipo==='simulacro' ? 'SIMULACRO' : 'CARTA'),
       minutos: t.minutosTotal, nota: t.nota,
       preguntas: t.totalPreguntas!=null ? t.totalPreguntas : null,
       aciertos: t.aciertosTotal!=null ? t.aciertosTotal : null,
@@ -5083,7 +5449,7 @@ function getRendTestsPorTema(){
       if(te.aciertos==null || !(te.preguntas>0)) return;
       const fallosTema = rendFallosDelTema(t, te);
       out.push({
-        id: t.id+'_'+te.temaId, fecha: t.fecha, temaId: te.temaId, origen: t.tipo==='simulacro' ? 'SIMULACRO' : 'CARTA',
+        id: t.id+'_'+te.temaId, fecha: t.fecha, temaId: te.temaId, origen: t.origen==='ARRASTRE' ? 'ARRASTRE' : (t.tipo==='simulacro' ? 'SIMULACRO' : 'CARTA'),
         minutos: te.minutos, nota: notaOficial(te.aciertos, fallosTema||0, te.preguntas),
         preguntas: te.preguntas, aciertos: te.aciertos, fallos: fallosTema, blancos: null,
         estimado: fallosTema==null,
@@ -5093,7 +5459,7 @@ function getRendTestsPorTema(){
   });
   return out.sort((a,b)=>a.fecha.localeCompare(b.fecha));
 }
-const REND_FILTROS = ['TODOS','TEST','INNOTEST','CARTA','SIMULACRO'];
+const REND_FILTROS = ['TODOS','TEST','INNOTEST','CARTA','SIMULACRO','ARRASTRE'];
 let rendFiltro = 'TODOS';
 let rendExcluirRepeticiones = false;
 function rendFiltrar(list){
@@ -5109,6 +5475,7 @@ function rendTestsPorTemaFiltrados(){ return rendFiltrar(getRendTestsPorTema());
 function rendEtiqueta(t){
   if(t.temaId) return temaNombre(t.temaId);
   if(t.origen==='SIMULACRO') return (t.simulacroNombre||'Simulacro') + (t.intentoNum?(' · intento '+t.intentoNum):'');
+  if(t.origen==='ARRASTRE') return 'Test de arrastre';
   return 'Test a la carta';
 }
 function rendPctAcierto(t){ return t.preguntas>0 ? (t.aciertos/t.preguntas)*100 : t.nota*10; }
