@@ -1023,10 +1023,6 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
       <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
       <span>Importar backup (JSON)</span>
     </div>
-    <div class="settings-row" onclick="exportCSV()">
-      <div class="settings-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div>
-      <span>Exportar a CSV</span>
-    </div>
   </div>
 
   <div class="settings-group">
@@ -2129,7 +2125,7 @@ function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.s
 
 // ========== VERSIÓN Y BACKUPS ==========
 const APP_VERSION = 15;
-const APP_BUILD_DATE = '11 Nov 2026 12:12'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_BUILD_DATE = '11 Nov 2026 12:13'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2910,12 +2906,6 @@ function entradaColor(e){
   if(e.tipo==='psico') return getCategoriaColor(e.categoriaId);
   return '#666';
 }
-function entradaLabelCat(e){ return e.tipo==='tema' ? temaNombre(e.temaId) : getCategoriaNombre(e.categoriaId); }
-function entradaLabelSub(e){
-  if(e.tipo==='tema'){ let s=subcatTemaNombre(e.subKey); if(e.subKey==='LIBRO_RESUMEN') s+=' vuelta '+e.vuelta; return s; }
-  return getSubcategoriaNombre(e.categoriaId, e.subcategoriaId);
-}
-
 // ========== MIGRACIÓN v2 (Bloque C) ==========
 function sumEntradasMinutos(dias){
   let total = 0;
@@ -6947,27 +6937,6 @@ function handleImport(e){
     }
   };
   r.readAsText(f); e.target.value='';
-}
-function exportCSV(){
-  const rows = [['Fecha','Tipo','Categoría','Subcategoría','Minutos','Tiempo']];
-  getDias().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(d=>{
-    d.entradas.forEach(e=>{
-      rows.push([d.fecha, e.tipo, entradaLabelCat(e), entradaLabelSub(e), e.minutos, formatHM(e.minutos)]);
-    });
-  });
-  testUnidades().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(t=>{
-    const sub = t.tipo==='simulacro'
-      ? (t.simulacroNombre||'')+' · intento '+t.intentoNum+(t.nota!=null?(' · Nota '+t.nota):'')
-      : (t.nota!=null?('Nota '+t.nota):'');
-    rows.push([t.fecha, t.tipo, 'TESTS', sub, t.minutosTotal, formatHM(t.minutosTotal)]);
-  });
-  repasoUnidades().sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(r=>{
-    rows.push([r.fecha, 'repaso', 'TESTS', (r.simulacroNombre||'')+' · repaso', r.minutos, formatHM(r.minutos)]);
-  });
-  const blob = new Blob([rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n')], {type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = 'estudiotracker.csv'; a.click();
-  showToast('CSV exportado ✓','green');
 }
 function clearAllData(){
   if(!confirm('¿Seguro? Se borrará TODO: categorías y registros.')) return;
