@@ -759,9 +759,8 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .arr-section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin: 0 0 8px; }
 .arr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
 .arr-chip { display: flex; flex-direction: column; gap: 3px; min-width: 0; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 12px; }
-.arr-chip-top { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--text); }
+.arr-chip-top { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text); }
 .arr-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold2); flex-shrink: 0; }
-.arr-chip-titulo { font-size: 10.5px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 14px; }
 .arr-hoy-hecho { font-size: 12.5px; color: var(--text2); margin-bottom: 8px; }
 .arr-hoy-botones { display: flex; gap: 8px; }
 .arr-meta { font-size: 12px; color: var(--text2); margin-bottom: 16px; }
@@ -769,12 +768,27 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .arr-suggest span.tap { text-decoration: underline; font-weight: 700; }
 .arr-footer-row { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
 .arr-racha { font-size: 12.5px; color: var(--text2); font-weight: 600; }
-.arr-form-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.arr-form-tema-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.arr-form-tema { font-size: 12.5px; font-weight: 600; color: var(--text); }
-.arr-form-titulo { font-size: 10px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.arr-form-row input { width: 64px; flex-shrink: 0; margin-bottom: 0; text-align: center; }
-.arr-form-row-3 input { width: 50px; }
+/* ⓘ de info (tema sin título => no se pinta — ver arrChipHtml/renderArrFormHtml)
+   y el popover de título que despliega: una sola instancia abierta a la vez
+   (arrToggleInfo + el dismiss-listener de más abajo), nunca reconstruye el
+   formulario de alrededor para no perder lo que ya se ha tecleado en otra
+   fila al tocar la ⓘ de esta. */
+.arr-info-btn { width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--border-2); background: rgba(255,255,255,0.04); color: var(--text3); font-family: var(--font-sans); font-size: 9px; font-weight: 700; line-height: 1; padding: 0; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+.arr-info-btn.open { color: var(--gold2); border-color: var(--gold2); }
+.arr-info-pop { display: none; font-size: 10.5px; color: var(--text3); line-height: 1.4; }
+.arr-info-pop.open { display: block; }
+.arr-chip-titulo-pop { padding-left: 13px; margin-top: 1px; }
+.arr-form-titulo-pop { margin: -4px 0 8px; padding-left: 2px; }
+.arr-form-grid { display: grid; grid-template-columns: 1fr 46px 46px 46px 42px; gap: 6px; align-items: center; }
+.arr-form-head { margin-bottom: 6px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); }
+.arr-form-head span { text-align: center; }
+.arr-form-head span:first-child { text-align: left; }
+.arr-form-row { margin-bottom: 8px; }
+.arr-form-tema-wrap { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.arr-form-tema { font-size: 12.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arr-form-grid .modal-input { margin-bottom: 0; text-align: center; padding: 9px 2px; }
+.arr-form-blanco { text-align: center; font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text3); }
+.arr-form-blanco.neg { color: var(--red); }
 .arr-total-row { font-size: 12px; font-weight: 600; color: var(--text2); margin: 4px 0 12px; }
 .arr-nota-preview { font-size: 13px; font-weight: 700; color: var(--gold2); margin: 2px 0 4px; min-height: 18px; }
 .arr-aviso { font-size: 11.5px; color: var(--orange); margin: 0 0 10px; min-height: 14px; }
@@ -2244,8 +2258,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 16;
-const APP_BUILD_DATE = '13 Nov 2026 09:38'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_VERSION = 17;
+const APP_BUILD_DATE = '13 Nov 2026 10:52'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -5260,11 +5274,35 @@ function renderArrastre(){
 // hacer scroll, así que el título nunca puede forzar una segunda línea.
 function arrChipHtml(n){
   const titulo = temaTitulo(n);
+  const popId = 'arr-chip-pop-'+n;
+  const infoBtn = titulo ? `<button type="button" class="arr-info-btn" onclick="arrToggleInfo(this,'${popId}')">i</button>` : '';
   return `<div class="arr-chip">
-    <div class="arr-chip-top"><span class="dot"></span>TEMA ${n}</div>
-    ${titulo ? `<div class="arr-chip-titulo">${escapeHtml(titulo)}</div>` : ''}
+    <div class="arr-chip-top"><span class="dot"></span>TEMA ${n}${infoBtn}</div>
+    ${titulo ? `<div class="arr-info-pop arr-chip-titulo-pop" id="${popId}">${escapeHtml(titulo)}</div>` : ''}
   </div>`;
 }
+// ⓘ de un tema (ficha del arrastre y formulario de registro): despliega su
+// título sin reconstruir nada alrededor — crítico en el formulario, donde
+// una fila ya puede tener preguntas/aciertos/fallos tecleados en las demás
+// que no se pueden perder al tocar la ⓘ de ésta. Solo un popover abierto a
+// la vez, se cierra al tocarlo otra vez, otra ⓘ, o fuera (ver el
+// dismiss-listener más abajo).
+function arrToggleInfo(btn, popId){
+  const pop = document.getElementById(popId);
+  if(!pop) return;
+  const abrir = !pop.classList.contains('open');
+  document.querySelectorAll('.arr-info-pop.open').forEach(p=>{ if(p!==pop) p.classList.remove('open'); });
+  document.querySelectorAll('.arr-info-btn.open').forEach(b=>{ if(b!==btn) b.classList.remove('open'); });
+  pop.classList.toggle('open', abrir);
+  btn.classList.toggle('open', abrir);
+}
+(function setupArrInfoDismiss(){
+  document.addEventListener('click', e=>{
+    if(e.target.closest('.arr-info-btn') || e.target.closest('.arr-info-pop')) return;
+    document.querySelectorAll('.arr-info-pop.open').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('.arr-info-btn.open').forEach(b=>b.classList.remove('open'));
+  });
+})();
 
 function renderArrHomeHtml(){
   const a = getArrastre();
@@ -5381,20 +5419,23 @@ function arrElegirTanda(puntero){
 function renderArrFormHtml(){
   const rows = arrFormTemas.map(n=>{
     const titulo = temaTitulo(n);
+    const popId = 'arr-form-pop-'+n;
+    const infoBtn = titulo ? `<button type="button" class="arr-info-btn" onclick="arrToggleInfo(this,'${popId}')">i</button>` : '';
     return `
-    <div class="arr-form-row arr-form-row-3">
+    <div class="arr-form-row arr-form-grid">
       <span class="arr-form-tema-wrap">
-        <span class="arr-form-tema">TEMA ${n}</span>
-        ${titulo ? `<span class="arr-form-titulo">${escapeHtml(titulo)}</span>` : ''}
+        <span class="arr-form-tema">TEMA ${n}</span>${infoBtn}
       </span>
-      <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-pr-${n}" placeholder="preg." oninput="renderArrNotaPreview()">
-      <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-ac-${n}" placeholder="acier." oninput="renderArrNotaPreview()">
-      <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-fa-${n}" placeholder="fallos" oninput="renderArrNotaPreview()">
-    </div>`;
+      <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-pr-${n}" oninput="renderArrNotaPreview()">
+      <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-ac-${n}" oninput="renderArrNotaPreview()">
+      <input type="number" class="modal-input" min="0" inputmode="numeric" id="arr-fa-${n}" oninput="renderArrNotaPreview()">
+      <span class="arr-form-blanco" id="arr-bl-${n}">0</span>
+    </div>
+    ${titulo ? `<div class="arr-info-pop arr-form-titulo-pop" id="${popId}">${escapeHtml(titulo)}</div>` : ''}`;
   }).join('');
   return `
     <div class="arr-date">REGISTRAR ARRASTRE · ${arrFechaLabel(todayStr())}</div>
-    <div class="arr-section-label">PREG. · ACIERTOS · FALLOS</div>
+    <div class="arr-form-head arr-form-grid"><span></span><span>Preg</span><span>✓</span><span>✗</span><span>Blanco</span></div>
     ${rows}
     <div class="arr-total-row" id="arr-total-row"></div>
     <label class="modal-label" style="margin-top:6px;">Tiempo test (min)</label>
@@ -5406,9 +5447,10 @@ function renderArrFormHtml(){
     <button class="save-btn" onclick="arrGuardarSesion()">Guardar</button>
   `;
 }
-// Lee preguntas/aciertos/fallos de los temas con preguntas>0 (los que
-// llevan 0 no tocaron ese tema y se descartan enteros). Clampa aciertos y
-// fallos a enteros ≥0, sin capar su suma — eso solo genera aviso.
+// Lee preguntas/aciertos/fallos/blanco (preguntas-aciertos-fallos, nunca
+// tecleado) de cada tema del formulario, tocara o no — los de preguntas=0
+// no se han tocado y se descartan de "datos" (el aggregate que se guarda),
+// pero igualmente llevan blanco=0 si alguien pregunta por su fila.
 function arrLeerDesglose(){
   return arrFormTemas.map(n=>{
     const prRaw = (document.getElementById('arr-pr-'+n)||{}).value;
@@ -5417,27 +5459,41 @@ function arrLeerDesglose(){
     const preguntas = Math.max(0, parseInt(prRaw,10)||0);
     const aciertos = Math.max(0, parseInt(acRaw,10)||0);
     const fallos = Math.max(0, parseInt(faRaw,10)||0);
-    return { n, preguntas, aciertos, fallos };
-  }).filter(d=>d.preguntas>0);
+    const blancos = preguntas-aciertos-fallos;
+    return { n, preguntas, aciertos, fallos, blancos };
+  });
 }
 function renderArrNotaPreview(){
   const notaEl = document.getElementById('arr-nota-preview');
   const totalEl = document.getElementById('arr-total-row');
   const avisoEl = document.getElementById('arr-aviso');
   if(!notaEl) return;
-  const datos = arrLeerDesglose();
+  const todas = arrLeerDesglose();
+  todas.forEach(d=>{
+    const el = document.getElementById('arr-bl-'+d.n);
+    if(!el) return;
+    el.textContent = d.blancos;
+    el.classList.toggle('neg', d.blancos<0);
+  });
+  const datos = todas.filter(d=>d.preguntas>0);
   const totalPreguntas = datos.reduce((a,d)=>a+d.preguntas,0);
   const totalAciertos = datos.reduce((a,d)=>a+d.aciertos,0);
   const totalFallos = datos.reduce((a,d)=>a+d.fallos,0);
-  if(totalEl) totalEl.textContent = totalPreguntas>0 ? `Total ${totalPreguntas} preguntas · ${totalAciertos} ac · ${totalFallos} fa` : '';
+  const totalBlancos = datos.reduce((a,d)=>a+d.blancos,0);
+  if(totalEl) totalEl.textContent = totalPreguntas>0 ? `Total ${totalPreguntas} · ${totalAciertos} · ${totalFallos} · ${totalBlancos}` : '';
   if(!totalPreguntas){ notaEl.textContent=''; if(avisoEl) avisoEl.textContent=''; return; }
   notaEl.textContent = `Nota ${formatNota(notaOficial(totalAciertos, totalFallos, totalPreguntas))}`;
-  const descuadra = datos.some(d=>d.aciertos+d.fallos>d.preguntas);
+  const descuadra = datos.some(d=>d.blancos<0);
   if(avisoEl) avisoEl.textContent = descuadra ? 'Aciertos + fallos no cuadran con las preguntas en algún tema' : '';
 }
 function arrGuardarSesion(){
-  const datos = arrLeerDesglose();
+  const datos = arrLeerDesglose().filter(d=>d.preguntas>0);
   if(!datos.length){ showToast('Añade preguntas a al menos un tema'); return; }
+  // El blanco se calcula, nunca se teclea — pero si aciertos+fallos superan
+  // las preguntas de algún tema (blanco negativo), el reparto no es real y
+  // no se deja guardar hasta que cuadre (ver renderArrNotaPreview, que ya
+  // lo pinta en rojo en vivo).
+  if(datos.some(d=>d.blancos<0)){ showToast('Aciertos + fallos no cuadran con las preguntas en algún tema'); return; }
   const tiempoTest = parseInt(document.getElementById('arr-tiempo-test').value,10);
   const tiempoCorreccion = parseInt(document.getElementById('arr-tiempo-correccion').value,10);
   if(!tiempoTest || tiempoTest<=0){ showToast('Introduce un tiempo de test válido'); return; }
@@ -5451,7 +5507,7 @@ function arrGuardarSesion(){
   const totalPreguntas = datos.reduce((a,d)=>a+d.preguntas,0);
   const totalAciertos = datos.reduce((a,d)=>a+d.aciertos,0);
   const totalFallos = datos.reduce((a,d)=>a+d.fallos,0);
-  const totalBlancos = Math.max(0, totalPreguntas-totalAciertos-totalFallos);
+  const totalBlancos = datos.reduce((a,d)=>a+d.blancos,0);
   const nota = notaOficial(totalAciertos, totalFallos, totalPreguntas);
   const nuevo = {
     id: uid(), tipo:'carta', origen:'ARRASTRE', fecha, minutosTotal: tiempoTest,
