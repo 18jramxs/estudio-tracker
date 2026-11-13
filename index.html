@@ -820,13 +820,17 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 /* —— HERRAMIENTAS: Test de arrastre, lista de tandas (CAMBIAR TANDA) —— */
 .arr-tandas-list { display: flex; flex-direction: column; }
 .arr-tanda-row { width: 100%; background: none; border: none; text-align: left; font-family: inherit; }
-.arr-tanda-radio { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--text3); flex-shrink: 0; }
-.arr-tanda-radio.on { border-color: var(--gold2); background: var(--gold2); }
+.arr-tanda-dia { width: 36px; flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: var(--text3); letter-spacing: 0.02em; }
 .arr-tanda-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.arr-tanda-temas { font-family: var(--font-mono); font-size: 13.5px; font-weight: 600; color: var(--text); }
+.arr-tanda-temas { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--text); }
 .arr-tanda-titulos { font-size: 10.5px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.arr-tanda-sub { font-size: 11px; color: var(--text3); flex-shrink: 0; white-space: nowrap; }
-.arr-tanda-row.actual .arr-tanda-sub { color: var(--gold2); font-weight: 700; }
+.arr-tanda-estado { font-size: 10.5px; font-weight: 700; flex-shrink: 0; white-space: nowrap; }
+.arr-tanda-estado.hecha { color: var(--green); }
+.arr-tanda-estado.hoy { color: var(--gold2); }
+.arr-tanda-estado.saltada { color: var(--orange); }
+/* Las "sin hacer" son las que interesa recuperar — resaltadas con un acento
+   de color a la izquierda, no solo el texto del estado en ámbar. */
+.arr-tanda-row.saltada { background: rgba(255,138,61,0.08); box-shadow: inset 3px 0 0 var(--orange); }
 /* —— HERRAMIENTAS: Mnemotécnicas —— */
 .mnemo-search { margin-bottom: 12px; font-family: var(--font-sans); }
 .mnemo-tema-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--border); }
@@ -2258,8 +2262,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 17;
-const APP_BUILD_DATE = '13 Nov 2026 10:52'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_VERSION = 18;
+const APP_BUILD_DATE = '13 Nov 2026 16:03'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -5069,7 +5073,7 @@ function getArrastre(){
     const raw = localStorage.getItem('estudio_arrastre');
     if(raw) return JSON.parse(raw);
   }catch{}
-  const seed = { temas:[24,25,9,14,38,39,16,2,27,3,7], puntero:0, ultimaSesion:null };
+  const seed = { temas:[24,25,9,14,38,39,16,2,27,3,7], puntero:0, ultimaSesion:null, inicio: todayStr() };
   localStorage.setItem('estudio_arrastre', JSON.stringify(seed));
   return seed;
 }
@@ -5094,9 +5098,12 @@ function arrFechaLabel(fecha){
 }
 
 // Los cuatro temas que caen en una posición cualquiera del puntero —
-// arrHoyTemas() es solo el caso particular de la posición actual.
-function arrTemasEnPuntero(puntero){
-  const a = getArrastre();
+// arrHoyTemas() es solo el caso particular de la posición actual. aIn
+// permite pasar un arrastre ya leído (p.ej. durante la migración de
+// inicio, antes de que ese objeto se haya guardado) para no reabrir
+// localStorage ni arriesgar una recursión con getArrastre().
+function arrTemasEnPuntero(puntero, aIn){
+  const a = aIn || getArrastre();
   const n = a.temas.length;
   if(!n) return [];
   const out = [];
@@ -5105,30 +5112,68 @@ function arrTemasEnPuntero(puntero){
 }
 function arrHoyTemas(){
   const a = getArrastre();
-  return arrTemasEnPuntero(a.puntero);
+  return arrTemasEnPuntero(a.puntero, a);
 }
 // Todas las tandas distintas de la rotación, en el orden en que van
 // saliendo si se recorre la lista de cuatro en cuatro desde el principio
 // (igual que el calendario) — es la MISMA secuencia para cualquier día, así
 // que cada tanda siempre aparece en la misma fila de "¿Qué tanda haces?"
 // independientemente de dónde esté el puntero ahora mismo.
-function arrTandas(){
-  const a = getArrastre();
+function arrTandas(aIn){
+  const a = aIn || getArrastre();
   const n = a.temas.length;
   const out = [];
   if(!n) return out;
   let p = 0;
   const vistos = new Set();
   do{
-    out.push({ puntero:p, temas: arrTemasEnPuntero(p) });
+    out.push({ puntero:p, temas: arrTemasEnPuntero(p, a) });
     vistos.add(p);
     p = (p+4)%n;
   }while(!vistos.has(p));
   return out;
 }
-function arrFechaCorta(fecha){
+// Fecha lectiva que le "tocaba" a la tanda de índice k de la secuencia
+// canónica (arrTandas), contando desde a.inicio — un ancla FIJA, no el
+// puntero actual: si hoy se hacen dos tandas seguidas (la de ayer y la de
+// hoy), la segunda no "tocaba" hoy en el sentido de la agenda, tocaba
+// mañana, y el puntero ya adelantado no debe correr esa fecha hacia atrás.
+function arrFechaTanda(k, aIn){
+  const a = aIn || getArrastre();
+  let fecha = a.inicio || todayStr();
+  if(!arrEsLectivo(fecha)) fecha = arrSiguienteLectivo(fecha);
+  for(let i=0;i<k;i++) fecha = arrSiguienteLectivo(fecha);
+  return fecha;
+}
+// "MAR 10" (lista de tandas) / en minúscula "mar 10" (card: "tanda del mar 10").
+function arrDiaCorto(fecha){
   const d = new Date(fecha+'T12:00:00');
-  return `${d.getDate()} ${ARR_MES[d.getMonth()].toLowerCase()}`;
+  return `${ARR_DOW[d.getDay()]} ${d.getDate()}`;
+}
+// Un ancla ("inicio") ya existente para todas las apps nuevas desde este
+// cambio (ver getArrastre) — esto solo rellena el hueco en localStorage de
+// quien ya tenía la rotación en marcha. Reconstruye la fecha más plausible:
+// la del registro de arrastre más antiguo que haya, retrocedida tantos días
+// lectivos como la tanda a la que correspondía ese registro, para que el
+// histórico ya acumulado quede en la posición correcta en vez de arrancar
+// de cero en el día de hoy.
+function migrateArrastreInicio(){
+  const a = getArrastre();
+  if(a.inicio) return;
+  const tandas = arrTandas(a);
+  const tests = getTests().filter(t=>t.tipo==='carta' && t.origen==='ARRASTRE').sort((x,y)=>x.fecha.localeCompare(y.fecha));
+  let inicio = todayStr();
+  if(tests.length && tandas.length){
+    const primero = tests[0];
+    const propios = new Set((primero.temas||[]).map(te=>temaNumero(te.temaId)));
+    let idx = propios.size ? tandas.findIndex(t=>{ const key=new Set(t.temas); return [...propios].every(x=>key.has(x)); }) : -1;
+    if(idx<0) idx = 0;
+    let fecha = primero.fecha;
+    for(let i=0;i<idx;i++) fecha = arrAnteriorLectivo(fecha);
+    inicio = fecha;
+  }
+  a.inicio = inicio;
+  saveArrastre(a);
 }
 // ¿Ya se hizo esta tanda alguna vez? Empareja por el conjunto de temas del
 // registro (lo que de verdad se contestó, puede ser un subconjunto si algún
@@ -5314,6 +5359,15 @@ function renderArrHomeHtml(){
   const chipsHtml = hoyTemas.map(arrChipHtml).join('');
   const sug = arrSugerenciaTema();
   const racha = arrRacha();
+  // Si la tanda que toca ahora mismo (a.puntero) no es la que de verdad le
+  // tocaba a hoy en la agenda (arrFechaTanda, ancla fija) — p.ej. porque se
+  // saltó un día y todavía no se ha puesto al día — se avisa de qué día es,
+  // para no dar por hecho que es la de hoy.
+  const tandasActuales = arrTandas(a);
+  const idxActual = tandasActuales.findIndex(t=>t.puntero===a.puntero);
+  const fechaActual = idxActual>=0 ? arrFechaTanda(idxActual, a) : todayStr();
+  const deOtroDia = fechaActual!==todayStr();
+  const tocanLbl = 'HOY TE TOCAN' + (deOtroDia ? ` · tanda del ${arrDiaCorto(fechaActual).toLowerCase()}` : '');
   // El botón de empezar/registrar nunca desaparece: si ya hay arrastre(s)
   // hoy se informa, pero la acción sigue activa (puede haber más de uno,
   // p.ej. ponerse al día con el de ayer y hacer también el de hoy).
@@ -5342,7 +5396,7 @@ function renderArrHomeHtml(){
   return `
     <div class="arr-date">${arrFechaLabel(todayStr())}</div>
     <div class="arr-section-label-row">
-      <div class="arr-section-label">HOY TE TOCAN</div>
+      <div class="arr-section-label">${tocanLbl}</div>
       <button type="button" class="arr-change-btn tap" onclick="arrView='tandas';renderArrastre();">CAMBIAR</button>
     </div>
     <div class="arr-grid">${chipsHtml}</div>
@@ -5384,25 +5438,36 @@ function arrAbrirForm(){
   arrView = 'form';
   renderArrastre();
 }
-// Lista de todas las tandas de la rotación (CAMBIAR TANDA): la que toca
-// marcada, las ya hechas con su fecha. Elegir una pasa a 'form' con esos
-// cuatro temas, igual que arrAbrirForm pero anclada a esa tanda concreta.
+// Lista de todas las tandas de la rotación (CAMBIAR TANDA), con el día
+// lectivo que le tocaba a cada una por delante (arrFechaTanda, ancla fija
+// desde a.inicio — no el puntero, que puede estar adelantado por catch-ups
+// del mismo día). Estado a la derecha: hecha (ya registrada, en cualquier
+// fecha), sin hacer (de un día ya pasado y sin registrar — resaltada, son
+// las que interesa recuperar), ← hoy (la de hoy, todavía sin hacer), o
+// nada en las futuras. Elegir una pasa a 'form' con esos cuatro temas,
+// igual que arrAbrirForm pero anclada a esa tanda concreta.
 function renderArrTandasHtml(){
   const a = getArrastre();
-  const tandas = arrTandas();
+  const tandas = arrTandas(a);
   if(!tandas.length) return '<div class="empty-sub">Añade temas al arrastre primero.</div>';
-  const filas = tandas.map(t=>{
-    const esActual = t.puntero===a.puntero;
+  const hoy = todayStr();
+  const filas = tandas.map((t,k)=>{
+    const fecha = arrFechaTanda(k, a);
     const hecha = arrTandaHecha(t.temas);
+    const esHoy = fecha===hoy;
+    const saltada = !hecha && !esHoy && fecha<hoy;
+    let estadoHtml = '';
+    if(hecha) estadoHtml = '<span class="arr-tanda-estado hecha">hecha ✓</span>';
+    else if(esHoy) estadoHtml = '<span class="arr-tanda-estado hoy">← hoy</span>';
+    else if(saltada) estadoHtml = '<span class="arr-tanda-estado saltada">sin hacer</span>';
     const titulos = t.temas.map(temaTitulo).filter(Boolean);
-    const sub = esActual ? 'te toca' : (hecha ? 'hecha '+arrFechaCorta(hecha.fecha) : '');
-    return `<button type="button" class="lvl-row arr-tanda-row${esActual?' actual':''}" onclick="arrElegirTanda(${t.puntero})">
-      <span class="arr-tanda-radio${esActual?' on':''}"></span>
+    return `<button type="button" class="lvl-row arr-tanda-row${saltada?' saltada':''}" onclick="arrElegirTanda(${t.puntero})">
+      <span class="arr-tanda-dia">${arrDiaCorto(fecha)}</span>
       <span class="arr-tanda-main">
         <span class="arr-tanda-temas">${t.temas.join(' · ')}</span>
         ${titulos.length ? `<span class="arr-tanda-titulos">${titulos.map(escapeHtml).join(' · ')}</span>` : ''}
       </span>
-      ${sub ? `<span class="arr-tanda-sub">${sub}</span>` : ''}
+      ${estadoHtml}
     </button>`;
   }).join('');
   return `<div class="arr-tandas-list">${filas}</div>`;
@@ -7383,6 +7448,7 @@ function clearAllData(){
 // ========== INIT ==========
 checkBackupRestoreOffer();
 migrateSubcategorias();
+migrateArrastreInicio();
 ensureOrganigramaSeed();
 migrateToV2();
 migrateSimulacrosToIntentos();
