@@ -796,6 +796,23 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .arr-puntero-temas { font-family: var(--font-mono); font-size: 13px; color: var(--text2); margin-bottom: 8px; }
 .arr-puntero-botones { display: flex; gap: 8px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
 .arr-puntero-botones button { font-size: 12.5px; padding: 9px; }
+.arr-section-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.arr-section-label-row .arr-section-label { margin-bottom: 0; }
+.arr-change-btn { background: none; border: 1px solid var(--border); border-radius: 100px; padding: 4px 11px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: var(--text2); font-family: inherit; }
+.arr-hoy-multi-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.arr-hoy-multi-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 9px 12px; }
+.arr-hoy-multi-temas { font-family: var(--font-mono); font-size: 12.5px; color: var(--text2); }
+.arr-hoy-multi-val { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; color: var(--text); flex-shrink: 0; }
+/* —— HERRAMIENTAS: Test de arrastre, lista de tandas (CAMBIAR TANDA) —— */
+.arr-tandas-list { display: flex; flex-direction: column; }
+.arr-tanda-row { width: 100%; background: none; border: none; text-align: left; font-family: inherit; }
+.arr-tanda-radio { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--text3); flex-shrink: 0; }
+.arr-tanda-radio.on { border-color: var(--gold2); background: var(--gold2); }
+.arr-tanda-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.arr-tanda-temas { font-family: var(--font-mono); font-size: 13.5px; font-weight: 600; color: var(--text); }
+.arr-tanda-titulos { font-size: 10.5px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arr-tanda-sub { font-size: 11px; color: var(--text3); flex-shrink: 0; white-space: nowrap; }
+.arr-tanda-row.actual .arr-tanda-sub { color: var(--gold2); font-weight: 700; }
 /* —— HERRAMIENTAS: Mnemotécnicas —— */
 .mnemo-search { margin-bottom: 12px; font-family: var(--font-sans); }
 .mnemo-tema-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--border); }
@@ -2227,8 +2244,8 @@ function deleteTemaTestEntry(){
 function isTemaTestEntry(e){ return e.tipo==='tema' && (e.subKey==='TEST' || e.subKey==='INNOTEST'); }
 
 // ========== VERSIÓN Y BACKUPS ==========
-const APP_VERSION = 15;
-const APP_BUILD_DATE = '11 Nov 2026 16:28'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
+const APP_VERSION = 16;
+const APP_BUILD_DATE = '13 Nov 2026 09:38'; // no se escribe a mano: TZ=Europe/Madrid date "+%d %b %Y %H:%M"
 
 const IDB_NAME = 'estudio_backups_db';
 const IDB_STORE = 'snapshots';
@@ -2462,8 +2479,13 @@ let testsViewSearch = '';
 let testTiempoTarget = null; // {categoriaId, subcategoriaId}
 let testTiempoEditing = null; // {fecha, id} | null
 
-let arrView = 'home'; // 'home' | 'form' | 'calendario' | 'gestion' | 'ver'
+let arrView = 'home'; // 'home' | 'form' | 'calendario' | 'gestion' | 'ver' | 'tandas'
 let arrFormTemas = [];
+// Puntero (posición en la rotación) de donde salen arrFormTemas — normalmente
+// el puntero actual, pero si se elige una tanda a mano desde 'tandas' es la
+// de esa tanda, para que al guardar el puntero avance desde AHÍ y no desde
+// donde estuviera antes (ver arrElegirTanda/arrGuardarSesion).
+let arrFormPuntero = null;
 let arrDragState = null;
 let arrVerId = null;
 
@@ -5057,18 +5079,74 @@ function arrFechaLabel(fecha){
   return `${ARR_DOW[d.getDay()]} ${d.getDate()} ${ARR_MES[d.getMonth()]}`;
 }
 
-function arrHoyTemas(){
+// Los cuatro temas que caen en una posición cualquiera del puntero —
+// arrHoyTemas() es solo el caso particular de la posición actual.
+function arrTemasEnPuntero(puntero){
   const a = getArrastre();
   const n = a.temas.length;
   if(!n) return [];
   const out = [];
-  for(let i=0;i<4;i++) out.push(a.temas[(a.puntero+i)%n]);
+  for(let i=0;i<4;i++) out.push(a.temas[(puntero+i)%n]);
   return out;
 }
-function arrAvanzarPuntero(){
+function arrHoyTemas(){
+  const a = getArrastre();
+  return arrTemasEnPuntero(a.puntero);
+}
+// Todas las tandas distintas de la rotación, en el orden en que van
+// saliendo si se recorre la lista de cuatro en cuatro desde el principio
+// (igual que el calendario) — es la MISMA secuencia para cualquier día, así
+// que cada tanda siempre aparece en la misma fila de "¿Qué tanda haces?"
+// independientemente de dónde esté el puntero ahora mismo.
+function arrTandas(){
   const a = getArrastre();
   const n = a.temas.length;
-  a.puntero = n ? (a.puntero+4)%n : 0;
+  const out = [];
+  if(!n) return out;
+  let p = 0;
+  const vistos = new Set();
+  do{
+    out.push({ puntero:p, temas: arrTemasEnPuntero(p) });
+    vistos.add(p);
+    p = (p+4)%n;
+  }while(!vistos.has(p));
+  return out;
+}
+function arrFechaCorta(fecha){
+  const d = new Date(fecha+'T12:00:00');
+  return `${d.getDate()} ${ARR_MES[d.getMonth()].toLowerCase()}`;
+}
+// ¿Ya se hizo esta tanda alguna vez? Empareja por el conjunto de temas del
+// registro (lo que de verdad se contestó, puede ser un subconjunto si algún
+// tema del día se dejó a 0 preguntas) contra el conjunto de la tanda —
+// prioriza la coincidencia exacta y, si hay varias, la más reciente.
+function arrTandaHecha(temas){
+  const key = new Set(temas);
+  let exacta = null, parcial = null;
+  getTests().filter(t=>t.tipo==='carta' && t.origen==='ARRASTRE').forEach(t=>{
+    const propios = new Set((t.temas||[]).map(te=>temaNumero(te.temaId)));
+    if(!propios.size) return;
+    const esSubconjunto = [...propios].every(x=>key.has(x));
+    if(!esSubconjunto) return;
+    const esExacta = propios.size===key.size;
+    if(esExacta && (!exacta || t.fecha>exacta.fecha)) exacta = t;
+    else if(!esExacta && (!parcial || t.fecha>parcial.fecha)) parcial = t;
+  });
+  return exacta || parcial || null;
+}
+function arrastresDeHoy(){
+  const hoy = todayStr();
+  return getTests().filter(t=>t.tipo==='carta' && t.origen==='ARRASTRE' && t.fecha===hoy).sort((a,b)=> a.id<b.id?-1:(a.id>b.id?1:0));
+}
+// desde: puntero a partir del cual avanzar 4 — por defecto el actual (avance
+// normal), pero al guardar una tanda elegida a mano es la de esa tanda
+// (arrFormPuntero), para que quede justo después de ELLA y no simplemente
+// +4 desde donde estuviera el puntero antes de elegirla.
+function arrAvanzarPuntero(desde){
+  const a = getArrastre();
+  const n = a.temas.length;
+  const base = desde!=null ? desde : a.puntero;
+  a.puntero = n ? (base+4)%n : 0;
   // ultimaSesion queda como dato informativo (p.ej. para depurar), pero ya
   // no manda sobre el estado de la tarjeta ni del calendario — ver
   // arrastreDeHoy() y arrRacha(), que miran los registros reales. Si se
@@ -5167,7 +5245,7 @@ function openArrastre(){
 function arrBack(){ arrView='home'; renderArrastre(); }
 function renderArrastre(){
   document.getElementById('arr-back-btn').style.display = arrView==='home' ? 'none' : 'flex';
-  const titulos = {home:'Test de arrastre', form:'Registrar arrastre', calendario:'Calendario', gestion:'Gestionar rotación', ver:'Registro de hoy'};
+  const titulos = {home:'Test de arrastre', form:'Registrar arrastre', calendario:'Calendario', gestion:'Gestionar rotación', ver:'Registro de hoy', tandas:'¿Qué tanda haces?'};
   document.getElementById('arr-header-title').textContent = titulos[arrView];
   const body = document.getElementById('arr-body');
   if(arrView==='home') body.innerHTML = renderArrHomeHtml();
@@ -5175,6 +5253,7 @@ function renderArrastre(){
   else if(arrView==='calendario') body.innerHTML = renderArrCalendarioHtml();
   else if(arrView==='gestion'){ body.innerHTML = renderArrGestionHtml(); arrSetupDrag(); }
   else if(arrView==='ver') body.innerHTML = renderArrVerHtml();
+  else if(arrView==='tandas') body.innerHTML = renderArrTandasHtml();
 }
 // Chip de un tema del arrastre: número + título (si lo hay) en gris debajo,
 // cortado con puntos suspensivos en una sola línea — la tarjeta no puede
@@ -5193,22 +5272,41 @@ function renderArrHomeHtml(){
     return '<div class="empty-sub">Todavía no hay temas en el arrastre.</div><button class="add-btn tap" style="margin-top:10px;" onclick="arrView=\'gestion\';renderArrastre();">Gestionar rotación</button>';
   }
   const hoyTemas = arrHoyTemas();
-  const hoyTest = arrastreDeHoy();
+  const hoyTests = arrastresDeHoy();
   const chipsHtml = hoyTemas.map(arrChipHtml).join('');
   const sug = arrSugerenciaTema();
   const racha = arrRacha();
-  // El botón de empezar/registrar nunca desaparece: si ya hay un arrastre
-  // hoy se informa, pero la acción sigue activa (puede haber más de uno).
-  const accionHtml = hoyTest
-    ? `<div class="arr-hoy-hecho">Hoy ya hay uno registrado · ${hoyTest.aciertosTotal!=null?hoyTest.aciertosTotal:'—'}/${hoyTest.totalPreguntas||0}</div>
+  // El botón de empezar/registrar nunca desaparece: si ya hay arrastre(s)
+  // hoy se informa, pero la acción sigue activa (puede haber más de uno,
+  // p.ej. ponerse al día con el de ayer y hacer también el de hoy).
+  let accionHtml;
+  if(hoyTests.length===1){
+    const ht = hoyTests[0];
+    accionHtml = `<div class="arr-hoy-hecho">Hoy ya hay uno registrado · ${ht.aciertosTotal!=null?ht.aciertosTotal:'—'}/${ht.totalPreguntas||0}</div>
        <div class="arr-hoy-botones">
-         <button class="add-btn tap" style="flex:1;margin:0;" onclick="arrVerHoy('${hoyTest.id}')">VER</button>
+         <button class="add-btn tap" style="flex:1;margin:0;" onclick="arrVerHoy('${ht.id}')">VER</button>
          <button class="save-btn" style="flex:1;margin:0;" onclick="arrAbrirForm()">REGISTRAR OTRO</button>
-       </div>`
-    : `<button class="save-btn" onclick="arrAbrirForm()">EMPEZAR</button>`;
+       </div>`;
+  }else if(hoyTests.length>1){
+    const filasHtml = hoyTests.map(t=>{
+      const temasTxt = (t.temas||[]).map(te=>temaNumero(te.temaId)).join(' · ');
+      return `<div class="arr-hoy-multi-row tap" onclick="arrVerHoy('${t.id}')">
+        <span class="arr-hoy-multi-temas">${temasTxt}</span>
+        <span class="arr-hoy-multi-val">${t.aciertosTotal!=null?t.aciertosTotal:'—'}/${t.totalPreguntas||0}</span>
+      </div>`;
+    }).join('');
+    accionHtml = `<div class="arr-hoy-hecho">Hoy · ${hoyTests.length} arrastres</div>
+       <div class="arr-hoy-multi-list">${filasHtml}</div>
+       <button class="save-btn" onclick="arrAbrirForm()">REGISTRAR OTRO</button>`;
+  }else{
+    accionHtml = `<button class="save-btn" onclick="arrAbrirForm()">EMPEZAR</button>`;
+  }
   return `
     <div class="arr-date">${arrFechaLabel(todayStr())}</div>
-    <div class="arr-section-label">HOY TE TOCAN</div>
+    <div class="arr-section-label-row">
+      <div class="arr-section-label">HOY TE TOCAN</div>
+      <button type="button" class="arr-change-btn tap" onclick="arrView='tandas';renderArrastre();">CAMBIAR</button>
+    </div>
     <div class="arr-grid">${chipsHtml}</div>
     <div class="arr-meta">20 preguntas repartidas entre los 4</div>
     ${accionHtml}
@@ -5242,7 +5340,38 @@ function renderArrVerHtml(){
 }
 
 function arrAbrirForm(){
-  arrFormTemas = arrHoyTemas();
+  const a = getArrastre();
+  arrFormPuntero = a.puntero;
+  arrFormTemas = arrTemasEnPuntero(arrFormPuntero);
+  arrView = 'form';
+  renderArrastre();
+}
+// Lista de todas las tandas de la rotación (CAMBIAR TANDA): la que toca
+// marcada, las ya hechas con su fecha. Elegir una pasa a 'form' con esos
+// cuatro temas, igual que arrAbrirForm pero anclada a esa tanda concreta.
+function renderArrTandasHtml(){
+  const a = getArrastre();
+  const tandas = arrTandas();
+  if(!tandas.length) return '<div class="empty-sub">Añade temas al arrastre primero.</div>';
+  const filas = tandas.map(t=>{
+    const esActual = t.puntero===a.puntero;
+    const hecha = arrTandaHecha(t.temas);
+    const titulos = t.temas.map(temaTitulo).filter(Boolean);
+    const sub = esActual ? 'te toca' : (hecha ? 'hecha '+arrFechaCorta(hecha.fecha) : '');
+    return `<button type="button" class="lvl-row arr-tanda-row${esActual?' actual':''}" onclick="arrElegirTanda(${t.puntero})">
+      <span class="arr-tanda-radio${esActual?' on':''}"></span>
+      <span class="arr-tanda-main">
+        <span class="arr-tanda-temas">${t.temas.join(' · ')}</span>
+        ${titulos.length ? `<span class="arr-tanda-titulos">${titulos.map(escapeHtml).join(' · ')}</span>` : ''}
+      </span>
+      ${sub ? `<span class="arr-tanda-sub">${sub}</span>` : ''}
+    </button>`;
+  }).join('');
+  return `<div class="arr-tandas-list">${filas}</div>`;
+}
+function arrElegirTanda(puntero){
+  arrFormPuntero = puntero;
+  arrFormTemas = arrTemasEnPuntero(puntero);
   arrView = 'form';
   renderArrastre();
 }
@@ -5332,7 +5461,8 @@ function arrGuardarSesion(){
   const tests = getTests();
   tests.push(nuevo);
   saveTests(tests);
-  arrAvanzarPuntero();
+  arrAvanzarPuntero(arrFormPuntero);
+  arrFormPuntero = null;
   closeModal('arrastre-modal');
   showToast('Guardado ✓','green');
   renderHoy(); renderHistorial(); renderEstadisticas();
@@ -7216,7 +7346,7 @@ if(luEl){
 if('serviceWorker' in navigator){
   let hadController = !!navigator.serviceWorker.controller;
   window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+    navigator.serviceWorker.register('sw.js?v='+APP_VERSION).catch(()=>{});
   });
   navigator.serviceWorker.addEventListener('controllerchange', ()=>{
     if(!hadController){ hadController = true; return; }

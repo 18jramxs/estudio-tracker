@@ -1,4 +1,10 @@
-const APP_VERSION = 11;
+// La versión vive solo en index.html (const APP_VERSION) — se registra este
+// SW como "sw.js?v=" + APP_VERSION, y aquí se lee de esa query string para
+// que no puedan desincronizarse (si no, un index.html nuevo con sw.js sin
+// tocar no invalida la caché y la app puede servir una versión vieja: esto
+// pasó el 13/11/2026, el TEST DE ARRASTRE desapareció de Herramientas hasta
+// cerrar y reabrir la app).
+const APP_VERSION = new URL(self.location.href).searchParams.get('v') || '0';
 const CACHE_NAME = `estudio-v${APP_VERSION}`;
 const CORE_ASSETS = [
   './',
